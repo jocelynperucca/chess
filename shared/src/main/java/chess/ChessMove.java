@@ -26,6 +26,11 @@ public class ChessMove {
         throw new RuntimeException("Not implemented");
     }
 
+    @Override
+    public String toString() {
+        return "change this to show array";
+    }
+
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
      * chess move
