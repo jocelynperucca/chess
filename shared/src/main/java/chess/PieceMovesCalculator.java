@@ -9,7 +9,7 @@ public abstract class PieceMovesCalculator {
         return position.getRow() >= 0 && position.getRow() < 8
                 && position.getColumn() >= 0 && position.getColumn() < 8;
 
-        //GET COLOR by uppercase or lower? fimd if occupied
+        // find if occupied
     }
 
     //receive type of piece...switch case
