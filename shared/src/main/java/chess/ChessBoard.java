@@ -16,6 +16,10 @@ public class ChessBoard {
         
     }
 
+    public ChessPiece[][] getSquares() {
+        return squares;
+    }
+
     //memory address override
     @Override
     public boolean equals(Object o) {

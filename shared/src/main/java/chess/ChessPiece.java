@@ -72,6 +72,16 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        if (PieceType.BISHOP.equals(type)) {
+
+            Bishop bishop = new Bishop(pieceColor, type);
+            bishop.pieceMoves(board, myPosition);
+
+        }
         return new ArrayList<>();
+
+
     }
 }
+
+
