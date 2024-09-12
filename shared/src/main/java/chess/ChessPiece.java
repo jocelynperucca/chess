@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 //figure out toString
@@ -72,12 +73,30 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        if (PieceType.BISHOP.equals(type)) {
+        ChessPiece piece = board.getPiece(myPosition);
 
-            Bishop bishop = new Bishop(pieceColor, type);
-            bishop.pieceMoves(board, myPosition);
+        switch (piece.getPieceType()) {
+            case BISHOP:
+                Bishop bishop = new Bishop(pieceColor, type);
+                return bishop.pieceMoves(board, myPosition);
+            case ROOK:
+                Rook rook = new Rook(pieceColor, type);
+                return rook.pieceMoves(board, myPosition);
+            case QUEEN:
+                Rook queen = new Rook(pieceColor, type);
+                Bishop queenBishop = new Bishop(pieceColor, type);
+                Collection<ChessMove> queenPieceMoves = new HashSet<>();
+                queenPieceMoves.addAll(queen.pieceMoves(board,myPosition));
+                queenPieceMoves.addAll(queenBishop.pieceMoves(board,myPosition));
+                return queenPieceMoves;
 
         }
+//        if (PieceType.BISHOP.equals(type)) {
+//
+//            Bishop bishop = new Bishop(pieceColor, type);
+//            return bishop.pieceMoves(board, myPosition);
+//
+//        }
         return new ArrayList<>();
 
 

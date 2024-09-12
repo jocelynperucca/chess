@@ -1,6 +1,7 @@
 package chess;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class Bishop extends ChessPiece {
 
@@ -10,8 +11,10 @@ public class Bishop extends ChessPiece {
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> moves = new ArrayList<>();
+        Collection<ChessMove> moves = new HashSet<ChessMove>();
 
+
+//CHECK EACH WAY
         int[][] directions = {
                 {1, 1},   // Up-right
                 {1, -1},  // Down-right
@@ -27,7 +30,14 @@ public class Bishop extends ChessPiece {
 
                 int newRow = position.getRow() + rowOffset * i;
                 int newCol = position.getColumn() + colOffset * i;
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
+                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                    ChessMove newMove = new ChessMove(position, newPosition, null);
+                    moves.add(newMove);
+                } else {
+                    break;
+                }
+
             }
         }
 
