@@ -89,6 +89,9 @@ public class ChessPiece {
                 queenPieceMoves.addAll(queen.pieceMoves(board,myPosition));
                 queenPieceMoves.addAll(queenBishop.pieceMoves(board,myPosition));
                 return queenPieceMoves;
+            case KNIGHT:
+                Knight knight = new Knight(pieceColor, type);
+                return knight.pieceMoves(board, myPosition);
 
         }
 //        if (PieceType.BISHOP.equals(type)) {
