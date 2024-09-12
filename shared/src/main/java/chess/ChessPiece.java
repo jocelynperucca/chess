@@ -92,6 +92,15 @@ public class ChessPiece {
             case KNIGHT:
                 Knight knight = new Knight(pieceColor, type);
                 return knight.pieceMoves(board, myPosition);
+            case PAWN:
+                Pawn pawn = new Pawn(pieceColor, type);
+            case KING:
+                King king = new King(pieceColor, type);
+                return king.pieceMoves(board, myPosition);
+
+
+
+
 
         }
 //        if (PieceType.BISHOP.equals(type)) {
