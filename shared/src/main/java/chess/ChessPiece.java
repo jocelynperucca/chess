@@ -94,6 +94,7 @@ public class ChessPiece {
                 return knight.pieceMoves(board, myPosition);
             case PAWN:
                 Pawn pawn = new Pawn(pieceColor, type);
+                return pawn.pieceMoves(board, myPosition);
             case KING:
                 King king = new King(pieceColor, type);
                 return king.pieceMoves(board, myPosition);

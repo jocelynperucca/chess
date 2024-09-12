@@ -5,9 +5,13 @@ import java.util.HashSet;
 
 public class King extends ChessPiece{
 
+
+
     public King (ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         super(pieceColor, PieceType.KING );
     }
+
+
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
