@@ -23,7 +23,9 @@ public class Pawn extends ChessPiece {
             if ((position.getRow() == 2)) {
                 int[][] directions = {
                         {1,0}, //up one
-                        {2,0} // up two
+                        {2,0}, // up two
+                        {1,-1}, //diagonal up left
+                        {1,1} //diagonal up right
                 };
 
                 for (int[] direction : directions) {
@@ -35,7 +37,26 @@ public class Pawn extends ChessPiece {
                     if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
                         ChessPosition newPosition = new ChessPosition(newRow, newCol);
                         ChessMove newMove = new ChessMove(position, newPosition, null);
-                        moves.add(newMove);
+                        String result = hasPiece(board, newMove);
+
+                        //check diagonals
+                        if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
+                            if (result.equals("can capture")) {
+                                moves.add(newMove);
+                            }
+                            //else check if blocked
+                        } else {
+                            if (!"can capture".equals(result) && !"same team".equals(result)) {
+                                //check if can't hop other piece
+                                ChessPosition behindPosition = new ChessPosition(newRow -1, newCol);
+                                ChessMove behindMove = new ChessMove(newPosition, behindPosition, null);
+                                String behindResult = hasPiece(board, behindMove);
+                                if(!behindResult.equals("same team")) {
+                                    moves.add(newMove);
+                                }
+                            }
+                        }
+
                     } else {
                         break;
                     }
@@ -45,7 +66,9 @@ public class Pawn extends ChessPiece {
                 //not on starting row for WHITE
             } else {
                 int[][] directions = {
-                        {1,0} //up one
+                        {1,0}, //up one
+                        {1,-1}, //diagonal up left
+                        {1,1} //diagonal up right
                 };
 
                 for (int[] direction : directions) {
@@ -57,7 +80,19 @@ public class Pawn extends ChessPiece {
                     if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
                         ChessPosition newPosition = new ChessPosition(newRow, newCol);
                         ChessMove newMove = new ChessMove(position, newPosition, null);
-                        moves.add(newMove);
+                        String result = hasPiece(board, newMove);
+
+                        //check diagonals
+                        if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
+                            if (result.equals("can capture")) {
+                                moves.add(newMove);
+                            }
+                            // check block
+                        } else {
+                            if (!"can capture".equals(result) && !"same team".equals(result)) {
+                                moves.add(newMove);
+                            }
+                        }
                     } else {
                         break;
                     }
@@ -70,7 +105,9 @@ public class Pawn extends ChessPiece {
             if ((position.getRow() == 7)) {
                 int[][] directions = {
                         {-1,0}, //up one
-                        {-2,0} // up two
+                        {-2,0}, // up two
+                        {-1,-1}, //diagonal down left
+                        {-1,1} // diagonal down right
                 };
 
                 for (int[] direction : directions) {
@@ -83,7 +120,27 @@ public class Pawn extends ChessPiece {
                     if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
                         ChessPosition newPosition = new ChessPosition(newRow, newCol);
                         ChessMove newMove = new ChessMove(position, newPosition, null);
-                        moves.add(newMove);
+                        String result = hasPiece(board, newMove);
+
+                        //check diagonals
+                        if((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
+                            if (result.equals("can capture")) {
+                                moves.add(newMove);
+                            }
+                            //else normal move
+                        } else {
+                            // checks straight forward blockage
+                            if (!result.equals("can capture") && !result.equals("same team")) {
+                                ChessPosition behindPosition = new ChessPosition(newRow +1, newCol);
+                                ChessMove behindMove = new ChessMove(position, behindPosition, null);
+                                String behindResult = hasPiece(board, behindMove);
+                                if (!"same team".equals(behindResult)) {
+                                    moves.add(newMove);
+                                }
+                                //moves.add(newMove);
+                            }
+                        }
+
                     } else {
                         break;
                     }
@@ -93,7 +150,9 @@ public class Pawn extends ChessPiece {
                 //not on starting row for BLACK
             } else {
                 int[][] directions = {
-                        {-1,0} //up one
+                        {-1,0}, //up one
+                        {-1,-1}, //diagonal down left
+                        {-1,1} // diagonal down right
                 };
 
                 for (int[] direction : directions) {
@@ -106,7 +165,21 @@ public class Pawn extends ChessPiece {
                     if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
                         ChessPosition newPosition = new ChessPosition(newRow, newCol);
                         ChessMove newMove = new ChessMove(position, newPosition, null);
-                        moves.add(newMove);
+                        String result = hasPiece(board, newMove);
+
+                        //check diagonals
+                        if ((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
+                            if (result.equals("can capture")) {
+                                moves.add(newMove);
+                            }
+                        } else {
+                            //if in front of piece, cannot capture
+                            if (!"can capture".equals(result) && !"same team".equals(result)) {
+                                moves.add(newMove);
+                            }
+                        }
+
+                        //moves.add(newMove);
                     } else {
                         break;
                     }
@@ -114,7 +187,7 @@ public class Pawn extends ChessPiece {
             }
 
         }
-        //RETURN MOVES
+        //RETURN PAWN MOVES
         return moves;
     }
 
