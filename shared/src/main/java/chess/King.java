@@ -39,7 +39,14 @@ public class King extends ChessPiece{
                 if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
                     ChessPosition newPosition = new ChessPosition(newRow, newCol);
                     ChessMove newMove = new ChessMove(position, newPosition, null);
-                    moves.add(newMove);
+
+
+                    //CHECK IF OCCUPIED
+                    String result = hasPiece(board, newMove);
+
+                    if (result.equals("good") || result.equals("can capture")) {
+                        moves.add(newMove);
+                    }
                 } else {
                     break;
 
