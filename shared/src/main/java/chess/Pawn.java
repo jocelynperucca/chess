@@ -48,12 +48,17 @@ public class Pawn extends ChessPiece {
                         } else {
                             if (!"can capture".equals(result) && !"same team".equals(result)) {
                                 //check if can't hop other piece
-                                ChessPosition behindPosition = new ChessPosition(newRow -1, newCol);
-                                ChessMove behindMove = new ChessMove(newPosition, behindPosition, null);
-                                String behindResult = hasPiece(board, behindMove);
-                                if(!behindResult.equals("same team")) {
+                                if (rowOffset != 2) {
                                     moves.add(newMove);
+                                } else {
+                                    ChessPosition behindPosition = new ChessPosition(newRow -1, newCol);
+                                    ChessMove behindMove = new ChessMove(newPosition, behindPosition, null);
+                                    String behindResult = hasPiece(board, behindMove);
+                                    if(!behindResult.equals("same team")) {
+                                        moves.add(newMove);
+                                    }
                                 }
+
                             }
                         }
 
@@ -85,12 +90,33 @@ public class Pawn extends ChessPiece {
                         //check diagonals
                         if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
                             if (result.equals("can capture")) {
-                                moves.add(newMove);
+                                if (canPromote(newRow)) {
+                                    moves.add(new ChessMove(position, newPosition, PieceType.QUEEN));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.ROOK));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.KNIGHT));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.BISHOP));
+
+
+
+                                } else {
+                                    moves.add(newMove);
+                                }
+
                             }
-                            // check block
+                            // check if blocked
                         } else {
                             if (!"can capture".equals(result) && !"same team".equals(result)) {
-                                moves.add(newMove);
+                                if (canPromote(newRow)) {
+                                    moves.add(new ChessMove(position, newPosition, PieceType.QUEEN));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.ROOK));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.KNIGHT));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.BISHOP));
+
+
+
+                                } else {
+                                    moves.add(newMove);
+                                }
                             }
                         }
                     } else {
@@ -131,12 +157,18 @@ public class Pawn extends ChessPiece {
                         } else {
                             // checks straight forward blockage
                             if (!result.equals("can capture") && !result.equals("same team")) {
-                                ChessPosition behindPosition = new ChessPosition(newRow +1, newCol);
-                                ChessMove behindMove = new ChessMove(position, behindPosition, null);
-                                String behindResult = hasPiece(board, behindMove);
-                                if (!"same team".equals(behindResult)) {
+                                if (rowOffset != -2) {
                                     moves.add(newMove);
+                                }   else {
+                                    ChessPosition behindPosition = new ChessPosition(newRow +1, newCol);
+                                    ChessMove behindMove = new ChessMove(position, behindPosition, null);
+                                    String behindResult = hasPiece(board, behindMove);
+                                    if (!"same team".equals(behindResult)) {
+                                        moves.add(newMove);
+                                    }
+
                                 }
+
                                 //moves.add(newMove);
                             }
                         }
@@ -170,12 +202,37 @@ public class Pawn extends ChessPiece {
                         //check diagonals
                         if ((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
                             if (result.equals("can capture")) {
-                                moves.add(newMove);
+
+                                //CHECK PROMOTION
+                                if (canPromote(newRow)) {
+                                    moves.add(new ChessMove(position, newPosition, PieceType.QUEEN));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.ROOK));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.KNIGHT));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.BISHOP));
+
+
+
+
+
+                                } else {
+                                    moves.add(newMove);
+                                }
                             }
                         } else {
                             //if in front of piece, cannot capture
                             if (!"can capture".equals(result) && !"same team".equals(result)) {
-                                moves.add(newMove);
+
+                                //CHECK PROMOTION
+                                if (canPromote(newRow)) {
+                                    //moves.add(newMove);
+                                    moves.add(new ChessMove(position, newPosition, PieceType.QUEEN));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.ROOK));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.KNIGHT));
+                                    moves.add(new ChessMove(position, newPosition, PieceType.BISHOP));
+                                } else {
+                                    moves.add(newMove);
+                                }
+
                             }
                         }
 
@@ -189,6 +246,10 @@ public class Pawn extends ChessPiece {
         }
         //RETURN PAWN MOVES
         return moves;
+    }
+
+    public boolean canPromote (int row) {
+        return ((row == 8 && ChessGame.TeamColor.WHITE == getTeamColor()) || (row == 1 && ChessGame.TeamColor.BLACK == getTeamColor()));
     }
 
 
