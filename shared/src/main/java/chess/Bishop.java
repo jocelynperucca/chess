@@ -42,6 +42,8 @@ public class Bishop extends ChessPiece {
                     } else if (hasPiece(board, newMove).equals("can capture")) {
                         moves.add(newMove);
                         stop = true;
+                    } else if (hasPiece(board, newMove).equals("same team")) {
+                        stop = true;
                     }
                     if (stop) {
                         break;
