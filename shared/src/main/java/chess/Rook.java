@@ -41,7 +41,7 @@ public class Rook extends ChessPiece {
                     if (stop) {
                         break;
                     }
-                    moves.add(newMove);
+                    //moves.add(newMove);
                 } else {
                     break;
                 }
