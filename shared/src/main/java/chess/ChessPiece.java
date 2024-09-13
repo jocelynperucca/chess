@@ -114,6 +114,18 @@ public class ChessPiece {
 
 
     }
+
+    String hasPiece(ChessBoard board, ChessMove move) {
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        ChessPiece checkPiece = board.getPiece(move.getEndPosition());
+        if (checkPiece == null) {
+            return "good";
+        } else if (piece.getTeamColor() == checkPiece.getTeamColor()) {
+            return "same team";
+        } else {
+            return "can capture";
+        }
+    }
 }
 
 
