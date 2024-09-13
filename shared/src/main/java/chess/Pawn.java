@@ -17,56 +17,104 @@ public class Pawn extends ChessPiece {
         ChessGame.TeamColor pieceColor = getTeamColor();
 
 
+//WHITE PAWN
+        if(ChessGame.TeamColor.WHITE == pieceColor) {
+            //on starting row for WHITE
+            if ((position.getRow() == 2)) {
+                int[][] directions = {
+                        {1,0}, //up one
+                        {2,0} // up two
+                };
 
-        //on starting row
-        if ((position.getRow() == 2 && pieceColor == ChessGame.TeamColor.WHITE)|| (position.getRow() == 7 && pieceColor == ChessGame.TeamColor.BLACK)) {
-            int[][] directions = {
-                    {1,0}, //up one
-                    {2,0} // up two
-            };
+                for (int[] direction : directions) {
+                    int rowOffset = direction[0];
+                    int colOffset = direction[1];
+                    //check if is in bounds
+                    int newRow = position.getRow() + rowOffset;
+                    int newCol = position.getColumn() + colOffset;
+                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessMove newMove = new ChessMove(position, newPosition, null);
+                        moves.add(newMove);
+                    } else {
+                        break;
+                    }
 
-            for (int[] direction : directions) {
-                int rowOffset = direction[0];
-                int colOffset = direction[1];
-
-
-                int newRow = position.getRow() + rowOffset;
-                int newCol = position.getColumn() + colOffset;
-                if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                    ChessMove newMove = new ChessMove(position, newPosition, null);
-                    moves.add(newMove);
-                } else {
-                    break;
                 }
 
+                //not on starting row for WHITE
+            } else {
+                int[][] directions = {
+                        {1,0} //up one
+                };
+
+                for (int[] direction : directions) {
+                    int rowOffset = direction[0];
+                    int colOffset = direction[1];
+                    //check if is in bounds
+                    int newRow = position.getRow() + rowOffset;
+                    int newCol = position.getColumn() + colOffset;
+                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessMove newMove = new ChessMove(position, newPosition, null);
+                        moves.add(newMove);
+                    } else {
+                        break;
+                    }
+                }
             }
 
-            //not on starting row
-        } else {
-            int[][] directions = {
-                    {1,0} //up one
-            };
+//BLACK PAWN
+        } else if (pieceColor == ChessGame.TeamColor.BLACK) {
+            //on starting row for BLACK
+            if ((position.getRow() == 7)) {
+                int[][] directions = {
+                        {-1,0}, //up one
+                        {-2,0} // up two
+                };
 
-            for (int[] direction : directions) {
-                int rowOffset = direction[0];
-                int colOffset = direction[1];
+                for (int[] direction : directions) {
+                    int rowOffset = direction[0];
+                    int colOffset = direction[1];
 
 
-                int newRow = position.getRow() + rowOffset;
-                int newCol = position.getColumn() + colOffset;
-                if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                    ChessMove newMove = new ChessMove(position, newPosition, null);
-                    moves.add(newMove);
-                } else {
-                    break;
+                    int newRow = position.getRow() + rowOffset;
+                    int newCol = position.getColumn() + colOffset;
+                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessMove newMove = new ChessMove(position, newPosition, null);
+                        moves.add(newMove);
+                    } else {
+                        break;
+                    }
+
                 }
 
+                //not on starting row for BLACK
+            } else {
+                int[][] directions = {
+                        {-1,0} //up one
+                };
+
+                for (int[] direction : directions) {
+                    int rowOffset = direction[0];
+                    int colOffset = direction[1];
+
+                    //CHECK IF IN BOUNDS
+                    int newRow = position.getRow() + rowOffset;
+                    int newCol = position.getColumn() + colOffset;
+                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
+                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                        ChessMove newMove = new ChessMove(position, newPosition, null);
+                        moves.add(newMove);
+                    } else {
+                        break;
+                    }
+                }
             }
 
         }
-
+        //RETURN MOVES
         return moves;
     }
 
