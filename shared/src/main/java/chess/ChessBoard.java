@@ -1,5 +1,7 @@
 package chess;
 
+import com.google.gson.Gson;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -11,7 +13,6 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-
     public ChessBoard() {
         
     }
