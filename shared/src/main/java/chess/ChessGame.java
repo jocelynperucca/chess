@@ -77,7 +77,7 @@ public class ChessGame {
 
 //See if King needs to move
     private boolean canCheck(TeamColor teamColor, ChessBoard currentBoard) {
-        TeamColor currentTeam = getTeamTurn();
+        TeamColor currentTeam = teamColor;
 
         for(int i = 1; i <= 8; i++) {
             for(int j = 1; j <= 8; j++) {
@@ -101,8 +101,11 @@ public class ChessGame {
         for(int i = 1; i <= 8; i++) {
             for(int j = 1; j <= 8; j++) {
                 ChessPosition newPosition = new ChessPosition(i, j);
-                if(currentBoard.getPiece(newPosition).getPieceType() == ChessPiece.PieceType.KING && currentBoard.getPiece(newPosition).getTeamColor() != teamColor) {
+                ChessPiece testPiece = currentBoard.getPiece(newPosition);
+                if (testPiece != null && testPiece.getPieceType() == ChessPiece.PieceType.KING && testPiece.getTeamColor() == teamColor) {
                     return newPosition;
+                } else {
+                    continue;
                 }
             }
         }
