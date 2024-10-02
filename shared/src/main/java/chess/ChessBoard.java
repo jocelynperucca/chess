@@ -21,6 +21,23 @@ public class ChessBoard {
         return squares;
     }
 
+    public ChessBoard copyBoard() {
+        ChessBoard copiedBoard = new ChessBoard();
+        copiedBoard.squares = new ChessPiece[8][8];
+        for(int row = 0; row < 8; row++) {
+            for(int col = 0; col < 8; col++) {
+                ChessPiece originalPiece = this.squares[row][col];
+                if(originalPiece != null) {
+                    copiedBoard.squares[row][col] = new ChessPiece(originalPiece);
+                } else {
+                    copiedBoard.squares[row][col] = null;
+                }
+
+            }
+        }
+        return copiedBoard;
+    }
+
     //memory address override
     @Override
     public boolean equals(Object o) {

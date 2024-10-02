@@ -69,6 +69,10 @@ public class ChessGame {
                 //if it doesn't put the king in check, you're okay
                 if(canCheck(teamColor,currentBoard) == false) {
                     validMoves.add(Checkmove);
+                } else if (canCheck(teamColor,currentBoard) == true) {
+                    if(ridOfCheck(Checkmove)) {
+                        validMoves.add(Checkmove);
+                    }
                 }
 
             }
@@ -81,7 +85,7 @@ public class ChessGame {
 
 //See if King needs to move
     private boolean canCheck(TeamColor teamColor, ChessBoard currentBoard) {
-        TeamColor currentTeam = teamColor;
+        //TeamColor currentTeam = teamColor;
 
         for(int i = 1; i <= 8; i++) {
             for(int j = 1; j <= 8; j++) {
@@ -90,7 +94,7 @@ public class ChessGame {
                     Collection<ChessMove> checkMoves = currentBoard.getPiece(checkPosition).pieceMoves(currentBoard,checkPosition);
                     //if one of these moves can kill the king, he's in check
                     for (ChessMove move : checkMoves) {
-                        ChessPosition kingPosition = findKing(currentBoard, currentTeam);
+                        ChessPosition kingPosition = findKing(currentBoard, teamColor);
                         if(move.getEndPosition().equals(kingPosition)) {
                             return true;
                             //KING POSITOIN HERE)
@@ -100,6 +104,18 @@ public class ChessGame {
             }
         }
         return false;
+    }
+
+    private boolean ridOfCheck(ChessMove move) {
+        ChessBoard testBoard = currentBoard.copyBoard();
+        ChessPiece testPiece = testBoard.getPiece(move.getStartPosition());
+        officialMove(move, testPiece, testBoard);
+        if(canCheck(testPiece.getTeamColor(), testBoard)) {
+             return false;
+        }
+
+        return true;
+
     }
 
     private ChessPosition findKing(ChessBoard currentBoard, TeamColor teamColor) {
