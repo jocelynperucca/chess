@@ -68,6 +68,7 @@ public class ChessGame {
             for (ChessMove Checkmove : currentPiece.pieceMoves(currentBoard, startPosition)) {
                 //if it doesn't put the king in check, you're okay
                 if(canCheck(teamColor,currentBoard) == false) {
+                    //create copy board to see if move puts king in check
                     ChessBoard testBoard = currentBoard.copyBoard();
                     officialMove(Checkmove,currentPiece, testBoard);
                     if(!canCheck(currentPiece.getTeamColor(),testBoard)) {
@@ -75,6 +76,7 @@ public class ChessGame {
                     }
 
                 } else if (canCheck(teamColor,currentBoard) == true) {
+                    //if gets rid of check, you can move
                     if(ridOfCheck(Checkmove)) {
                         validMoves.add(Checkmove);
                     }
@@ -180,6 +182,7 @@ public class ChessGame {
             //see if there's any moves to get out of check
             ChessBoard testBoard = currentBoard;
             officialMove(move, movePiece, testBoard);
+            //check move or if move will put them in check
             if(!isInCheck(teamTurn)) {
                 //free to move
                 officialMove(move, movePiece,currentBoard);
