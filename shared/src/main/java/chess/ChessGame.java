@@ -118,6 +118,7 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
+
     public void makeMove(ChessMove move) throws InvalidMoveException {
         //get starting values
         ChessPosition startPosition = move.getStartPosition();
@@ -139,15 +140,19 @@ public class ChessGame {
             throw new InvalidMoveException("Not your team");
 
         } else if (isInCheck(movePieceColor)) {
+            //see if there's any moves to get out of check
             ChessBoard testBoard = currentBoard;
             officialMove(move, movePiece, testBoard);
             if(!isInCheck(teamTurn)) {
+                //free to move
                 officialMove(move, movePiece,currentBoard);
             } else {
+                //King in check and something needs to happen
                 throw new InvalidMoveException("Your King is in danger");
             }
 
         } else {
+            //You're good to move
             officialMove(move, movePiece, currentBoard);
         }
 
@@ -166,7 +171,7 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         //ChessBoard board = getBoard();
-        //
+        // Add piece and remove other piece
         board.addPiece(endPosition, chessPiece);
         board.addPiece(startPosition, null);
 
