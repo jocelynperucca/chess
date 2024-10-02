@@ -68,7 +68,12 @@ public class ChessGame {
             for (ChessMove Checkmove : currentPiece.pieceMoves(currentBoard, startPosition)) {
                 //if it doesn't put the king in check, you're okay
                 if(canCheck(teamColor,currentBoard) == false) {
-                    validMoves.add(Checkmove);
+                    ChessBoard testBoard = currentBoard.copyBoard();
+                    officialMove(Checkmove,currentPiece, testBoard);
+                    if(!canCheck(currentPiece.getTeamColor(),testBoard)) {
+                        validMoves.add(Checkmove);
+                    }
+
                 } else if (canCheck(teamColor,currentBoard) == true) {
                     if(ridOfCheck(Checkmove)) {
                         validMoves.add(Checkmove);
