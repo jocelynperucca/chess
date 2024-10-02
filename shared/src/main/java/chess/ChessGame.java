@@ -16,6 +16,7 @@ public class ChessGame {
 
 
     public ChessGame() {
+        //always start with team white
 
         teamTurn = TeamColor.WHITE;
 
@@ -63,6 +64,7 @@ public class ChessGame {
         } else {
             TeamColor teamColor = currentPiece.getTeamColor();
             for (ChessMove Checkmove : currentPiece.pieceMoves(currentBoard, startPosition)) {
+                //if it doesn't put the king in check, you're okay
                 if(canCheck(teamColor,currentBoard) == false) {
                     validMoves.add(Checkmove);
                 }
@@ -84,6 +86,7 @@ public class ChessGame {
                 ChessPosition checkPosition = new ChessPosition(i, j);
                 if(currentBoard.getPiece(checkPosition) != null && currentBoard.getPiece(checkPosition).getTeamColor() != teamColor) {
                     Collection<ChessMove> checkMoves = currentBoard.getPiece(checkPosition).pieceMoves(currentBoard,checkPosition);
+                    //if one of these moves can kill the king, he's in check
                     for (ChessMove move : checkMoves) {
                         ChessPosition kingPosition = findKing(currentBoard, currentTeam);
                         if(move.getEndPosition().equals(kingPosition)) {
@@ -134,7 +137,7 @@ public class ChessGame {
         } else if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Can't make move");
         } else if(isInCheck(teamTurn)) {
-            //KING IN CHECK
+            //KING IN CHECK IMPLEMENT
 
         } else if (movePieceColor != teamTurn) {
             throw new InvalidMoveException("Not your team");
