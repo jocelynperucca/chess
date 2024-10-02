@@ -19,6 +19,8 @@ public class ChessGame {
         //always start with team white
 
         teamTurn = TeamColor.WHITE;
+        currentBoard = new ChessBoard();
+        currentBoard.resetBoard();
 
     }
 
@@ -127,6 +129,13 @@ public class ChessGame {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         //teamTurn = getTeamTurn();
+        if (currentBoard == null) {
+            throw new InvalidMoveException();
+        }
+        ChessPiece.PieceType chessPieceType = currentBoard.getPiece(startPosition).getPieceType();
+        if(chessPieceType == null) {
+            throw new InvalidMoveException("Space is empty");
+        }
         ChessPiece movePiece = currentBoard.getPiece(startPosition);
         Collection<ChessMove> validMoves = validMoves(startPosition);
         TeamColor movePieceColor = movePiece.getTeamColor();
