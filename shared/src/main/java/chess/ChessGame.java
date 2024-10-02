@@ -238,7 +238,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        ChessBoard testBoard = currentBoard;
+        ChessBoard testBoard = currentBoard.copyBoard();
         if(canCheck(teamTurn, testBoard) == false) {
             return false;
         }
@@ -248,9 +248,9 @@ public class ChessGame {
                 ChessPosition currentPosition = new ChessPosition(i,j);
                 ChessPiece checkPiece = testBoard.getPiece(currentPosition);
 
-                if(checkPiece != null && checkPiece.getTeamColor() == teamTurn) {
+                if(checkPiece != null && checkPiece.getTeamColor() == teamColor) {
                     for(ChessMove move : checkPiece.pieceMoves(testBoard,currentPosition)) {
-                        ChessBoard checkBoard = testBoard;
+                        ChessBoard checkBoard = currentBoard.copyBoard();
                         officialMove(move, checkPiece, checkBoard);
 
                         if(!canCheck(teamColor, checkBoard)) {
