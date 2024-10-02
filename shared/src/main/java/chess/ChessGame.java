@@ -98,9 +98,9 @@ public class ChessGame {
     }
 
     private ChessPosition findKing(ChessBoard currentBoard, TeamColor teamColor) {
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                ChessPosition newPosition = new ChessPosition(i, j);
+        for(int row = 1; row <= 8; row++) {
+            for(int col = 1; col <= 8; col++) {
+                ChessPosition newPosition = new ChessPosition(row, col);
                 ChessPiece testPiece = currentBoard.getPiece(newPosition);
                 if (testPiece != null && testPiece.getPieceType() == ChessPiece.PieceType.KING && testPiece.getTeamColor() == teamColor) {
                     return newPosition;
@@ -224,7 +224,18 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //let's run through all positions for that color okay?
+        for(int row = 1; row <= 8; row++) {
+            for(int col = 1; col <= 8; col++) {
+                ChessPosition stalematePosition = new ChessPosition(row, col);
+                ChessPiece stalematePiece = currentBoard.getPiece(stalematePosition);
+                if(stalematePiece != null && stalematePiece.getTeamColor() == teamColor) {
+                    ChessBoard stalemateBoard = currentBoard;
+
+                }
+
+            }
+        }
     }
 
     /**
