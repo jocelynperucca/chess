@@ -149,6 +149,7 @@ public class ChessGame {
         } else if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Can't make move");
         } else if(isInCheck(teamTurn)) {
+
             //KING IN CHECK IMPLEMENT
 
         } else if (movePieceColor != teamTurn) {
@@ -185,6 +186,10 @@ public class ChessGame {
     public void officialMove(ChessMove move, ChessPiece chessPiece, ChessBoard board) {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
+
+        if(move.getPromotionPiece() != null) {
+            chessPiece = new ChessPiece(teamTurn, move.getPromotionPiece());
+        }
         //ChessBoard board = getBoard();
         // Add piece and remove other piece
         board.addPiece(endPosition, chessPiece);
