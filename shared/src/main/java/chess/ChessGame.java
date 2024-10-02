@@ -128,7 +128,7 @@ public class ChessGame {
         TeamColor movePieceColor = movePiece.getTeamColor();
 
         //Test tried move
-        if(movePiece == null) {
+        if(movePiece.getPieceType() == null) {
             throw new InvalidMoveException("Space is empty");
         } else if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Can't make move");
@@ -230,12 +230,25 @@ public class ChessGame {
                 ChessPosition stalematePosition = new ChessPosition(row, col);
                 ChessPiece stalematePiece = currentBoard.getPiece(stalematePosition);
                 if(stalematePiece != null && stalematePiece.getTeamColor() == teamColor) {
-                    ChessBoard stalemateBoard = currentBoard;
+                    Collection<ChessMove> stalemateMoves = validMoves(stalematePosition);
+                    for(ChessMove move : stalemateMoves) {
+                        //if we move any of the pieces any way, does it take us out of check?
+                        ChessBoard stalemateBoard = currentBoard;
+                        officialMove(move, stalematePiece, stalemateBoard);
+                        if(!canCheck(teamColor, stalemateBoard)) {
+                            //Yay, it does
+                            return false;
+                        }
+
+                    }
+
 
                 }
 
             }
         }
+//Oh no, it doesn't
+        return true;
     }
 
     /**
