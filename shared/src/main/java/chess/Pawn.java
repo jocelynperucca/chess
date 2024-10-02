@@ -52,7 +52,7 @@ public class Pawn extends ChessPiece {
                                     moves.add(newMove);
                                 } else {
                                     ChessPosition behindPosition = new ChessPosition(newRow -1, newCol);
-                                    ChessMove behindMove = new ChessMove(newPosition, behindPosition, null);
+                                    ChessMove behindMove = new ChessMove(position, behindPosition, null);
                                     String behindResult = hasPiece(board, behindMove);
                                     if(!behindResult.equals("same team")) {
                                         moves.add(newMove);

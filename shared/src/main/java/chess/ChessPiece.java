@@ -123,6 +123,10 @@ public class ChessPiece {
     String hasPiece(ChessBoard board, ChessMove move) {
         ChessPiece piece = board.getPiece(move.getStartPosition());
         ChessPiece checkPiece = board.getPiece(move.getEndPosition());
+        if(piece == null) {
+            return "no piece to move";
+
+        }
         if (checkPiece == null) {
             return "good";
         } else if (piece.getTeamColor() == checkPiece.getTeamColor()) {
