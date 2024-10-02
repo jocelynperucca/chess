@@ -132,10 +132,13 @@ public class ChessGame {
         if (currentBoard == null) {
             throw new InvalidMoveException();
         }
-        ChessPiece.PieceType chessPieceType = currentBoard.getPiece(startPosition).getPieceType();
-        if(chessPieceType == null) {
+
+        if(currentBoard.getPiece(startPosition) == null) {
             throw new InvalidMoveException("Space is empty");
         }
+
+        ChessPiece.PieceType chessPieceType = currentBoard.getPiece(startPosition).getPieceType();
+
         ChessPiece movePiece = currentBoard.getPiece(startPosition);
         Collection<ChessMove> validMoves = validMoves(startPosition);
         TeamColor movePieceColor = movePiece.getTeamColor();
