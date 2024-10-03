@@ -273,30 +273,36 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //let's run through all positions for that color okay?
-        for(int row = 1; row <= 8; row++) {
-            for(int col = 1; col <= 8; col++) {
-                ChessPosition stalematePosition = new ChessPosition(row, col);
-                ChessPiece stalematePiece = currentBoard.getPiece(stalematePosition);
-                if(stalematePiece != null && stalematePiece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> stalemateMoves = validMoves(stalematePosition);
-                    for(ChessMove move : stalemateMoves) {
-                        //if we move any of the pieces any way, does it take us out of check?
-                        ChessBoard stalemateBoard = currentBoard;
-                        officialMove(move, stalematePiece, stalemateBoard);
-                        if(!canCheck(teamColor, stalemateBoard)) {
-                            //Yay, it does
+        //stalemate is if team isn't in check and if they have NO valid moves
+        if (canCheck(teamColor, currentBoard)) {
+            return false; // not a stalemate if in check
+        }
+
+        // check for legal moves
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = currentBoard.getPiece(position);
+
+                // current team?
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> possibleMoves = validMoves(position);
+
+                    for (ChessMove move : possibleMoves) {
+                        //check move on board
+                        ChessBoard copiedBoard = currentBoard.copyBoard();
+                        officialMove(move, piece, copiedBoard);
+
+                        //if they get out of check, they're okay
+                        if (!canCheck(teamColor, copiedBoard)) {
                             return false;
                         }
-
                     }
-
-
                 }
-
             }
         }
-//Oh no, it doesn't
+
+        // STALEMATE
         return true;
     }
 
