@@ -1,11 +1,11 @@
 package server;
 
-import service.Admin;
+import service.RegisterService;
 import spark.*;
 
 public class Server {
 
-    private Admin admin;
+    private RegisterService registerService;
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -29,7 +29,7 @@ public class Server {
     }
 
     private String delete(Request req, Response res)  throws Exception{
-        admin.delete();
+        registerService.delete();
         return "cow";
     }
 }
