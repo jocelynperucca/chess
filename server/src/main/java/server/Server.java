@@ -3,6 +3,8 @@ package server;
 import service.RegisterService;
 import spark.*;
 
+import java.util.logging.Handler;
+
 public class Server {
 
     private RegisterService registerService;
@@ -19,6 +21,8 @@ public class Server {
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
+        Spark.post("/user", (request, response) -> "register user");
+
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -31,5 +35,11 @@ public class Server {
     private String delete(Request req, Response res)  throws Exception{
         registerService.delete();
         return "cow";
+    }
+
+    private String post(Request req, Response res) throws Exception {
+        registerService.post();
+        return "cows";
+
     }
 }
