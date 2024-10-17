@@ -3,6 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.RegisterRequest;
 import model.RegisterResult;
 import model.UserData;
@@ -42,7 +43,8 @@ public class RegisterService {
             } else {
                 userDao.createUser(new UserData(registerRequest.userName(), registerRequest.password(), registerRequest.email()));
                 String authToken = generateAuthToken();
-                authDao.saveAuthToken(authToken);
+                AuthData userAuthData = new AuthData(registerRequest.userName(), authToken);
+                authDao.saveAuthToken(userAuthData);
 
                 //successfully registered
                 return new RegisterResult(registerRequest.userName(), authToken, "created");
