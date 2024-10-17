@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.RegisterRequest;
@@ -18,19 +19,21 @@ public class RegisterService {
 //    }
 
     private final UserDAO userDao;
+    private final AuthDAO authDao;
 
-    public RegisterService(UserDAO userDao) {
+    public RegisterService(UserDAO userDao, AuthDAO authDao) {
         this.userDao = userDao;
+        this.authDao = authDao;
     }
 
-    public static String generateRandomString() {
+    public static String generateAuthToken() {
         return UUID.randomUUID().toString(); // Generates a random UUID string
     }
 
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if(registerRequest.email() == null || registerRequest.userName() == null || registerRequest.password() == null) {
-            return new RegisterResult(null, null, "Error: couldn't register");
+            return new RegisterResult(null, null, "Error: couldn't register, missing info");
 
         } else {
             if(userDao.getUser(registerRequest.userName()) != null) {
@@ -38,9 +41,11 @@ public class RegisterService {
 
             } else {
                 userDao.createUser(new UserData(registerRequest.userName(), registerRequest.password(), registerRequest.email()));
-                String authToken = generateRandomString();
-                //add token here
-                //return result
+                String authToken = generateAuthToken();
+                authDao.saveAuthToken(authToken);
+
+                //successfully registered
+                return new RegisterResult(registerRequest.userName(), authToken, "created");
             }
 
         }

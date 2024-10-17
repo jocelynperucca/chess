@@ -10,9 +10,9 @@ public interface UserDAO {
 
     UserData getUser(String userName) throws DataAccessException;
 
-    UserData verifyPassword(UserData userData) throws DataAccessException;
+    UserData verifyPassword(UserData userData, String password) throws DataAccessException;
 
-    UserData insertUser(UserData userData) throws DataAccessException;
+    //UserData insertUser(UserData userData) throws DataAccessException;
 
 
 

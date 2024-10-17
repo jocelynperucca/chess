@@ -1,7 +1,9 @@
 package dataaccess;
 
+import model.AuthData;
+
 public interface AuthDAO {
-    void saveAuthToken(String authToken) throws DataAccessException;
+    void saveAuthToken(AuthData authData) throws DataAccessException;
 
     void getAuthToken(String authToken) throws DataAccessException;
 
