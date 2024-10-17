@@ -8,9 +8,11 @@ import javax.xml.crypto.Data;
 public interface UserDAO {
     void createUser(UserData userData) throws DataAccessException;
 
-    UserData getUser(UserData userData) throws DataAccessException;
+    UserData getUser(String userName) throws DataAccessException;
 
     UserData verifyPassword(UserData userData) throws DataAccessException;
+
+    UserData insertUser(UserData userData) throws DataAccessException;
 
 
 
