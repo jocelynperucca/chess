@@ -7,7 +7,7 @@ import org.eclipse.jetty.server.Authentication;
 import java.util.HashMap;
 import java.util.Objects;
 
-abstract class MemoryUserDAO implements UserDAO {
+public class MemoryUserDAO implements UserDAO {
     final private HashMap<String, UserData> users = new HashMap<>();
 
     public void createUser(UserData userData) {

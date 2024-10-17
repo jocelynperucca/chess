@@ -1,30 +1,38 @@
 package server;
 
+import com.google.gson.Gson;
+import dataaccess.*;
+import model.RegisterRequest;
+import model.RegisterResult;
+import org.eclipse.jetty.server.Authentication;
+import org.eclipse.jetty.server.Handler;
 import service.RegisterService;
+import Handler.RegisterHandler;
 import spark.*;
-
-import java.util.logging.Handler;
 
 public class Server {
 
-    private RegisterService registerService;
+    //private RegisterService registerService;
+    private Gson gson = new Gson();
 
-    public Server(RegisterService registerService) {
-        this.registerService = registerService;
-    }
+    UserDAO userDAO = new MemoryUserDAO();
+    AuthDAO authDAO = new MemoryAuthDAO();
+
+    RegisterService registerService = new RegisterService(userDAO, authDAO);
 
     public int run(int desiredPort) {
+
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", (request, response) -> "delete db");
+        //Spark.delete("/db", (request, response) -> "delete db");
 
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
-        Spark.post("/user", Regis);
+        Spark.post("/user", new RegisterHandler(registerService));
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -35,14 +43,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-//    private String delete(Request req, Response res)  throws Exception{
-//        registerService.delete();
-//        return "cow";
-//    }
-//
-//    private String post(Request req, Response res) throws Exception {
-//        registerService.post();
-//        return "cows";
-//
-//    }
+
+
+
 }
