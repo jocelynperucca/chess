@@ -34,11 +34,11 @@ public class RegisterService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         if(registerRequest.email() == null || registerRequest.userName() == null || registerRequest.password() == null) {
-            return new RegisterResult(null, null, "Error: couldn't register, missing info");
+            return new RegisterResult(null, null, "Error: bad request");
 
         } else {
             if(userDao.getUser(registerRequest.userName()) != null) {
-                return new RegisterResult(null, null, "Error: username in use");
+                return new RegisterResult(null, null, "Error: already taken");
 
             } else {
                 userDao.createUser(new UserData(registerRequest.userName(), registerRequest.password(), registerRequest.email()));
