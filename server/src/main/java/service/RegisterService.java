@@ -33,21 +33,21 @@ public class RegisterService {
 
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-        if(registerRequest.email() == null || registerRequest.userName() == null || registerRequest.password() == null) {
+        if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null) {
             return new RegisterResult(null, null, "Error: bad request");
 
         } else {
-            if(userDao.getUser(registerRequest.userName()) != null) {
+            if(userDao.getUser(registerRequest.username()) != null) {
                 return new RegisterResult(null, null, "Error: already taken");
 
             } else {
-                userDao.createUser(new UserData(registerRequest.userName(), registerRequest.password(), registerRequest.email()));
+                userDao.createUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
                 String authToken = generateAuthToken();
-                AuthData userAuthData = new AuthData(registerRequest.userName(), authToken);
+                AuthData userAuthData = new AuthData(registerRequest.username(), authToken);
                 authDao.saveAuthToken(userAuthData);
 
                 //successfully registered
-                return new RegisterResult(registerRequest.userName(), authToken, "created");
+                return new RegisterResult(registerRequest.username(), authToken, "created");
             }
 
         }
