@@ -17,10 +17,10 @@ public class ListGamesService {
 
     public ListGamesResult listGames(String authToken) throws DataAccessException {
         if (authDao.getAuthToken(authToken) == null) {
-            return new ListGamesResult("Error: unauthorized");
+            return new ListGamesResult(null,"Error: unauthorized");
         } else {
-            authDao.deleteAuthToken(authToken);
-            return new ListGamesResult("Logged Out");
+            gameDao.
+            return new ListGamesResult("Listed Games");
         }
 
     }
