@@ -6,8 +6,10 @@ import model.RegisterRequest;
 import model.RegisterResult;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.server.Handler;
+import service.LoginService;
 import service.RegisterService;
 import Handler.RegisterHandler;
+import Handler.LoginHandler;
 import spark.*;
 
 public class Server {
@@ -19,6 +21,7 @@ public class Server {
     AuthDAO authDAO = new MemoryAuthDAO();
 
     RegisterService registerService = new RegisterService(userDAO, authDAO);
+    LoginService loginService = new LoginService(userDAO, authDAO);
 
     public int run(int desiredPort) {
 
@@ -33,6 +36,7 @@ public class Server {
         Spark.init();
 
         Spark.post("/user", new RegisterHandler(registerService));
+        Spark.post("/session", new LoginHandler(loginService)) ;
 
         Spark.awaitInitialization();
         return Spark.port();

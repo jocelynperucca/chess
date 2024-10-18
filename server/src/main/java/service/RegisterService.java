@@ -11,13 +11,6 @@ import model.UserData;
 import java.util.UUID;
 
 public class RegisterService {
-//    public void delete() throws Exception {
-//        throw new Exception("test delete");
-//    }
-//
-//    public void post() throws Exception {
-//        throw new Exception("test");
-//    }
 
     private final UserDAO userDao;
     private final AuthDAO authDao;
@@ -33,7 +26,7 @@ public class RegisterService {
 
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-        if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null) {
+        if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null || registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
             return new RegisterResult(null, null, "Error: bad request");
 
         } else {

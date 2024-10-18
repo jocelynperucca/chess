@@ -19,7 +19,7 @@ public class RegisterHandler implements Route {
     }
 
     @Override
-    public Object handle(Request sparkRequest, Response response) throws Exception {
+    public Object handle(Request sparkRequest, Response response) throws DataAccessException {
         return registerUser(sparkRequest, response); // Call the refactored method
     }
 
