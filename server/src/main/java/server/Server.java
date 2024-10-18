@@ -6,20 +6,14 @@ import model.RegisterRequest;
 import model.RegisterResult;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.server.Handler;
-import service.ListGamesService;
-import service.LoginService;
-import service.LogoutService;
-import service.RegisterService;
-import Handler.RegisterHandler;
-import Handler.LoginHandler;
-import Handler.LogoutHandler;
-import Handler.ListGamesHandler;
+import service.*;
+import Handler.*;
 import spark.*;
 
 public class Server {
 
     //private RegisterService registerService;
-    private Gson gson = new Gson();
+    //private Gson gson = new Gson();
 
     UserDAO userDAO = new MemoryUserDAO();
     AuthDAO authDAO = new MemoryAuthDAO();
@@ -29,6 +23,7 @@ public class Server {
     LoginService loginService = new LoginService(userDAO, authDAO);
     LogoutService logoutService = new LogoutService(authDAO);
     ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO);
+    CreateGameService createGameService = new CreateGameService();
 
     public int run(int desiredPort) {
 
@@ -45,6 +40,7 @@ public class Server {
         Spark.post("/session", new LoginHandler(loginService)) ;
         Spark.delete("/session", new LogoutHandler(logoutService));
         Spark.get("/game", new ListGamesHandler(listGamesService));
+        Spark.post("/game", new CreateGameHandler(createGameService));
 
         Spark.awaitInitialization();
         return Spark.port();
