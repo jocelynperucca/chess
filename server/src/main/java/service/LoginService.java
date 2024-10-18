@@ -3,6 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.LoginRequest;
 import model.LoginResult;
 import model.UserData;
@@ -36,6 +37,8 @@ public class LoginService {
                 return new LoginResult(null, null, "Error: unauthorized");
             } else {
                 String authToken = generateAuthToken();
+                AuthData authUserData = new AuthData(username, authToken);
+                authDao.saveAuthToken(authUserData);
                 return new LoginResult(username, authToken, "Logged In");
 
             }
