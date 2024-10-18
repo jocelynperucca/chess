@@ -36,13 +36,11 @@ public class ListGamesHandler implements Route {
             listGamesResult = new ListGamesResult(null, e.getMessage());
             response.status(500);
 
-            //throw new RuntimeException(e);
-
         }
 
         response.type("application/json");
         return gson.toJson(listGamesResult);
 
-        //return logoutUser(authToken, response); // Call the refactored method
+
     }
 }
