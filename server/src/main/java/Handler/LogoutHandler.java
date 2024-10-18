@@ -32,7 +32,7 @@ public class LogoutHandler implements Route {
 
 
         } catch (DataAccessException e) {
-            logoutResult = new  LogoutResult("Error:" + e.getMessage());
+            logoutResult = new  LogoutResult(e.getMessage());
             response.status(500);
 
             //throw new RuntimeException(e);
