@@ -3,7 +3,10 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import model.GameData;
 import model.ListGamesResult;
+
+import java.util.Collection;
 
 public class ListGamesService {
 
@@ -19,8 +22,8 @@ public class ListGamesService {
         if (authDao.getAuthToken(authToken) == null) {
             return new ListGamesResult(null,"Error: unauthorized");
         } else {
-            gameDao.
-            return new ListGamesResult("Listed Games");
+            Collection<GameData> listGames = gameDao.listGames();
+            return new ListGamesResult(listGames, "Listed Games");
         }
 
     }
