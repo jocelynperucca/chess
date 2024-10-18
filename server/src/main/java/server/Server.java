@@ -40,6 +40,7 @@ public class Server {
         Spark.post("/user", new RegisterHandler(registerService));
         Spark.post("/session", new LoginHandler(loginService)) ;
         Spark.delete("/session", new LogoutHandler(logoutService));
+        Spark.get("/game", new ListGameHandler(listGameService));
 
         Spark.awaitInitialization();
         return Spark.port();
