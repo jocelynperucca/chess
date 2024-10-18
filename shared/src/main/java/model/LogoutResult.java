@@ -1,4 +1,4 @@
 package model;
 
-public record LogoutResult(String message) {
+public record LogoutResult(String logoutMessage) {
 }
