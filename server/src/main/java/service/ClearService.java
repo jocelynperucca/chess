@@ -21,9 +21,11 @@ public class ClearService {
     }
 
     public ClearResult clear() throws DataAccessException {
-        for(AuthData authData : authDao) {
 
-        }
+        authDao.clearAuthTokens();
+        gameDao.clearGames();
+        userDao.clearUsers();
+        return new ClearResult("Cleared");
 
     }
 }
