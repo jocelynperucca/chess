@@ -30,7 +30,7 @@ public class CreateGameService {
         String createGameName = createGameRequest.gameName();
 
         if (authDao.getAuthToken(authToken) == null) {
-            return new CreateGameResult(null,"Error: unauthorized");
+            return new CreateGameResult(null,"Error: Unauthorized");
         } else if(createGameName == null || createGameName.isEmpty()) {
             return new CreateGameResult(null, "Error: bad request");
         } else {

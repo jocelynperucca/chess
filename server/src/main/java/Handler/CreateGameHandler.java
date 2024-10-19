@@ -27,10 +27,12 @@ public class CreateGameHandler implements Route {
             CreateGameRequest createGameRequest = gson.fromJson(request.body(), CreateGameRequest.class);
             createGameResult = createGameService.createGame(createGameRequest, authToken);
 
-            if (createGameResult.createGameMessage().contains("Listed Games")) {
+            if (createGameResult.createGameMessage().contains("Created Game")) {
                 response.status(200);
             } else if (createGameResult.createGameMessage().contains("Unauthorized")) {
                 response.status(401);
+            } else {
+                response.status(400);
             }
         } catch (DataAccessException e) {
             createGameResult = new CreateGameResult(null, e.getMessage());
