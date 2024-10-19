@@ -23,7 +23,7 @@ public class Server {
     LoginService loginService = new LoginService(userDAO, authDAO);
     LogoutService logoutService = new LogoutService(authDAO);
     ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO);
-    CreateGameService createGameService = new CreateGameService();
+    CreateGameService createGameService = new CreateGameService(authDAO, gameDAO);
 
     public int run(int desiredPort) {
 

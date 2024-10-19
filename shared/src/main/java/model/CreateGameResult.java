@@ -1,4 +1,4 @@
 package model;
 
-public record CreateGameResult(int gameID) {
+public record CreateGameResult(Integer gameID, String createGameMessage) {
 }

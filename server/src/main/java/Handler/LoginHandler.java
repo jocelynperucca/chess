@@ -4,13 +4,11 @@ import dataaccess.DataAccessException;
 import model.LoginRequest;
 import model.LoginResult;
 import service.LoginService;
-import service.RegisterService;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import model.RegisterRequest;
-import model.RegisterResult;
+
 
 public class LoginHandler implements Route {
 
