@@ -24,6 +24,7 @@ public class Server {
     LogoutService logoutService = new LogoutService(authDAO);
     ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO);
     CreateGameService createGameService = new CreateGameService(authDAO, gameDAO);
+    JoinGameService joinGameService = new JoinGameService();
 
     public int run(int desiredPort) {
 
@@ -41,6 +42,7 @@ public class Server {
         Spark.delete("/session", new LogoutHandler(logoutService));
         Spark.get("/game", new ListGamesHandler(listGamesService));
         Spark.post("/game", new CreateGameHandler(createGameService));
+        Spark.put("/game", new JoinGameHandler(joinGameService));
 
         Spark.awaitInitialization();
         return Spark.port();
