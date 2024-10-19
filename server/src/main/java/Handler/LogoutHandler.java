@@ -18,11 +18,11 @@ public class LogoutHandler implements Route {
     }
 
     @Override
-    public Object handle(Request sparkRequest, Response response) throws DataAccessException {
+    public Object handle(Request Request, Response response) throws DataAccessException {
 
         LogoutResult logoutResult;
         try {
-            String authToken = sparkRequest.headers("Authorization");
+            String authToken = Request.headers("Authorization");
             logoutResult = logoutService.logout(authToken);
             if (logoutResult.logoutMessage().contains("Logged Out")) {
                 response.status(200);

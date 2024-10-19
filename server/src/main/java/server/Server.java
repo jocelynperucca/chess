@@ -24,7 +24,7 @@ public class Server {
     LogoutService logoutService = new LogoutService(authDAO);
     ListGamesService listGamesService = new ListGamesService(authDAO, gameDAO);
     CreateGameService createGameService = new CreateGameService(authDAO, gameDAO);
-    JoinGameService joinGameService = new JoinGameService();
+    JoinGameService joinGameService = new JoinGameService(authDAO,gameDAO);
 
     public int run(int desiredPort) {
 
