@@ -24,7 +24,7 @@ public class ClearHandler implements Route {
         ClearResult clearResult;
         try {
             String authToken = Request.headers("Authorization");
-            clearResult = clearService.clear(authToken);
+            clearResult = clearService.clear();
             if (clearResult.clearMessage().contains("Cleared")) {
                 response.status(200);
             } else if (clearResult.clearMessage().contains("Unauthorized")) {
