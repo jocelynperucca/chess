@@ -12,8 +12,7 @@ public interface UserDAO {
 
     UserData verifyPassword(UserData userData, String password) throws DataAccessException;
 
-    //UserData insertUser(UserData userData) throws DataAccessException;
-
+    void clearUsers() throws DataAccessException;
 
 
 

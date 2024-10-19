@@ -40,7 +40,10 @@ public class MemoryGameDAO implements GameDAO {
             game.setBlackUsername(username);
             games.put(gameID, game);
         }
+    }
 
+    public void clearGames() throws DataAccessException {
+        games.clear();
 
     }
 }

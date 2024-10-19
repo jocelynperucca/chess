@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.ClearResult;
 
 
@@ -20,6 +21,9 @@ public class ClearService {
     }
 
     public ClearResult clear() throws DataAccessException {
+        for(AuthData authData : authDao) {
+
+        }
 
     }
 }
