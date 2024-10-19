@@ -13,7 +13,7 @@ import spark.Route;
 public class LoginHandler implements Route {
 
     private final LoginService loginService;
-    private final Gson gson = new Gson(); // Initialize Gson here
+    private final Gson gson = new Gson();
 
     public LoginHandler(LoginService loginService) {
         this.loginService = loginService;
@@ -21,7 +21,7 @@ public class LoginHandler implements Route {
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws DataAccessException {
-        return loginUser(sparkRequest, response); // Call the refactored method
+        return loginUser(sparkRequest, response);
     }
 
     private String loginUser(Request req, Response res) throws DataAccessException {
@@ -31,17 +31,16 @@ public class LoginHandler implements Route {
         LoginResult result = loginService.login(request);
 
         // Set the appropriate HTTP status based on the result message
-        if (result.loginMessage().equals("Logged In")) {
+        if (result.message().equals("Logged In")) {
             res.status(200); // Success
-        } else if (result.loginMessage().contains("unauthorized")) {
+        } else if (result.message().contains("unauthorized")) {
             res.status(401); // Username already taken
-        } else if (result.loginMessage().contains("no user found")) {
-            res.status(500); // Bad request (missing or invalid fields)
         } else {
-            res.status(500); // Internal server error or unexpected case
+            res.status(500);
         }
 
         // Return the RegisterResult as a JSON string
+        String test = gson.toJson(result);
         return gson.toJson(result);
     }
 }

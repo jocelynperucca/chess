@@ -27,8 +27,6 @@ public class ClearHandler implements Route {
             clearResult = clearService.clear();
             if (clearResult.clearMessage().contains("Cleared")) {
                 response.status(200);
-            } else if (clearResult.clearMessage().contains("Unauthorized")) {
-                response.status(401);
             }
 
 

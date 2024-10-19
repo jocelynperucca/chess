@@ -31,7 +31,7 @@ public class LoginService {
         UserData userData = userDao.getUser(username);
 
         if(userData == null) {
-            return new LoginResult(null, null, "Error: no user found");
+            return new LoginResult(null, null, "Error: unauthorized");
         } else {
             if (userDao.verifyPassword(userData, password) == null) {
                 return new LoginResult(null, null, "Error: unauthorized");

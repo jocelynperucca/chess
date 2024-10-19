@@ -10,20 +10,21 @@ import java.util.Objects;
 public class MemoryUserDAO implements UserDAO {
     final private HashMap<String, UserData> users = new HashMap<>();
 
-    public void createUser(UserData userData) {
+    public void createUser(UserData userData) throws DataAccessException{
         users.put(userData.getUsername(), userData);
     }
 
-    public UserData getUser(String userName) {
-        UserData user = users.get(userName);
-        if (user != null) {
-            return user;
-        } else {
-            return null;
+    public UserData getUser(String userName) throws DataAccessException {
+        try {
+            UserData user = users.get(userName);
+            return user; // This will return null if the user is not found
+        } catch (Exception e) {
+            // If you had a different logic that could throw an exception
+            throw new DataAccessException("Could not access user data");
         }
     }
 
-    public UserData verifyPassword(UserData userData, String password) {
+    public UserData verifyPassword(UserData userData, String password) throws DataAccessException{
         UserData testUser = getUser(userData.getUsername());
         if (testUser == null) {
             return null;
