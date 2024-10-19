@@ -1,4 +1,4 @@
 package model;
 
-public record ClearResult(String clearMessage) {
+public record ClearResult(String message) {
 }

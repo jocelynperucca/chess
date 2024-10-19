@@ -30,11 +30,11 @@ public class RegisterHandler implements Route {
         RegisterResult result = registerService.register(request);
 
         // Set the appropriate HTTP status based on the result message
-        if (result.registerMessage().equals("created")) {
+        if (result.message().equals("created")) {
             res.status(200); // Success
-        } else if (result.registerMessage().contains("already taken")) {
+        } else if (result.message().contains("already taken")) {
             res.status(403); // Username already taken
-        } else if (result.registerMessage().contains("bad request")) {
+        } else if (result.message().contains("bad request")) {
             res.status(400); // Bad request (missing or invalid fields)
         } else {
             res.status(500); // Internal server error or unexpected case

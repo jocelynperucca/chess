@@ -25,9 +25,9 @@ public class ListGamesHandler implements Route {
         try {
             String authToken = sparkRequest.headers("Authorization");
             listGamesResult = listGamesService.listGames(authToken);
-            if (listGamesResult.listGamesMessage().contains("Listed Games")) {
+            if (listGamesResult.message().contains("Listed Games")) {
                 response.status(200);
-            } else if (listGamesResult.listGamesMessage().contains("Unauthorized")) {
+            } else if (listGamesResult.message().contains("Unauthorized")) {
                 response.status(401);
             }
         } catch (DataAccessException e) {

@@ -36,13 +36,13 @@ public class JoinGameHandler implements Route {
         JoinGameResult result = joinGameService.joinGame(joinGameRequest, authToken);
 
         // Set the appropriate HTTP status based on the result message
-        if (result.joinGameMessage().equals("Joined Game")) {
+        if (result.message().equals("Joined Game")) {
             res.status(200); // Success
-        } else if (result.joinGameMessage().contains("Unauthorized")) {
+        } else if (result.message().contains("Unauthorized")) {
             res.status(401);
-        } else if (result.joinGameMessage().contains("bad request")) {
+        } else if (result.message().contains("bad request")) {
             res.status(400); // Bad request (missing or invalid fields)
-        } else if (result.joinGameMessage().contains("already taken")) {
+        } else if (result.message().contains("already taken")) {
             res.status(403);
         } else {
             res.status(500); // Internal server error or unexpected case

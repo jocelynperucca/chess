@@ -1,4 +1,4 @@
 package model;
 
-public record JoinGameResult(String joinGameMessage) {
+public record JoinGameResult(String message) {
 }
