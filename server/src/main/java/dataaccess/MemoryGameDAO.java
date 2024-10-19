@@ -28,4 +28,19 @@ public class MemoryGameDAO implements GameDAO {
     }
 
 
+    public void updateGameData(int gameID, String playerColor, String username) throws DataAccessException {
+        GameData game = games.get(gameID);
+
+        if (game == null) {
+            throw new DataAccessException("Game doesn't exist");
+        } else if (playerColor.equalsIgnoreCase("WHITE")) {
+            game.setWhiteUsername(username);
+            games.put(gameID, game);
+        } else if (playerColor.equalsIgnoreCase("BLACK")) {
+            game.setBlackUsername(username);
+            games.put(gameID, game);
+        }
+
+
+    }
 }

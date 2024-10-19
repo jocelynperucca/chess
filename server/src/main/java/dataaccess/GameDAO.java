@@ -7,11 +7,13 @@ import java.util.List;
 
 public interface GameDAO {
 
-    void addGame(GameData gameData) throws DataAccessException;
+    public void addGame(GameData gameData) throws DataAccessException;
 
-    GameData findGame(int gameID) throws DataAccessException;
+    public GameData findGame(int gameID) throws DataAccessException;
 
-    Collection<GameData> listGames() throws DataAccessException;
+    public Collection<GameData> listGames() throws DataAccessException;
+
+    public void updateGameData(int gameID, String playerColor, String username) throws DataAccessException;
 
 
 

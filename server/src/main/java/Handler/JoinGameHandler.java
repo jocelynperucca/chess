@@ -30,8 +30,10 @@ public class JoinGameHandler implements Route {
     private String joinGame(Request req, Response res) throws DataAccessException {
         // Parse the request body to RegisterRequest object
         JoinGameRequest joinGameRequest = gson.fromJson(req.body(), JoinGameRequest.class);
-        // Call the register method in the service layer to get the result
-        JoinGameResult result = joinGameService.joinGame(joinGameRequest);
+
+        String authToken = req.headers("Authorization");
+
+        JoinGameResult result = joinGameService.joinGame(joinGameRequest, authToken);
 
         // Set the appropriate HTTP status based on the result message
         if (result.joinGameMessage().equals("Joined Game")) {

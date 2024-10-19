@@ -37,4 +37,12 @@ public class GameData {
     public ChessGame getGame() {
         return game;
     }
+
+    public void setWhiteUsername(String username) {
+        whiteUsername = username;
+    }
+
+    public void setBlackUsername(String username) {
+        blackUsername = username;
+    }
 }

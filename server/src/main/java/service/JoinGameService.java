@@ -25,26 +25,33 @@ public class JoinGameService {
             return new JoinGameResult("Error: unauthorized");
         }
 
-       int joinGameID = joinGameRequest.gameID();
-       GameData gameData = gameDao.findGame(joinGameID);
+        int joinGameID = joinGameRequest.gameID();
+        GameData gameData = gameDao.findGame(joinGameID);
 
-       if(gameData == null) {
-           return new JoinGameResult("Error: bad request");
-       } else {
-           String playerColor = joinGameRequest.playerColor();
-           String user = authDao.getAuthToken(authToken).getUsername();
+        JoinGameResult joinGameResult;
+        if (gameData == null) {
+            return new JoinGameResult("Error: bad request");
+        } else {
+            String playerColor = joinGameRequest.playerColor();
+            String user = authDao.getAuthToken(authToken).getUsername();
+            joinGameResult = new JoinGameResult("");
 
-           if (playerColor == null) {
-               //what happens if it's null?
-           } else if (playerColor.equalsIgnoreCase("WHITE") && gameData.getWhiteUsername() != null) {
-               return new JoinGameResult("Error: already taken");
-           } else if (playerColor.equalsIgnoreCase("BLACK") && gameData.getBlackUsername() != null) {
-               return new JoinGameResult("Error: already taken");
-           } else {
+            if (playerColor.equalsIgnoreCase("WHITE") && gameData.getWhiteUsername() != null) {
+                joinGameResult = new JoinGameResult("Error: already taken");
+            } else if (playerColor.equalsIgnoreCase("BLACK") && gameData.getBlackUsername() != null) {
+                joinGameResult = new JoinGameResult("Error: already taken");
+            } else if (playerColor.equalsIgnoreCase("WHITE")) {
+                gameDao.updateGameData(joinGameID, "WHITE", user);
+                joinGameResult = new JoinGameResult("Joined Game");
+            } else if (playerColor.equalsIgnoreCase("BLACK")) {
+                gameDao.updateGameData(joinGameID, "BLACK", user);
+                joinGameResult = new JoinGameResult("Joined Game");
+            } else {
+                joinGameResult = new JoinGameResult("Error: invalid color");
+            }
 
-           }
-
-       }
+        }
+        return joinGameResult;
 
     }
 }
