@@ -3,7 +3,6 @@ package Handler;
 import dataaccess.DataAccessException;
 import model.*;
 import service.CreateGameService;
-import service.ListGamesService;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
@@ -19,25 +18,27 @@ public class CreateGameHandler implements Route {
     }
 
     @Override
-    public Object handle(Request sparkRequest, Response response) throws DataAccessException {
+    public Object handle(Request request, Response response) throws DataAccessException {
 
         CreateGameResult createGameResult;
 
         try {
-            String authToken = sparkRequest.headers("Authorization");
-            createGameResult = createGameService.createGame(authToken);
-            if (listGamesResult.listGamesMessage().contains("Listed Games")) {
+            String authToken = request.headers("Authorization");
+            CreateGameRequest createGameRequest = gson.fromJson(request.body(), CreateGameRequest.class);
+            createGameResult = createGameService.createGame(createGameRequest, authToken);
+
+            if (createGameResult.createGameMessage().contains("Listed Games")) {
                 response.status(200);
-            } else if (listGamesResult.listGamesMessage().contains("Unauthorized")) {
+            } else if (createGameResult.createGameMessage().contains("Unauthorized")) {
                 response.status(401);
             }
         } catch (DataAccessException e) {
-            listGamesResult = new ListGamesResult(null, e.getMessage());
+            createGameResult = new CreateGameResult(null, e.getMessage());
             response.status(500);
 
         }
 
         response.type("application/json");
-        return gson.toJson(listGamesResult);
+        return gson.toJson(createGameResult);
     }
 }

@@ -3,6 +3,7 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import model.CreateGameRequest;
 import model.CreateGameResult;
 import model.GameData;
 import model.ListGamesResult;
@@ -25,13 +26,24 @@ public class CreateGameService {
         return ThreadLocalRandom.current().nextInt(1000, 10000);
     }
 
-    public CreateGameResult createGame(String authToken) throws DataAccessException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws DataAccessException {
+        String createGameName = createGameRequest.gameName();
+
         if (authDao.getAuthToken(authToken) == null) {
             return new CreateGameResult(null,"Error: unauthorized");
+        } else if(createGameName == null || createGameName.isEmpty()) {
+            return new CreateGameResult(null, "Error: bad request");
         } else {
-            int gameID = generateGameID();
-            gameDao.addGame();
-            return new CreateGameResult(gameID, "Created Game");
+            try {
+                int gameID = generateGameID();
+                GameData newGame = new GameData(gameID, authDao.getAuthToken(authToken).getUsername(), null, createGameName, null);
+                gameDao.addGame(newGame);
+                return new CreateGameResult(gameID, "Created Game");
+
+            } catch (DataAccessException e) {
+                throw new DataAccessException("Error: couldn't create game");
+            }
+
         }
 
     }
