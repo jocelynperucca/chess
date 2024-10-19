@@ -11,7 +11,7 @@ import spark.Route;
 public class CreateGameHandler implements Route {
 
     private final CreateGameService createGameService;
-    private final Gson gson = new Gson(); // Initialize Gson here
+    private final Gson gson = new Gson();
 
     public CreateGameHandler(CreateGameService createGameService) {
         this.createGameService = createGameService;
