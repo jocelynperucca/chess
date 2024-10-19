@@ -36,7 +36,7 @@ public class CreateGameService {
         } else {
             try {
                 int gameID = generateGameID();
-                GameData newGame = new GameData(gameID, authDao.getAuthToken(authToken).getUsername(), null, createGameName, null);
+                GameData newGame = new GameData(gameID, null, null, createGameName, null);
                 gameDao.addGame(newGame);
                 return new CreateGameResult(gameID, "Created Game");
 
