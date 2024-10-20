@@ -2,10 +2,7 @@ package service;
 
 import Handler.LoginHandler;
 import dataaccess.*;
-import model.LoginRequest;
-import model.LoginResult;
-import model.RegisterRequest;
-import model.RegisterResult;
+import model.*;
 import org.junit.jupiter.api.*;
 
 public class MemoryDAOTests {
@@ -73,6 +70,18 @@ public class MemoryDAOTests {
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
         Assertions.assertEquals("Error: unauthorized", result.message());
+
+    }
+
+    @Test
+    @DisplayName("Logout Test")
+    public void logoutTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        LogoutResult logoutResult = logoutService.logout(authToken);
+        Assertions.assertEquals("Logged Out", logoutResult.message());
 
     }
 
