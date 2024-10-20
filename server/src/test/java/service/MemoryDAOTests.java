@@ -96,5 +96,27 @@ public class MemoryDAOTests {
 
     }
 
+    @Test
+    @DisplayName("List Games Test")
+    public void listGamesTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        ListGamesResult listGamesResult = listGamesService.listGames(authToken);
+        Assertions.assertEquals("Listed Games", listGamesResult.message());
+    }
+
+    @Test
+    @DisplayName("List Games Negative Test")
+    public void listGamesNegativeTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        ListGamesResult listGamesResult = listGamesService.listGames("BLARGH");
+        Assertions.assertEquals("Error: unauthorized", listGamesResult.message());
+    }
+
 
 }
