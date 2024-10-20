@@ -85,5 +85,16 @@ public class MemoryDAOTests {
 
     }
 
+    @Test
+    @DisplayName("Logout Negative Test")
+    public void logoutNegativeTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        LogoutResult logoutResult = logoutService.logout("badAuth");
+        Assertions.assertEquals("Error: unauthorized", logoutResult.message());
+
+    }
+
 
 }
