@@ -1,6 +1,9 @@
 package service;
 
+import Handler.LoginHandler;
 import dataaccess.*;
+import model.LoginRequest;
+import model.LoginResult;
 import model.RegisterRequest;
 import model.RegisterResult;
 import org.junit.jupiter.api.*;
@@ -51,6 +54,16 @@ public class MemoryDAOTests {
         RegisterRequest request = new RegisterRequest(null, "jocelyn", "jocelynperucca@gmail.com");
         RegisterResult result = registerService.register(request);
         Assertions.assertEquals("Error: bad request", result.message());
+
+    }
+
+    @Test
+    @DisplayName("Login Test")
+    public void loginTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        Assertions.assertEquals("Logged In", result.message());
 
     }
 
