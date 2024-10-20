@@ -26,7 +26,7 @@ public class LogoutHandler implements Route {
             logoutResult = logoutService.logout(authToken);
             if (logoutResult.message().contains("Logged Out")) {
                 response.status(200);
-            } else if (logoutResult.message().contains("Unauthorized")) {
+            } else if (logoutResult.message().contains("unauthorized")) {
                 response.status(401);
             }
 

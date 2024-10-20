@@ -36,7 +36,11 @@ public class JoinGameService {
             String user = authDao.getAuthToken(authToken).getUsername();
             joinGameResult = new JoinGameResult("");
 
-            if (playerColor.equalsIgnoreCase("WHITE") && gameData.getWhiteUsername() != null) {
+            if(playerColor == null) {
+                joinGameResult = new JoinGameResult("Error: bad request");
+            }
+
+            else if (playerColor.equalsIgnoreCase("WHITE") && gameData.getWhiteUsername() != null) {
                 joinGameResult = new JoinGameResult("Error: already taken");
             } else if (playerColor.equalsIgnoreCase("BLACK") && gameData.getBlackUsername() != null) {
                 joinGameResult = new JoinGameResult("Error: already taken");
@@ -46,7 +50,7 @@ public class JoinGameService {
             } else if (playerColor.equalsIgnoreCase("BLACK")) {
                 gameDao.updateGameData(joinGameID, "BLACK", user);
                 joinGameResult = new JoinGameResult("Joined Game");
-            } else {
+            } else if (playerColor == null){
                 joinGameResult = new JoinGameResult("Error: invalid color");
             }
 

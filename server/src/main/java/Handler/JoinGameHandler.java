@@ -38,7 +38,7 @@ public class JoinGameHandler implements Route {
         // Set the appropriate HTTP status based on the result message
         if (result.message().equals("Joined Game")) {
             res.status(200); // Success
-        } else if (result.message().contains("Unauthorized")) {
+        } else if (result.message().contains("unauthorized")) {
             res.status(401);
         } else if (result.message().contains("bad request")) {
             res.status(400); // Bad request (missing or invalid fields)

@@ -15,7 +15,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public AuthData getAuthToken(String authToken) throws DataAccessException{
         if(authTokens.get(authToken) == null) {
-            throw new DataAccessException("Error: couldn't find authToken");
+            return null;
         }
         return authTokens.get(authToken);
     }

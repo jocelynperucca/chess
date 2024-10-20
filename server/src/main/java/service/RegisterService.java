@@ -40,6 +40,7 @@ public class RegisterService {
                 authDao.saveAuthToken(userAuthData);
 
                 //successfully registered
+                String username = registerRequest.username();
                 return new RegisterResult(registerRequest.username(), authToken, "created");
             }
 

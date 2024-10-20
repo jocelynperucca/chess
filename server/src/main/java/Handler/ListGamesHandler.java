@@ -27,7 +27,7 @@ public class ListGamesHandler implements Route {
             listGamesResult = listGamesService.listGames(authToken);
             if (listGamesResult.message().contains("Listed Games")) {
                 response.status(200);
-            } else if (listGamesResult.message().contains("Unauthorized")) {
+            } else if (listGamesResult.message().contains("unauthorized")) {
                 response.status(401);
             }
         } catch (DataAccessException e) {
