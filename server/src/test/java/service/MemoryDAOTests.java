@@ -3,10 +3,7 @@ package service;
 import dataaccess.*;
 import model.RegisterRequest;
 import model.RegisterResult;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 public class MemoryDAOTests {
 
@@ -41,10 +38,20 @@ public class MemoryDAOTests {
     }
 
     @Test
+    @DisplayName("Register Positive")
     public void registerTest() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("jocelynp", "jocelyn", "jocelynperucca@gmail.com");
         RegisterResult result = registerService.register(request);
         Assertions.assertEquals("created", result.message());
+    }
+
+    @Test
+    @DisplayName("Register Negative")
+    public void registerNegativeTest() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest(null, "jocelyn", "jocelynperucca@gmail.com");
+        RegisterResult result = registerService.register(request);
+        Assertions.assertEquals("Error: bad request", result.message());
+
     }
 
 
