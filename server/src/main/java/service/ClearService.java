@@ -6,7 +6,7 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import requestsAndResults.ClearResult;
 
-
+// Service class for clearing authentication tokens, game data, and user data from their respective DAOs.
 public class ClearService {
 
     private final AuthDAO authDao;
@@ -19,6 +19,7 @@ public class ClearService {
         this.userDao = userDao;
     }
 
+    //Clears all authentication tokens, game data, and user data.
     public ClearResult clear() throws DataAccessException {
 
         try {
@@ -26,10 +27,9 @@ public class ClearService {
             gameDao.clearGames();
             userDao.clearUsers();
             return new ClearResult("Cleared");
+
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: could not clear");
         }
-
-
     }
 }
