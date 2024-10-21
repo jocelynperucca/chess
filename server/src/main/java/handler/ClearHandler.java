@@ -19,7 +19,7 @@ public class ClearHandler implements Route {
     }
 
     @Override
-    public Object handle(Request Request, Response response){
+    public Object handle(Request request, Response response){
 
         //INITIALIZE CLEAR RESULT
         ClearResult clearResult;
