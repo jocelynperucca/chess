@@ -1,6 +1,6 @@
 package server;
 
-import Handler.*;
+import handler.*;
 import dataaccess.*;
 import service.*;
 import spark.*;

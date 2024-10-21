@@ -60,21 +60,21 @@ public class ChessGame {
 
 
             TeamColor teamColor = currentPiece.getTeamColor();
-            for (ChessMove Checkmove : currentPiece.pieceMoves(currentBoard, startPosition)) {
+            for (ChessMove checkMove : currentPiece.pieceMoves(currentBoard, startPosition)) {
 
                 //if it doesn't put the king in check, you're okay
                 if(!canCheck(teamColor, currentBoard)) {
                     //create copy board to see if move puts king in check
                     ChessBoard testBoard = currentBoard.copyBoard();
-                    officialMove(Checkmove,currentPiece, testBoard);
+                    officialMove(checkMove,currentPiece, testBoard);
                     if(!canCheck(currentPiece.getTeamColor(),testBoard)) {
-                        validMoves.add(Checkmove);
+                        validMoves.add(checkMove);
                     }
 
                 } else if (canCheck(teamColor, currentBoard)) {
                     //if it gets rid of check, you can move
-                    if(ridOfCheck(Checkmove)) {
-                        validMoves.add(Checkmove);
+                    if(ridOfCheck(checkMove)) {
+                        validMoves.add(checkMove);
                     }
                 }
             }

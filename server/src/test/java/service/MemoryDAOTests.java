@@ -142,7 +142,7 @@ public class MemoryDAOTests {
 
     @Test
     @DisplayName("Join Game Test")
-    public void JoinGameTest() throws DataAccessException {
+    public void joinGameTest() throws DataAccessException {
         registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
@@ -157,7 +157,7 @@ public class MemoryDAOTests {
 
     @Test
     @DisplayName("Join Game Negative Test")
-    public void JoinGameNegativeTest() throws DataAccessException {
+    public void joinGameNegativeTest() throws DataAccessException {
         registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
@@ -178,9 +178,7 @@ public class MemoryDAOTests {
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
         String authToken = result.authToken();
-        CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
         CreateGameRequest newCreateGameRequest = new CreateGameRequest("Fun Game");
-        CreateGameResult createGameResult = createGameService.createGame(newCreateGameRequest, authToken);
         clearService.clear();
         Collection<GameData> listGames = gameDAO.listGames();
 

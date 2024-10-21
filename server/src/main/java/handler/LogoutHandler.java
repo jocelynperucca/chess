@@ -1,4 +1,4 @@
-package Handler;
+package handler;
 
 import dataaccess.DataAccessException;
 import model.LogoutResult;

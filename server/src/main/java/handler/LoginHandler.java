@@ -1,4 +1,4 @@
-package Handler;
+package handler;
 
 import dataaccess.DataAccessException;
 import model.LoginRequest;
@@ -20,8 +20,8 @@ public class LoginHandler implements Route {
     }
 
     @Override
-    public Object handle(Request Request, Response response) throws DataAccessException {
-        return loginUser(Request, response);
+    public Object handle(Request request, Response response) throws DataAccessException {
+        return loginUser(request, response);
     }
 
     private String loginUser(Request req, Response res) throws DataAccessException {
