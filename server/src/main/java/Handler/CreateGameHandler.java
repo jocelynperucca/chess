@@ -29,7 +29,7 @@ public class CreateGameHandler implements Route {
 
             if (createGameResult.message().contains("Created Game")) {
                 response.status(200);
-            } else if (createGameResult.message().contains("Unauthorized")) {
+            } else if (createGameResult.message().contains("unauthorized")) {
                 response.status(401);
             } else {
                 response.status(400);
