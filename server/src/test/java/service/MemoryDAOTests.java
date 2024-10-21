@@ -1,6 +1,5 @@
 package service;
 
-import Handler.LoginHandler;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;

@@ -1,4 +1,4 @@
-package Handler;
+package server.Handler;
 
 import dataaccess.DataAccessException;
 import model.*;

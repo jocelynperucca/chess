@@ -1,13 +1,8 @@
 package server;
 
-import com.google.gson.Gson;
 import dataaccess.*;
-import model.RegisterRequest;
-import model.RegisterResult;
-import org.eclipse.jetty.server.Authentication;
-import org.eclipse.jetty.server.Handler;
+import server.Handler.*;
 import service.*;
-import Handler.*;
 import spark.*;
 
 public class Server {
