@@ -1,7 +1,7 @@
 package server.Handler;
 
 import dataaccess.DataAccessException;
-import model.*;
+import requestsAndResults.ListGamesResult;
 import service.ListGamesService;
 import com.google.gson.Gson;
 import spark.Request;

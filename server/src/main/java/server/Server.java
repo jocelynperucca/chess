@@ -7,9 +7,7 @@ import spark.*;
 
 public class Server {
 
-    //private RegisterService registerService;
-    //private Gson gson = new Gson();
-
+    //INITIALIZE ALL CLASSES AND VARIABLES
     UserDAO userDAO = new MemoryUserDAO();
     AuthDAO authDAO = new MemoryAuthDAO();
     GameDAO gameDAO = new MemoryGameDAO();
@@ -22,17 +20,13 @@ public class Server {
     JoinGameService joinGameService = new JoinGameService(authDAO,gameDAO);
     ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
 
+    //RUN SERVER AND ENDPOINTS
     public int run(int desiredPort) {
 
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
-
+        //ENDPOINTS
         Spark.delete("/db", new ClearHandler(clearService));
         Spark.post("/user", new RegisterHandler(registerService));
         Spark.post("/session", new LoginHandler(loginService)) ;
@@ -41,6 +35,7 @@ public class Server {
         Spark.post("/game", new CreateGameHandler(createGameService));
         Spark.put("/game", new JoinGameHandler(joinGameService));
 
+        //START SERVER
         Spark.awaitInitialization();
         return Spark.port();
     }

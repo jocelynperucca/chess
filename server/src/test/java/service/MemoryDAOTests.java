@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
+import requestsAndResults.*;
 
 import java.util.Collection;
 

@@ -1,7 +1,7 @@
 package server.Handler;
 
 import dataaccess.DataAccessException;
-import model.*;
+import requestsAndResults.LogoutResult;
 import service.LogoutService;
 import com.google.gson.Gson;
 import spark.Request;

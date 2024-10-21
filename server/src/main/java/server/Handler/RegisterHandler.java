@@ -6,8 +6,8 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import model.RegisterRequest;
-import model.RegisterResult;
+import requestsAndResults.RegisterRequest;
+import requestsAndResults.RegisterResult;
 
 public class RegisterHandler implements Route {
 

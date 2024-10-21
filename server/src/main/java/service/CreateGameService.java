@@ -3,12 +3,10 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import model.CreateGameRequest;
-import model.CreateGameResult;
+import requestsAndResults.CreateGameRequest;
+import requestsAndResults.CreateGameResult;
 import model.GameData;
-import model.ListGamesResult;
 
-import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class CreateGameService {

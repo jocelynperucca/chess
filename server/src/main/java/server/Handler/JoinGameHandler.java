@@ -1,12 +1,9 @@
 package server.Handler;
 
 import dataaccess.DataAccessException;
-import model.JoinGameRequest;
-import model.JoinGameResult;
-import model.LoginRequest;
-import model.LoginResult;
+import requestsAndResults.JoinGameRequest;
+import requestsAndResults.JoinGameResult;
 import service.JoinGameService;
-import service.LoginService;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;

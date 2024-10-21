@@ -4,10 +4,9 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
-import model.LoginRequest;
-import model.LoginResult;
+import requestsAndResults.LoginRequest;
+import requestsAndResults.LoginResult;
 import model.UserData;
-import org.eclipse.jetty.util.log.Log;
 
 import java.util.UUID;
 

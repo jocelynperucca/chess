@@ -4,11 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import model.JoinGameRequest;
-import model.JoinGameResult;
-import model.ListGamesResult;
-
-import java.util.Collection;
+import requestsAndResults.JoinGameRequest;
+import requestsAndResults.JoinGameResult;
 
 public class JoinGameService {
 
