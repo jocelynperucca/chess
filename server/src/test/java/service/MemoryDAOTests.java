@@ -142,5 +142,20 @@ public class MemoryDAOTests {
         Assertions.assertEquals("Error: unauthorized", createGameResult.message());
     }
 
+    @Test
+    @DisplayName("Join Game Test")
+    public void JoinGameTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
+        CreateGameResult createGameResult = createGameService.createGame(createGameRequest, authToken);
+        int gameID = createGameResult.gameID();
+        JoinGameRequest joinGameRequest = new JoinGameRequest("BLACK" , gameID);
+        JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest, authToken);
+        Assertions.assertEquals("Joined Game", joinGameResult.message());
+    }
+
 
 }
