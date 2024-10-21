@@ -1,5 +1,6 @@
 package model;
 
+//STORAGE OF USERNAMES AND AUTHTOKENS TO VERIFY AUTHORIZATION
 public class AuthData {
 
     String username;
@@ -7,11 +8,10 @@ public class AuthData {
 
     public AuthData (String username, String authToken) {
         this.username = username;
-
         this.authToken = authToken;
-
     }
 
+//GETTERS
     public String getUsername() {
         return username;
     }

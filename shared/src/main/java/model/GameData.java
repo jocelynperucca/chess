@@ -2,6 +2,7 @@ package model;
 
 import chess.ChessGame;
 
+//STORAGE OF EVERYTHING PERTAINING TO A GAME AND FUNCTIONS THAT GET AND SET THESE VARIABLES
 public class GameData {
     int gameID;
     String whiteUsername;
@@ -17,7 +18,7 @@ public class GameData {
         this.game = game;
     }
 
-    //getters
+    //GETTERS
     public int getGameID(){
         return gameID;
     }
@@ -30,14 +31,11 @@ public class GameData {
         return blackUsername;
     }
 
-    public String getGameName() {
-        return gameName;
-    }
-
     public ChessGame getGame() {
         return game;
     }
 
+    //SET USERNAME BASED ON INPUT
     public void setWhiteUsername(String username) {
         whiteUsername = username;
     }
