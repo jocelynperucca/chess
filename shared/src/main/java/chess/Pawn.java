@@ -37,8 +37,8 @@ public class Pawn extends ChessPiece {
                         ChessPosition newPosition = new ChessPosition(newRow, newCol);
                         ChessMove newMove = new ChessMove(position, newPosition, null);
 
+                        //Check if there is a piece already there
                         String result = hasPiece(board, newMove);
-
                         //check diagonals
                         if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
                             if (result.equals("can capture")) {
@@ -58,16 +58,12 @@ public class Pawn extends ChessPiece {
                                         moves.add(newMove);
                                     }
                                 }
-
                             }
                         }
-
                     } else {
                         break;
                     }
-
                 }
-
                 //not on starting row for WHITE
             } else {
                 int[][] directions = {
@@ -91,13 +87,12 @@ public class Pawn extends ChessPiece {
                         //check diagonals
                         if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
                             if (result.equals("can capture")) {
-
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
+
                             // check if blocked
                         } else {
                             if (!"can capture".equals(result) && !"same team".equals(result)) {
-
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
                         }
@@ -122,7 +117,7 @@ public class Pawn extends ChessPiece {
                     int rowOffset = direction[0];
                     int colOffset = direction[1];
 
-
+                    //set new row and column according to array coordinates
                     int newRow = position.getRow() + rowOffset;
                     int newCol = position.getColumn() + colOffset;
                     if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
@@ -148,17 +143,13 @@ public class Pawn extends ChessPiece {
                                     if (!"same team".equals(behindResult)) {
                                         moves.add(newMove);
                                     }
-
                                 }
-
-                                //moves.add(newMove);
                             }
                         }
 
                     } else {
                         break;
                     }
-
                 }
 
                 //not on starting row for BLACK
@@ -196,6 +187,7 @@ public class Pawn extends ChessPiece {
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
                         }
+
                     } else {
                         break;
                     }
