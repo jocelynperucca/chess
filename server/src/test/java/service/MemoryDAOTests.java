@@ -181,7 +181,6 @@ public class MemoryDAOTests {
         CreateGameRequest newCreateGameRequest = new CreateGameRequest("Fun Game");
         clearService.clear();
         Collection<GameData> listGames = gameDAO.listGames();
-
         Assertions.assertEquals(0, listGames.size());
         Assertions.assertNull(userDAO.getUser("jocelyn"));
         Assertions.assertNull(authDAO.getAuthToken(authToken));
