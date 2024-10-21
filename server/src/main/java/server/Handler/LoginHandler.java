@@ -9,7 +9,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-
+// Handles HTTP requests for user login, invoking LoginService and setting the response status.
 public class LoginHandler implements Route {
 
     private final LoginService loginService;
@@ -20,19 +20,21 @@ public class LoginHandler implements Route {
     }
 
     @Override
-    public Object handle(Request sparkRequest, Response response) throws DataAccessException {
-        return loginUser(sparkRequest, response);
+    public Object handle(Request Request, Response response) throws DataAccessException {
+        return loginUser(Request, response);
     }
 
     private String loginUser(Request req, Response res) throws DataAccessException {
+
         // Parse the request body to RegisterRequest object
         LoginRequest request = gson.fromJson(req.body(), LoginRequest.class);
+
         // Call the register method in the service layer to get the result
         LoginResult result = loginService.login(request);
 
         // Set the appropriate HTTP status based on the result message
         if (result.message().equals("Logged In")) {
-            res.status(200); // Success
+            res.status(200);
         } else if (result.message().contains("unauthorized")) {
             res.status(401); // Username already taken
         } else {
@@ -40,7 +42,6 @@ public class LoginHandler implements Route {
         }
 
         // Return the RegisterResult as a JSON string
-        String test = gson.toJson(result);
         return gson.toJson(result);
     }
 }
