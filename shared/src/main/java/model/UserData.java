@@ -1,7 +1,7 @@
 package model;
 
+//STORAGE OF USER INFORMATION AND GETTERS TO OBTAIN THAT INFORMATION
 public class UserData {
-
     String username;
     String password;
     String email;
@@ -12,17 +12,12 @@ public class UserData {
         this.email = email;
     }
 
+    //GETTERS
     public String getUsername() {
         return username;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public String getPassword() {
         return password;
     }
-
-
 }
