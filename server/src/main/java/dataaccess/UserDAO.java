@@ -1,10 +1,8 @@
 package dataaccess;
 
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
-import javax.xml.crypto.Data;
-
+// Defines methods for managing user data, including user creation, retrieval, password verification, and clearing users.
 public interface UserDAO {
     void createUser(UserData userData) throws DataAccessException;
 
