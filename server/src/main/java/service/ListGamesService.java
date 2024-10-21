@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import requestsAndResults.ListGamesResult;
+import model.ListGamesResult;
 import java.util.Collection;
 
 //Handles the retrieval of game data, verifying authorization before returning the list of games.

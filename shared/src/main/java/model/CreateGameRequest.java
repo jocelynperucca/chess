@@ -1,4 +1,4 @@
-package requestsAndResults;
+package model;
 
 public record CreateGameRequest(String gameName) {
 }

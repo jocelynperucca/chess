@@ -1,6 +1,4 @@
-package requestsAndResults;
-
-import model.GameData;
+package model;
 
 import java.util.Collection;
 

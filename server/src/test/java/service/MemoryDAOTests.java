@@ -3,7 +3,6 @@ package service;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
-import requestsAndResults.*;
 
 import java.util.Collection;
 
@@ -92,7 +91,6 @@ public class MemoryDAOTests {
     public void logoutNegativeTest() throws DataAccessException {
         registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
-        LoginResult result = loginService.login(request);
         LogoutResult logoutResult = logoutService.logout("badAuth");
         Assertions.assertEquals("Error: unauthorized", logoutResult.message());
 
@@ -115,7 +113,6 @@ public class MemoryDAOTests {
         registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
-        String authToken = result.authToken();
         ListGamesResult listGamesResult = listGamesService.listGames("BLARGH");
         Assertions.assertEquals("Error: unauthorized", listGamesResult.message());
     }
@@ -138,7 +135,6 @@ public class MemoryDAOTests {
         registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
         LoginRequest request = new LoginRequest("jocelyn", "perucca");
         LoginResult result = loginService.login(request);
-        String authToken = result.authToken();
         CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
         CreateGameResult createGameResult = createGameService.createGame(createGameRequest, "badAuth");
         Assertions.assertEquals("Error: unauthorized", createGameResult.message());
@@ -184,7 +180,7 @@ public class MemoryDAOTests {
         String authToken = result.authToken();
         CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
         CreateGameRequest newCreateGameRequest = new CreateGameRequest("Fun Game");
-        CreateGameResult createGameResult = createGameService.createGame(createGameRequest, authToken);
+        CreateGameResult createGameResult = createGameService.createGame(newCreateGameRequest, authToken);
         clearService.clear();
         Collection<GameData> listGames = gameDAO.listGames();
 

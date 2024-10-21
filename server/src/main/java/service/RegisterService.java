@@ -4,8 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
-import requestsAndResults.RegisterRequest;
-import requestsAndResults.RegisterResult;
+import model.RegisterRequest;
+import model.RegisterResult;
 import model.UserData;
 
 import java.util.UUID;
@@ -29,7 +29,8 @@ public class RegisterService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
 
         //checks if all variables are filled out
-        if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null || registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
+        if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null
+                || registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
             return new RegisterResult(null, null, "Error: bad request");
 
         } else {
@@ -43,7 +44,6 @@ public class RegisterService {
                 authDao.saveAuthToken(userAuthData);
 
                 //successfully registered
-                String username = registerRequest.username();
                 return new RegisterResult(registerRequest.username(), authToken, "created");
             }
         }

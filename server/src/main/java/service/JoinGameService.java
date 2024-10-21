@@ -4,8 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
-import requestsAndResults.JoinGameRequest;
-import requestsAndResults.JoinGameResult;
+import model.JoinGameRequest;
+import model.JoinGameResult;
 
 
 //Handles game joining logic, verifying authorization and player color, while updating game data accordingly.

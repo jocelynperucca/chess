@@ -108,7 +108,8 @@ public class ChessPiece {
     }
 
 
-    //Calculates valid moves for any given piece when given an array of moves it could make when can move in one direction til it hits another piece (all pieces other than knight or King)
+    //Calculates valid moves for any given piece when given an array of moves it could make
+    //Can move in one direction til it hits another piece (all pieces other than knight or King)
     public void evaluateMovesInDirection(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int[][] directions) {
         for(int[] direction: directions) {
             int rowOffset = direction[0];
@@ -144,7 +145,8 @@ public class ChessPiece {
         }
     }
 
-    //Calculates valid moves for any given piece when given an array of moves it could make when can move in when has set moves it can make (Knight and King)
+    //Calculates valid moves for any given piece when given an array of moves it could make
+    // Can move in when has set moves it can make (Knight and King)
     public void evaluateMove(ChessBoard board, ChessPosition position, Collection<ChessMove> moves, int[][] directions) {
 
         for (int[] direction : directions) {
@@ -173,8 +175,12 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)  {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessPiece that = (ChessPiece) o;
         return pieceColor == that.pieceColor && type == that.type;
     }

@@ -4,7 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import requestsAndResults.ClearResult;
+import model.ClearResult;
 
 // Service class for clearing authentication tokens, game data, and user data from their respective DAOs.
 public class ClearService {

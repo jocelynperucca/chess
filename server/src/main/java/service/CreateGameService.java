@@ -3,8 +3,8 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import requestsAndResults.CreateGameRequest;
-import requestsAndResults.CreateGameResult;
+import model.CreateGameRequest;
+import model.CreateGameResult;
 import model.GameData;
 import java.util.concurrent.ThreadLocalRandom;
 

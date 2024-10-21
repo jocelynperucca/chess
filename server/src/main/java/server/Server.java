@@ -1,7 +1,7 @@
 package server;
 
+import Handler.*;
 import dataaccess.*;
-import server.Handler.*;
 import service.*;
 import spark.*;
 

@@ -1,4 +1,4 @@
-package server.Handler;
+package Handler;
 
 import dataaccess.DataAccessException;
 import service.RegisterService;
@@ -6,8 +6,8 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import requestsAndResults.RegisterRequest;
-import requestsAndResults.RegisterResult;
+import model.RegisterRequest;
+import model.RegisterResult;
 
 public class RegisterHandler implements Route {
 

@@ -1,8 +1,8 @@
-package server.Handler;
+package Handler;
 
 import dataaccess.DataAccessException;
-import requestsAndResults.CreateGameRequest;
-import requestsAndResults.CreateGameResult;
+import model.CreateGameRequest;
+import model.CreateGameResult;
 import service.CreateGameService;
 import com.google.gson.Gson;
 import spark.Request;

@@ -2,7 +2,7 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import requestsAndResults.LogoutResult;
+import model.LogoutResult;
 
 
 //Manages user logout functionality by validating the authorization token and removing it from the data store upon successful logout.
