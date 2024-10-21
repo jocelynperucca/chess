@@ -20,12 +20,14 @@ public class RegisterHandler implements Route {
 
     @Override
     public Object handle(Request sparkRequest, Response response) throws DataAccessException {
-        return registerUser(sparkRequest, response); // Call the refactored method
+        return registerUser(sparkRequest, response);
     }
 
     private String registerUser(Request req, Response res) throws DataAccessException {
+
         // Parse the request body to RegisterRequest object
         RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
+
         // Call the register method in the service layer to get the result
         RegisterResult result = registerService.register(request);
 
