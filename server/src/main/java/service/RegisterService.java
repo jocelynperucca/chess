@@ -10,6 +10,7 @@ import model.UserData;
 
 import java.util.UUID;
 
+//Manages user registration by validating input, creating new user accounts, and generating authorization tokens upon successful registration.
 public class RegisterService {
 
     private final UserDAO userDao;
@@ -21,11 +22,13 @@ public class RegisterService {
     }
 
     public static String generateAuthToken() {
-        return UUID.randomUUID().toString(); // Generates a random UUID string
+        return UUID.randomUUID().toString(); // Generates a random UUID string for an authToken
     }
 
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+
+        //checks if all variables are filled out
         if(registerRequest.email() == null || registerRequest.username() == null || registerRequest.password() == null || registerRequest.username().isEmpty() || registerRequest.password().isEmpty() || registerRequest.email().isEmpty()) {
             return new RegisterResult(null, null, "Error: bad request");
 
@@ -43,7 +46,6 @@ public class RegisterService {
                 String username = registerRequest.username();
                 return new RegisterResult(registerRequest.username(), authToken, "created");
             }
-
         }
     }
 }
