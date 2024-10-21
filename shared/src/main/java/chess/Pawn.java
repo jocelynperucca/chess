@@ -175,14 +175,12 @@ public class Pawn extends ChessPiece {
                         //check diagonals
                         if ((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
                             if (result.equals("can capture")) {
-
                                 //CHECK PROMOTION
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
                         } else {
                             //if in front of piece, cannot capture
                             if (!"can capture".equals(result) && !"same team".equals(result)) {
-
                                 //CHECK PROMOTION
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
