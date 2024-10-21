@@ -5,6 +5,8 @@ import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
 
+import java.util.Collection;
+
 public class MemoryDAOTests {
 
     UserDAO userDAO;
@@ -170,6 +172,26 @@ public class MemoryDAOTests {
         JoinGameRequest joinGameRequest = new JoinGameRequest("Purple" , gameID);
         JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest, authToken);
         Assertions.assertEquals("Error: bad request", joinGameResult.message());
+    }
+
+    @Test
+    @DisplayName("Clear Game Test")
+    public void clearGameTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        registerService.register(new RegisterRequest("jerry", "titus", "jerrydeantitus@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
+        CreateGameRequest newCreateGameRequest = new CreateGameRequest("Fun Game");
+        CreateGameResult createGameResult = createGameService.createGame(createGameRequest, authToken);
+        clearService.clear();
+        Collection<GameData> listGames = gameDAO.listGames();
+
+        Assertions.assertEquals(0, listGames.size());
+        Assertions.assertNull(userDAO.getUser("jocelyn"));
+        Assertions.assertNull(authDAO.getAuthToken(authToken));
+
     }
 
 
