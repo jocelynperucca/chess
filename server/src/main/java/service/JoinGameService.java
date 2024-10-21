@@ -50,8 +50,8 @@ public class JoinGameService {
             } else if (playerColor.equalsIgnoreCase("BLACK")) {
                 gameDao.updateGameData(joinGameID, "BLACK", user);
                 joinGameResult = new JoinGameResult("Joined Game");
-            } else if (playerColor == null){
-                joinGameResult = new JoinGameResult("Error: invalid color");
+            } else if (playerColor == null || playerColor != "BLACK" || playerColor != "WHITE"){
+                joinGameResult = new JoinGameResult("Error: bad request");
             }
 
         }

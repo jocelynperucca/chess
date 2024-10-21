@@ -157,5 +157,20 @@ public class MemoryDAOTests {
         Assertions.assertEquals("Joined Game", joinGameResult.message());
     }
 
+    @Test
+    @DisplayName("Join Game Negative Test")
+    public void JoinGameNegativeTest() throws DataAccessException {
+        registerService.register(new RegisterRequest("jocelyn", "perucca", "jocelynperucca@gmail.com"));
+        LoginRequest request = new LoginRequest("jocelyn", "perucca");
+        LoginResult result = loginService.login(request);
+        String authToken = result.authToken();
+        CreateGameRequest createGameRequest = new CreateGameRequest("New Game");
+        CreateGameResult createGameResult = createGameService.createGame(createGameRequest, authToken);
+        int gameID = createGameResult.gameID();
+        JoinGameRequest joinGameRequest = new JoinGameRequest("Purple" , gameID);
+        JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest, authToken);
+        Assertions.assertEquals("Error: bad request", joinGameResult.message());
+    }
+
 
 }
