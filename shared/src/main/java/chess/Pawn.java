@@ -4,20 +4,19 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class Pawn extends ChessPiece {
-
     public Pawn (ChessGame.TeamColor pieceColor) {
         super(pieceColor, ChessPiece.PieceType.PAWN);
     }
 
-
+    //Calculates valid moves for
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new HashSet<>();
         ChessGame.TeamColor pieceColor = getTeamColor();
 
-
         //WHITE PAWN
         if(ChessGame.TeamColor.WHITE == pieceColor) {
+
             //on starting row for WHITE
             if ((position.getRow() == 2)) {
                 int[][] directions = {
