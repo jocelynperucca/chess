@@ -197,18 +197,20 @@ public class Pawn extends ChessPiece {
                                 handlePromotionIfNeeded(moves, position, newPosition, newRow);
                             }
                         }
-
                     } else {
                         break;
                     }
                 }
             }
         }
+
         //RETURN PAWN MOVES
         return moves;
     }
 
-    public boolean canPromote (int row) {
+
+    //HELPER FUNCTIONS
+    private boolean canPromote (int row) {
         return ((row == 8 && ChessGame.TeamColor.WHITE == getTeamColor()) || (row == 1 && ChessGame.TeamColor.BLACK == getTeamColor()));
     }
 
@@ -224,6 +226,4 @@ public class Pawn extends ChessPiece {
             moves.add(addMove); // Add the capture move without promotion
         }
     }
-
-
 }
