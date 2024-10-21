@@ -8,6 +8,7 @@ public class Main {
 
         var server = new Server();
 
+        //START SERVER
         server.run(8080);
     }
 

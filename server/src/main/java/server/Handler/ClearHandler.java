@@ -8,10 +8,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+//RETURNS RESPONSE STATUS BASED ON CLEAR MESSAGE
 public class ClearHandler implements Route {
 
     private final ClearService clearService;
-    private final Gson gson = new Gson(); // Initialize Gson here
+    private final Gson gson = new Gson();
 
     public ClearHandler(ClearService clearService) {
         this.clearService = clearService;
@@ -20,9 +21,12 @@ public class ClearHandler implements Route {
     @Override
     public Object handle(Request Request, Response response) throws DataAccessException {
 
+        //INITIALIZE CLEAR RESULT
         ClearResult clearResult;
+
+
+        //SET RESULT BASED ON MESSAGE GIVEN IN HANDLER
         try {
-            String authToken = Request.headers("Authorization");
             clearResult = clearService.clear();
             if (clearResult.message().contains("Cleared")) {
                 response.status(200);
