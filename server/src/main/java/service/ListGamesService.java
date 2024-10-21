@@ -5,9 +5,9 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.GameData;
 import requestsAndResults.ListGamesResult;
-
 import java.util.Collection;
 
+//Handles the retrieval of game data, verifying authorization before returning the list of games.
 public class ListGamesService {
 
     private final AuthDAO authDao;
@@ -19,12 +19,13 @@ public class ListGamesService {
     }
 
     public ListGamesResult listGames(String authToken) throws DataAccessException {
+
         if (authDao.getAuthToken(authToken) == null) {
             return new ListGamesResult(null,"Error: unauthorized");
+
         } else {
             Collection<GameData> listGames = gameDao.listGames();
             return new ListGamesResult(listGames, "Listed Games");
         }
-
     }
 }
