@@ -24,7 +24,6 @@ public class ClearHandler implements Route {
         //INITIALIZE CLEAR RESULT
         ClearResult clearResult;
 
-
         //SET RESULT BASED ON MESSAGE GIVEN IN HANDLER
         try {
             clearResult = clearService.clear();
@@ -32,15 +31,12 @@ public class ClearHandler implements Route {
                 response.status(200);
             }
 
-
         } catch (DataAccessException e) {
             clearResult = new ClearResult(e.getMessage());
             response.status(500);
-
         }
 
         response.type("application/json");
         return gson.toJson(clearResult);
-
     }
 }
