@@ -4,206 +4,86 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class Pawn extends ChessPiece {
-    public Pawn (ChessGame.TeamColor pieceColor) {
+    public Pawn(ChessGame.TeamColor pieceColor) {
         super(pieceColor, ChessPiece.PieceType.PAWN);
     }
 
-    //Calculates valid moves for
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new HashSet<>();
         ChessGame.TeamColor pieceColor = getTeamColor();
 
-        //WHITE PAWN
-        if(ChessGame.TeamColor.WHITE == pieceColor) {
+        int[][] directions = getDirections(pieceColor, position.getRow());
+        int forwardDirection = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
 
-            //on starting row for WHITE
-            if ((position.getRow() == 2)) {
-                int[][] directions = {
-                        {1,0}, //up one
-                        {2,0}, // up two
-                        {1,-1}, //diagonal up left
-                        {1,1} //diagonal up right
-                };
+        for (int[] direction : directions) {
+            int newRow = position.getRow() + direction[0];
+            int newCol = position.getColumn() + direction[1];
 
-                for (int[] direction : directions) {
-                    int rowOffset = direction[0];
-                    int colOffset = direction[1];
-
-                    //check if is in bounds
-                    int newRow = position.getRow() + rowOffset;
-                    int newCol = position.getColumn() + colOffset;
-                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                        ChessMove newMove = new ChessMove(position, newPosition, null);
-
-                        //Check if there is a piece already there
-                        String result = hasPiece(board, newMove);
-                        //check diagonals
-                        if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
-                            if (result.equals("can capture")) {
-                                moves.add(newMove);
-                            }
-                            //else check if blocked
-                        } else {
-                            if (!"can capture".equals(result) && !"same team".equals(result)) {
-                                //check if pawn can't hop other piece
-                                if (rowOffset != 2) {
-                                    moves.add(newMove);
-                                } else {
-                                    ChessPosition behindPosition = new ChessPosition(newRow -1, newCol);
-                                    ChessMove behindMove = new ChessMove(position, behindPosition, null);
-                                    String behindResult = hasPiece(board, behindMove);
-                                    if(!behindResult.equals("same team")) {
-                                        moves.add(newMove);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                //not on starting row for WHITE
-            } else {
-                int[][] directions = {
-                        {1,0}, //up one
-                        {1,-1}, //diagonal up left
-                        {1,1} //diagonal up right
-                };
-
-                for (int[] direction : directions) {
-                    int rowOffset = direction[0];
-                    int colOffset = direction[1];
-
-                    //check if is in bounds
-                    int newRow = position.getRow() + rowOffset;
-                    int newCol = position.getColumn() + colOffset;
-                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                        ChessMove newMove = new ChessMove(position, newPosition, null);
-                        String result = hasPiece(board, newMove);
-
-                        //check diagonals
-                        if ((rowOffset == 1 && colOffset == 1) || (rowOffset == 1 && colOffset == -1)) {
-                            if (result.equals("can capture")) {
-                                handlePromotionIfNeeded(moves, position, newPosition, newRow);
-                            }
-
-                            // check if blocked
-                        } else {
-                            if (!"can capture".equals(result) && !"same team".equals(result)) {
-                                handlePromotionIfNeeded(moves, position, newPosition, newRow);
-                            }
-                        }
-                    } else {
-                        break;
-                    }
-                }
+            if (!isValidPosition(newRow, newCol)) {
+                continue;
             }
 
-        //BLACK PAWN
-        } else if (pieceColor == ChessGame.TeamColor.BLACK) {
-            //on starting row for BLACK
-            if ((position.getRow() == 7)) {
-                int[][] directions = {
-                        {-1,0}, //up one
-                        {-2,0}, // up two
-                        {-1,-1}, //diagonal down left
-                        {-1,1} // diagonal down right
-                };
+            ChessPosition newPosition = new ChessPosition(newRow, newCol);
+            ChessMove newMove = new ChessMove(position, newPosition, null);
+            String result = hasPiece(board, newMove);
 
-                for (int[] direction : directions) {
-                    int rowOffset = direction[0];
-                    int colOffset = direction[1];
-
-                    //set new row and column according to array coordinates
-                    int newRow = position.getRow() + rowOffset;
-                    int newCol = position.getColumn() + colOffset;
-                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                        ChessMove newMove = new ChessMove(position, newPosition, null);
-                        String result = hasPiece(board, newMove);
-
-                        //check diagonals
-                        if((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
-                            if (result.equals("can capture")) {
-                                moves.add(newMove);
-                            }
-                            //else normal move
-                        } else {
-                            // checks straight forward blockage
-                            if (!result.equals("can capture") && !result.equals("same team")) {
-                                if (rowOffset != -2) {
-                                    moves.add(newMove);
-                                }   else {
-                                    ChessPosition behindPosition = new ChessPosition(newRow +1, newCol);
-                                    ChessMove behindMove = new ChessMove(position, behindPosition, null);
-                                    String behindResult = hasPiece(board, behindMove);
-                                    if (!"same team".equals(behindResult)) {
-                                        moves.add(newMove);
-                                    }
-                                }
-                            }
-                        }
-
-                    } else {
-                        break;
-                    }
-                }
-
-                //not on starting row for BLACK
+            if (isDiagonalMove(direction)) {
+                handleDiagonalMove(moves, position, newPosition, result, newRow);
             } else {
-                int[][] directions = {
-                        {-1,0}, //up one
-                        {-1,-1}, //diagonal down left
-                        {-1,1} // diagonal down right
-                };
-
-                for (int[] direction : directions) {
-                    int rowOffset = direction[0];
-                    int colOffset = direction[1];
-
-                    //CHECK IF IN BOUNDS
-                    int newRow = position.getRow() + rowOffset;
-                    int newCol = position.getColumn() + colOffset;
-                    if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                        ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                        ChessMove newMove = new ChessMove(position, newPosition, null);
-                        String result = hasPiece(board, newMove);
-
-                        //check diagonals
-                        if ((rowOffset == -1 && colOffset == -1) || (rowOffset == -1 && colOffset == 1)) {
-                            if (result.equals("can capture")) {
-                                //CHECK PROMOTION
-                                handlePromotionIfNeeded(moves, position, newPosition, newRow);
-                            }
-                        } else {
-                            //if in front of piece, cannot capture
-                            if (!"can capture".equals(result) && !"same team".equals(result)) {
-                                //CHECK PROMOTION
-                                handlePromotionIfNeeded(moves, position, newPosition, newRow);
-                            }
-                        }
-
-                    } else {
-                        break;
-                    }
-                }
+                handleForwardMove(moves, board, position, newPosition, result, direction[0], forwardDirection);
             }
         }
 
-        //RETURN PAWN MOVES
         return moves;
     }
 
+    private int[][] getDirections(ChessGame.TeamColor pieceColor, int currentRow) {
+        boolean isStartingRow = (pieceColor == ChessGame.TeamColor.WHITE && currentRow == 2) ||
+                (pieceColor == ChessGame.TeamColor.BLACK && currentRow == 7);
+        int forward = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
 
-    //HELPER FUNCTIONS
-    private boolean canPromote (int row) {
-        return ((row == 8 && ChessGame.TeamColor.WHITE == getTeamColor()) || (row == 1 && ChessGame.TeamColor.BLACK == getTeamColor()));
+        if (isStartingRow) {
+            return new int[][] {{forward, 0}, {2 * forward, 0}, {forward, -1}, {forward, 1}};
+        } else {
+            return new int[][] {{forward, 0}, {forward, -1}, {forward, 1}};
+        }
     }
 
-    //function to do all promotion
+    private boolean isValidPosition(int row, int col) {
+        return row > 0 && row < 9 && col > 0 && col < 9;
+    }
+
+    private boolean isDiagonalMove(int[] direction) {
+        return direction[1] != 0;
+    }
+
+    private void handleDiagonalMove(Collection<ChessMove> moves, ChessPosition position, ChessPosition newPosition, String result, int newRow) {
+        if ("can capture".equals(result)) {
+            handlePromotionIfNeeded(moves, position, newPosition, newRow);
+        }
+    }
+
+    private void handleForwardMove(Collection<ChessMove> moves, ChessBoard board, ChessPosition position, ChessPosition newPosition, String result, int rowOffset, int forwardDirection) {
+        if (!"can capture".equals(result) && !"same team".equals(result)) {
+            if (Math.abs(rowOffset) != 2) {
+                handlePromotionIfNeeded(moves, position, newPosition, newPosition.getRow());
+            } else {
+                ChessPosition behindPosition = new ChessPosition(newPosition.getRow() - forwardDirection, newPosition.getColumn());
+                ChessMove behindMove = new ChessMove(position, behindPosition, null);
+                String behindResult = hasPiece(board, behindMove);
+                if (!"same team".equals(behindResult)) {
+                    moves.add(new ChessMove(position, newPosition, null));
+                }
+            }
+        }
+    }
+
+    private boolean canPromote(int row) {
+        return (row == 8 && getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                (row == 1 && getTeamColor() == ChessGame.TeamColor.BLACK);
+    }
+
     private void handlePromotionIfNeeded(Collection<ChessMove> moves, ChessPosition position, ChessPosition endPosition, int newRow) {
         if (canPromote(newRow)) {
             moves.add(new ChessMove(position, endPosition, PieceType.QUEEN));
@@ -211,8 +91,7 @@ public class Pawn extends ChessPiece {
             moves.add(new ChessMove(position, endPosition, PieceType.KNIGHT));
             moves.add(new ChessMove(position, endPosition, PieceType.BISHOP));
         } else {
-            ChessMove addMove = new ChessMove(position, endPosition, null);
-            moves.add(addMove); // Add the capture move without promotion
+            moves.add(new ChessMove(position, endPosition, null));
         }
     }
 }
