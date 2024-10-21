@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-//figure out toString
-
 /**
  * Represents a single chess piece
  * <p>
@@ -26,21 +24,6 @@ public class ChessPiece {
     public ChessPiece(ChessPiece other) {
         this.pieceColor = other.pieceColor;
         this.type = other.type;
-    }
-
-    //compares positions
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
     }
 
     /**
@@ -66,7 +49,6 @@ public class ChessPiece {
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        //throw new RuntimeException("Not implemented");
         return type;
     }
 
@@ -177,12 +159,29 @@ public class ChessPiece {
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
                 ChessMove newMove = new ChessMove(position, newPosition, null);
 
+                //Checks if space is already occupied
                 String result = hasPiece(board, newMove);
+
                 if (result.equals("good") || result.equals("can capture")) {
                     moves.add(newMove);
                 }
             }
         }
+    }
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 
 

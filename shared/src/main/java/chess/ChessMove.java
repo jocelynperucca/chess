@@ -29,22 +29,7 @@ public class ChessMove {
      */
     public ChessPosition getStartPosition() {
         return startPosition;
-
-
     }
-//        ChessPiece[][] squares  = board.getSquares();
-//        for (int row = 0; row < 8; row++) {
-//            for (int col = 0; col < 8; col++) {
-//                ChessPiece piece = squares[row][col];
-//                if (piece != null && piece.equals(targetPiece)) {
-//                    return new ChessPosition(row + 1, col + 1);
-//                }
-//            }
-//
-//
-//        }
-//        return null;
-//    }
 
     /**
      * @return ChessPosition of ending location
@@ -53,13 +38,6 @@ public class ChessMove {
         return endPosition;
         //enter in same that found in start position
     }
-
-//    @Override
-//    public String toString() {
-//        return "ChessMove{" +
-//                "board=" + board +
-//                '}';
-//    }
 
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
@@ -73,14 +51,11 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return "ChessMove{" +
-                "startPosition=" + startPosition +
-                ", endPosition=" + endPosition +
-                //", promotionPiece=" + promotionPiece +
-                '}';
+        return "ChessMove{" + "startPosition=" + startPosition + ", endPosition=" + endPosition + '}';
     }
 
 
+    //OVERRIDE
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

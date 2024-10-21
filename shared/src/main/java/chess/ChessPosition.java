@@ -34,9 +34,7 @@ public class ChessPosition {
         return col;
     }
 
-
-
-//OVERRIDE
+    //OVERRIDE
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,6 +43,7 @@ public class ChessPosition {
         return row == that.row && col == that.col;
     }
 
+    //OVERRIDE
     @Override
     public int hashCode() {
         return Objects.hash(row, col);
@@ -52,9 +51,6 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "ChessPosition{" +
-                "row=" + row +
-                ", col=" + col +
-                '}';
+        return "ChessPosition{" + "row=" + row + ", col=" + col + '}';
     }
 }
