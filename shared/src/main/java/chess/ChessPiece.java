@@ -80,7 +80,7 @@ public class ChessPiece {
                 Knight knight = new Knight(pieceColor);
                 return knight.pieceMoves(board, myPosition);
             case PAWN:
-                Pawn pawn = new Pawn(pieceColor, type);
+                Pawn pawn = new Pawn(pieceColor);
                 return pawn.pieceMoves(board, myPosition);
             case KING:
                 King king = new King(pieceColor);

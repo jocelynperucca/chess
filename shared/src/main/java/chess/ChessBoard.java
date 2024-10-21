@@ -1,7 +1,5 @@
 package chess;
 
-import com.google.gson.Gson;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -13,14 +11,9 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {
-        
-    }
+    public ChessBoard() {}
 
-    public ChessPiece[][] getSquares() {
-        return squares;
-    }
-
+    //copy current board to test out certain moves without altering actual game board
     public ChessBoard copyBoard() {
         ChessBoard copiedBoard = new ChessBoard();
         copiedBoard.squares = new ChessPiece[8][8];
@@ -37,22 +30,6 @@ public class ChessBoard {
         }
         return copiedBoard;
     }
-
-    //memory address override
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessBoard that = (ChessBoard) o;
-        return Objects.deepEquals(squares, that.squares);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(squares);
-    }
-
-
 
     /**
      * Adds a chess piece to the chessboard
@@ -121,6 +98,7 @@ public class ChessBoard {
         }
     }
 
+    //Make board into a readable string
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -128,6 +106,7 @@ public class ChessBoard {
         // Iterate over the rows of the chessboard
         for (int row = 7; row >= 0; row--) { // Start from the top row (index 7) to show in traditional board format
             sb.append((row + 1)).append(" "); // Add row number for better readability
+
             for (int col = 0; col < 8; col++) {
                 ChessPiece piece = squares[row][col];
                 if (piece == null) {
@@ -145,6 +124,7 @@ public class ChessBoard {
         return sb.toString();
     }
 
+    //print pieces
     private String pieceToString(ChessPiece piece) {
         char typeChar = ' ';
 
@@ -171,9 +151,23 @@ public class ChessBoard {
 
         if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             typeChar = Character.toLowerCase(typeChar);
-            // Return something like 'WK' for White King or 'BP' for Black Pawn
         }
         return String.valueOf(typeChar);
+    }
+
+
+    //OVERRIDE
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(squares);
     }
 
 
