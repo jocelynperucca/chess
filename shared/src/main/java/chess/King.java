@@ -3,22 +3,17 @@ package chess;
 import java.util.Collection;
 import java.util.HashSet;
 
+//Calculates all valid moves a King can make given any position
 public class King extends ChessPiece{
-
-
-
-    public King (ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public King (ChessGame.TeamColor pieceColor) {
         super(pieceColor, PieceType.KING );
     }
 
-
-
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> moves = new HashSet<ChessMove>();
+        Collection<ChessMove> moves = new HashSet<>();
 
-
-//CHECK EACH WAY
+        //CHECK EACH WAY
         int[][] directions = {
                 {1, 1},   // Up-right
                 {1, -1},  // Down-right
@@ -30,31 +25,10 @@ public class King extends ChessPiece{
                 {0, -1}, // down
         };
 
-        for (int[] direction : directions) {
-            int rowOffset = direction[0];
-            int colOffset = direction[1];
-
-                int newRow = position.getRow() + rowOffset;
-                int newCol = position.getColumn() + colOffset;
-                if(newRow > 0 && newRow < 9 && newCol > 0 && newCol < 9) {
-                    ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                    ChessMove newMove = new ChessMove(position, newPosition, null);
-
-
-                    //CHECK IF OCCUPIED
-                    String result = hasPiece(board, newMove);
-
-                    if (result.equals("good") || result.equals("can capture")) {
-                        moves.add(newMove);
-                    }
-                } else {
-                    continue;
-
-            }
-        }
+        //Find all valid moves for King
+        evaluateMove(board, position, moves, directions);
 
         return moves;
-
     }
 
 }
