@@ -64,7 +64,8 @@ public class Pawn extends ChessPiece {
         }
     }
 
-    private void handleForwardMove(Collection<ChessMove> moves, ChessBoard board, ChessPosition position, ChessPosition newPosition, String result, int rowOffset, int forwardDirection) {
+    private void handleForwardMove(Collection<ChessMove> moves, ChessBoard board, ChessPosition position, ChessPosition newPosition,
+                                   String result, int rowOffset, int forwardDirection) {
         if (!"can capture".equals(result) && !"same team".equals(result)) {
             if (Math.abs(rowOffset) != 2) {
                 handlePromotionIfNeeded(moves, position, newPosition, newPosition.getRow());

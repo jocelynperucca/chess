@@ -85,27 +85,32 @@ public class ChessGame {
 
     //See if King needs to move (if any other piece can kill it)
     private boolean canCheck(TeamColor teamColor, ChessBoard currentBoard) {
+        ChessPosition kingPosition = findKing(currentBoard, teamColor);
 
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                //set temporary position to check for moves to kill the king
-                ChessPosition checkPosition = new ChessPosition(i, j);
-
-                if(currentBoard.getPiece(checkPosition) != null && currentBoard.getPiece(checkPosition).getTeamColor() != teamColor) {
-                    Collection<ChessMove> checkMoves = currentBoard.getPiece(checkPosition).pieceMoves(currentBoard,checkPosition);
-                    ChessPosition kingPosition = findKing(currentBoard, teamColor);
-
-                    //if one of these moves can kill the king, he's in check
-                    for (ChessMove move : checkMoves) {
-                        if(move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if (canPieceKill(currentBoard, new ChessPosition(i, j), teamColor, kingPosition)) {
+                    return true;
                 }
             }
         }
 
-        //King is not in check
+        return false;
+    }
+
+    //See if piece is available to kill King
+    private boolean canPieceKill(ChessBoard board, ChessPosition position, TeamColor kingColor, ChessPosition kingPosition) {
+        ChessPiece piece = board.getPiece(position);
+        if (piece == null || piece.getTeamColor() == kingColor) {
+            return false;
+        }
+        //check if any of the moves match the king position
+        Collection<ChessMove> moves = piece.pieceMoves(board, position);
+        for (ChessMove move : moves) {
+            if (move.getEndPosition().equals(kingPosition)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -231,36 +236,42 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         ChessBoard testBoard = currentBoard.copyBoard();
 
-        //check on temporary board to see if the King is in danger
-        if(!canCheck(teamTurn, testBoard)) {
+        if (!canCheck(teamTurn, testBoard)) {
             return false;
         }
 
-        //Check each piece of the team to see if any move will protect the king
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
-                ChessPosition currentPosition = new ChessPosition(i,j);
-                ChessPiece checkPiece = testBoard.getPiece(currentPosition);
+        return !canMovePreventCheck(teamColor, testBoard);
+    }
 
-                if(checkPiece != null && checkPiece.getTeamColor() == teamColor) {
+    //Check the individual moves if they can prevent check, calls on the pieces too
+    private boolean canMovePreventCheck(TeamColor teamColor, ChessBoard board) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                ChessPosition currentPosition = new ChessPosition(i, j);
+                ChessPiece piece = board.getPiece(currentPosition);
 
-                    //Go through every valid move for checkPiece
-                    for(ChessMove move : checkPiece.pieceMoves(testBoard,currentPosition)) {
-                        ChessBoard checkBoard = currentBoard.copyBoard();
-                        officialMove(move, checkPiece, checkBoard);
-
-                        //Check to see if that move will protect the king
-                        if(!canCheck(teamColor, checkBoard)) {
-                            return false;
-                        }
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    if (canPiecePreventCheck(piece, currentPosition, board)) {
+                        return true;
                     }
                 }
             }
         }
-
-        return true;
+        return false;
     }
 
+    //Check if a single piece can prevent check by moving in the way of attackers
+    private boolean canPiecePreventCheck(ChessPiece piece, ChessPosition position, ChessBoard board) {
+        for (ChessMove move : piece.pieceMoves(board, position)) {
+            ChessBoard checkBoard = currentBoard.copyBoard();
+            officialMove(move, piece, checkBoard);
+
+            if (!canCheck(piece.getTeamColor(), checkBoard)) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -269,38 +280,34 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        //stalemate is if team isn't in check and if they have NO valid moves
         if (canCheck(teamColor, currentBoard)) {
             return false; // not a stalemate if in check
         }
 
-        // check for legal moves
+        return !hasLegalMoves(teamColor);
+    }
+
+    //checks if they can move at all
+    private boolean hasLegalMoves(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = currentBoard.getPiece(position);
 
-                // check if current team is the same as the piece that is wanted to move
                 if (piece != null && piece.getTeamColor() == teamColor) {
                     Collection<ChessMove> possibleMoves = validMoves(position);
-
                     for (ChessMove move : possibleMoves) {
-                        //check move on board
                         ChessBoard copiedBoard = currentBoard.copyBoard();
                         officialMove(move, piece, copiedBoard);
-
-                        //if they get out of check, they're okay
                         if (!canCheck(teamColor, copiedBoard)) {
-                            return false;
+                            return true; // Found a legal move, not a stalemate
                         }
                     }
                 }
             }
         }
-        // STALEMATE
-        return true;
+        return false; // No legal moves found, it's a stalemate
     }
-
     /**
      * Sets this game's chessboard with a given board
      *
