@@ -283,30 +283,39 @@ public class ChessGame {
         if (canCheck(teamColor, currentBoard)) {
             return false; // not a stalemate if in check
         }
-
         return !hasLegalMoves(teamColor);
     }
 
-    //checks if they can move at all
+    //sees if a color has any legal moves at all
     private boolean hasLegalMoves(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = currentBoard.getPiece(position);
-
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> possibleMoves = validMoves(position);
-                    for (ChessMove move : possibleMoves) {
-                        ChessBoard copiedBoard = currentBoard.copyBoard();
-                        officialMove(move, piece, copiedBoard);
-                        if (!canCheck(teamColor, copiedBoard)) {
-                            return true; // Found a legal move, not a stalemate
-                        }
-                    }
+                if (hasLegalMoveForPiece(teamColor, row, col)) {
+                    return true; // Found a legal move, not a stalemate
                 }
             }
         }
         return false; // No legal moves found, it's a stalemate
+    }
+
+    //checks individual move if they have legal moves
+    private boolean hasLegalMoveForPiece(TeamColor teamColor, int row, int col) {
+        ChessPosition position = new ChessPosition(row, col);
+        ChessPiece piece = currentBoard.getPiece(position);
+
+        if (piece == null || piece.getTeamColor() != teamColor) {
+            return false;
+        }
+
+        Collection<ChessMove> possibleMoves = validMoves(position);
+        for (ChessMove move : possibleMoves) {
+            ChessBoard copiedBoard = currentBoard.copyBoard();
+            officialMove(move, piece, copiedBoard);
+            if (!canCheck(teamColor, copiedBoard)) {
+                return true; // Found a legal move
+            }
+        }
+        return false; // No legal moves for this piece
     }
     /**
      * Sets this game's chessboard with a given board
