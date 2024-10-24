@@ -26,7 +26,7 @@ public class SQLUserDAO implements UserDAO {
                 fullStatement.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException( String.format("unable to add user: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(String.format("unable to add user: %s", e.getMessage()));
         }
     }
 
@@ -34,8 +34,32 @@ public class SQLUserDAO implements UserDAO {
 
     }
 
-    public UserData verifyPassword(UserData userData, String password) {
+    public UserData verifyPassword(UserData userData, String password) throws DataAccessException {
+        String username = userData.getUsername();
+        UserData user = getUser(username);
 
+        String query = "SELECT username, password FROM user WHERE username = ?";
+
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var ps = connection.prepareStatement(query)) {
+                ps.setString(1, username);
+
+                try(var rs = ps.executeQuery()) {
+                    if(rs.next()) {
+                        String storedPassword = rs.getString("password");
+                        if (BCrypt.checkpw(password, storedPassword)) {
+                            return userData;
+                        }
+                    }
+                }
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 
     public void clearUsers() {
@@ -44,6 +68,33 @@ public class SQLUserDAO implements UserDAO {
 
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+
+    private final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  user (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
+              PRIMARY KEY (`username`),
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+    };
+
+
+    private void configureDatabase() throws SQLException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
     }
 }
 
