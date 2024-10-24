@@ -53,14 +53,13 @@ public class SQLUserDAO implements UserDAO {
                     }
                 }
             }
-
-
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(String.format("unable to verify user: %s", e.getMessage()));
         }
 
         return null;
     }
+
 
     public void clearUsers() {
 
