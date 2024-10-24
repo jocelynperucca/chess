@@ -30,8 +30,23 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    public UserData getUser(String userName) {
+    public UserData getUser(String userName) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, json FROM user WHERE username=?";
+            try(var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, userName);
+                try (var rs = ps.executeQuery()) {
+                    if(rs.next()) {
+                        return new UserData(rs.getString(userName), rs.getString("password"), rs.getString("email"));
+                    }
+                }
+            }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 
     public UserData verifyPassword(UserData userData, String password) throws DataAccessException {
