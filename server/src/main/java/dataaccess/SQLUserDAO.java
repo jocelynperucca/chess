@@ -21,7 +21,7 @@ public class SQLUserDAO implements UserDAO {
         String username = userData.getUsername();
         String password = hashPassword(userData.getPassword());
         String email = userData.getEmail();
-        var json = new Gson().toJson(userData);
+        //var json = new Gson().toJson(userData);
         //var id = executeUpdate(statement, username, password, email);
 
         try (var connection = DatabaseManager.getConnection()) {
