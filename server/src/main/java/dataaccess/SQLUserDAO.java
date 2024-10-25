@@ -7,6 +7,8 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 
 public class SQLUserDAO implements UserDAO {
 
@@ -23,7 +25,7 @@ public class SQLUserDAO implements UserDAO {
         //var id = executeUpdate(statement, username, password, email);
 
         try (var connection = DatabaseManager.getConnection()) {
-            try (var fullStatement = connection.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+            try (var fullStatement = connection.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 fullStatement.setString(1, username);
                 fullStatement.setString(2, password);
                 fullStatement.setString(3, email);
@@ -36,12 +38,12 @@ public class SQLUserDAO implements UserDAO {
 
     public UserData getUser(String userName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
             try(var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, userName);
                 try (var rs = ps.executeQuery()) {
                     if(rs.next()) {
-                        return new UserData(rs.getString(userName), rs.getString("password"), rs.getString("email"));
+                        return new UserData(rs.getString("userName"), rs.getString("password"), rs.getString("email"));
                     }
                 }
             }
@@ -52,10 +54,13 @@ public class SQLUserDAO implements UserDAO {
 
         return null;
     }
+    
 
     public UserData verifyPassword(UserData userData, String password) throws DataAccessException {
         String username = userData.getUsername();
-        UserData user = getUser(username);
+        if (getUser(username) == null) {
+            throw new DataAccessException("User not found");
+        }
 
         String query = "SELECT username, password FROM user WHERE username = ?";
 
@@ -80,9 +85,20 @@ public class SQLUserDAO implements UserDAO {
     }
 
 
-    public void clearUsers() {
+    public void clearUsers() throws DataAccessException {
+        var statement = "TRUNCATE user";
+        try(var conn = DatabaseManager.getConnection()) {
+            try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                ps.executeUpdate();
 
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to clear users: %s", e.getMessage()));
+        }
     }
+
+
 
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
@@ -96,7 +112,7 @@ public class SQLUserDAO implements UserDAO {
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`),
+              PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
@@ -114,5 +130,6 @@ public class SQLUserDAO implements UserDAO {
             throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
+
 }
 
