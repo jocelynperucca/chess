@@ -90,7 +90,6 @@ public class SQLUserDAO implements UserDAO {
         try(var conn = DatabaseManager.getConnection()) {
             try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.executeUpdate();
-
             }
 
         } catch (SQLException e) {
