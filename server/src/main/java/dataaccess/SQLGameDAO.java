@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public class SQLGameDAO implements GameDAO {
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        result.add();
+                        result.add(readGame(rs));
                     }
                 }
             }
@@ -77,7 +78,7 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(String.format("unable to find user: %s", e.getMessage()));
 
         }
-        return null;
+        return result;
     }
 
     public void updateGameData(int gameID, String playerColor, String username) {
@@ -89,6 +90,19 @@ public class SQLGameDAO implements GameDAO {
     }
 
 
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var gameID = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        String chessGameJson = rs.getString("chessGameJson");
+        ChessGame chessGame = new Gson().fromJson(chessGameJson, ChessGame.class);
+
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
+    }
+
+
+
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
@@ -96,7 +110,7 @@ public class SQLGameDAO implements GameDAO {
               `whiteUsername` varchar(256) DEFAULT NULL,
               `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
-              `chessGame` JSON,
+              `game` JSON,
               PRIMARY KEY (`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
