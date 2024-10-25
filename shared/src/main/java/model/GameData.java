@@ -31,6 +31,10 @@ public class GameData {
         return blackUsername;
     }
 
+    public String getGameName() {
+        return gameName;
+    }
+
     public ChessGame getGame() {
         return game;
     }
