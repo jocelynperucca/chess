@@ -81,11 +81,38 @@ public class SQLGameDAO implements GameDAO {
         return result;
     }
 
-    public void updateGameData(int gameID, String playerColor, String username) {
+    public void updateGameData(int gameID, String playerColor, String username) throws DataAccessException {
+        var statement = "UPDATE user SET";
+        GameData game = findGame(gameID);
 
+
+        // see if game exists and insert user as white or black user
+        if (game == null) {
+            throw new DataAccessException("Game doesn't exist");
+        } else if (playerColor.equalsIgnoreCase("WHITE")) {
+            statement += "whiteUsername = ? WHERE gameID = ?";
+        } else if (playerColor.equalsIgnoreCase("BLACK")) {
+            statement += "blackUsername = ? WHERE gameID = ?";
+        } else {
+            throw new DataAccessException("Invalid player color.");
+        }
+
+        try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement)) {
+            ps.setString(1, username);
+            ps.setInt(2, gameID);
+
+            int rowsUpdated = ps.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                throw new DataAccessException("Error: didn't update");
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: couldn't update game data: " + e.getMessage());
+        }
     }
 
     public void clearGames() {
+
 
     }
 
