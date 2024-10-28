@@ -61,9 +61,9 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     public void clearAuthTokens() throws DataAccessException {
-        var statement = "TRUNCATE authToken";
+        var statement = "TRUNCATE auth";
         try(var conn = DatabaseManager.getConnection()) {
-            try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+            try(var ps = conn.prepareStatement(statement)) {
                 ps.executeUpdate();
             }
 
