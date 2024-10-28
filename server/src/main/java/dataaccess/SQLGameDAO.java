@@ -46,7 +46,7 @@ public class SQLGameDAO implements GameDAO {
 
     public GameData findGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGameJson FROM game WHERE gameID=?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
             try(var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -84,7 +84,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     public void updateGameData(int gameID, String playerColor, String username) throws DataAccessException {
-        var statement = "UPDATE user SET";
+        var statement = "UPDATE game SET ";
         GameData game = findGame(gameID);
 
 
