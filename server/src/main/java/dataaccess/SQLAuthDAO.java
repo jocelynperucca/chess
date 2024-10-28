@@ -14,7 +14,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     public void saveAuthToken(AuthData authData) throws DataAccessException {
-        var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
         String username = authData.getUsername();
         String authToken = authData.getAuthToken();
 
@@ -31,9 +31,9 @@ public class SQLAuthDAO implements AuthDAO {
 
     public AuthData getAuthToken(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, authToken FROM user WHERE authToken=?";
+            var statement = "SELECT username, authToken FROM auth WHERE authToken=?";
             try(var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, authToken);
+                ps.setString(2, authToken);
                 try (var rs = ps.executeQuery()) {
                     if(rs.next()) {
                         return new AuthData(rs.getString("userName"), rs.getString("authToken"));
@@ -74,11 +74,10 @@ public class SQLAuthDAO implements AuthDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  user (
-              `id` int NOT NULL AUTO_INCREMENT,
+            CREATE TABLE IF NOT EXISTS  auth (
               `username` varchar(256) NOT NULL,
               `authToken` varchar(256) NOT NULL,
-              PRIMARY KEY (`username`)
+              PRIMARY KEY (`authToken`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

@@ -13,7 +13,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+            configureDatabase();
     }
 
     public void createUser(UserData userData) throws DataAccessException {
@@ -54,7 +54,7 @@ public class SQLUserDAO implements UserDAO {
 
         return null;
     }
-    
+
 
     public UserData verifyPassword(UserData userData, String password) throws DataAccessException {
         String username = userData.getUsername();
@@ -107,12 +107,11 @@ public class SQLUserDAO implements UserDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
-              `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
               PRIMARY KEY (`username`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            );
             """
     };
 
