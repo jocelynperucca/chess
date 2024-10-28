@@ -87,7 +87,6 @@ public class SQLGameDAO implements GameDAO {
         var statement = "UPDATE game SET ";
         GameData game = findGame(gameID);
 
-
         // see if game exists and insert user as white or black user
         if (game == null) {
             throw new DataAccessException("Game doesn't exist");
@@ -103,6 +102,7 @@ public class SQLGameDAO implements GameDAO {
             ps.setString(1, username);
             ps.setInt(2, gameID);
 
+            //see if it actually changed
             int rowsUpdated = ps.executeUpdate();
 
             if (rowsUpdated == 0) {
@@ -113,18 +113,17 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+
+
     public void clearGames() throws DataAccessException {
         var statement = "TRUNCATE game";
         try(var conn = DatabaseManager.getConnection()) {
             try(var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.executeUpdate();
             }
-
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to clear games: %s", e.getMessage()));
         }
-
-
     }
 
 

@@ -27,7 +27,7 @@ public class Server {
 //    ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
 
     //RUN SERVER AND ENDPOINTS
-    public int run(int desiredPort) throws DataAccessException {
+    public int run(int desiredPort) {
 
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
@@ -38,7 +38,7 @@ public class Server {
             userDAO = new SQLUserDAO();
             authDAO = new SQLAuthDAO();
             gameDAO = new SQLGameDAO();
-        } catch (SQLException e) {
+        } catch (SQLException | DataAccessException e) {
             throw new RuntimeException(e);
         }
 
