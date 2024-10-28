@@ -50,7 +50,7 @@ public class SQLGameDAO implements GameDAO {
                 try (var rs = ps.executeQuery()) {
                     if(rs.next()) {
                         //serialize chessGame
-                        String chessGameJson = rs.getString("chessGameJson");
+                        String chessGameJson = rs.getString("game");
                         ChessGame chessGame = new Gson().fromJson(chessGameJson, ChessGame.class);
                         return new GameData(rs.getInt("gameID"), rs.getString("whiteUsername"), rs.getString("blackUsername"), rs.getString("gameName"), chessGame);
                     }
@@ -66,7 +66,7 @@ public class SQLGameDAO implements GameDAO {
     public Collection<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, chessGameJson FROM game WHERE gameID=?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -131,7 +131,7 @@ public class SQLGameDAO implements GameDAO {
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
         var gameName = rs.getString("gameName");
-        String chessGameJson = rs.getString("chessGameJson");
+        String chessGameJson = rs.getString("game");
         ChessGame chessGame = new Gson().fromJson(chessGameJson, ChessGame.class);
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
