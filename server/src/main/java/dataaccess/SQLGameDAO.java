@@ -25,6 +25,7 @@ public class SQLGameDAO implements GameDAO {
         String blackUsername = gameData.getBlackUsername();
         String gameName = gameData.getGameName();
         ChessGame game = gameData.getGame();
+        String gameJson = new Gson().toJson(game);
         //var json = new Gson().toJson(userData);
         //var id = executeUpdate(statement, username, password, email);
 
@@ -34,6 +35,7 @@ public class SQLGameDAO implements GameDAO {
                 fullStatement.setString(2, whiteUsername);
                 fullStatement.setString(3, blackUsername);
                 fullStatement.setString(4, gameName);
+                fullStatement.setString(5, gameJson);
                 fullStatement.executeUpdate();
             }
         } catch (SQLException e) {
