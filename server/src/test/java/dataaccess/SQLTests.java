@@ -254,7 +254,7 @@ public class SQLTests {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     @DisplayName("Update Game Data Negative Test")
     public void updateGameDataNegative() throws DataAccessException {
         gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
@@ -265,9 +265,8 @@ public class SQLTests {
         });
     }
 
-
     @Test
-    @Order(14)
+    @Order(16)
     @DisplayName("Update Test")
     public void updateGame() throws DataAccessException {
         //intialize original ChessGame data
@@ -289,6 +288,24 @@ public class SQLTests {
         String expectedGameJson = new Gson().toJson(updatedGame);
         String actualGameJson = new Gson().toJson(retrievedGame);
         Assertions.assertEquals(expectedGameJson, actualGameJson);
+    }
+
+    @Test
+    @Order(17)
+    @DisplayName("Update Negative Test")
+    public void updateGameNegative() throws DataAccessException {
+        //intialize original ChessGame data
+        int testGameID = 1234;
+        ChessGame initialGame = new ChessGame();
+        GameData initialGameData = new GameData(testGameID,"whitePlayer", "blackPlayer", "Sample", initialGame);
+        gameDAO.addGame(initialGameData);
+
+        //create new game to update initial to
+        ChessGame updatedGame = new ChessGame();
+
+        assertThrows(DataAccessException.class, () -> {
+            gameDAO.updateGame(updatedGame, 1235);
+        });
     }
 }
 
