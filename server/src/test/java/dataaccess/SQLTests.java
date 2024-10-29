@@ -53,12 +53,6 @@ public class SQLTests {
         clearService = new ClearService(authDAO, gameDAO, userDAO);
 
         serverFacade.clear();
-
-        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
-        registerService.register(request);
-        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
-        registerService.register(newRequest);
-
     }
 
     @Test
@@ -134,15 +128,20 @@ public class SQLTests {
 
     @Test
     @Order(7)
-    @DisplayName("List Games Test")
-    public void listGamesTest() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        ListGamesResult listGamesResult = listGamesService.listGames(result.authToken());
-        Assertions.assertEquals("Listed Games", listGamesResult.message());
-        //see if game was actually listed
-        Assertions.assertEquals(1, listGamesResult.games().size());
+    @DisplayName("Clear User Test")
+    public void clearUserTest() throws DataAccessException {
+        userDAO.createUser(new UserData("party", "password", "email"));
+        userDAO.createUser(new UserData("Jerry", "password", "email"));
+        userDAO.createUser(new UserData("Lee", "password", "email"));
+
+        //All users are there
+        Assertions.assertNotNull(userDAO.getUser("Lee"));
+        Assertions.assertNotNull(userDAO.getUser("Jerry"));
+        Assertions.assertNotNull(userDAO.getUser("party"));
+
+        userDAO.clearUsers();
+
+        Assertions.assertNull(userDAO.getUser("Lee"));
     }
 
     @Test
