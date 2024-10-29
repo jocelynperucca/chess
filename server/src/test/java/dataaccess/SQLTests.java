@@ -1,9 +1,6 @@
 package dataaccess;
 
-import model.LoginRequest;
-import model.LoginResult;
-import model.RegisterRequest;
-import model.RegisterResult;
+import model.*;
 import org.junit.jupiter.api.*;
 import passoff.server.TestServerFacade;
 import server.Server;
@@ -31,7 +28,7 @@ public class SQLTests {
     JoinGameService joinGameService;
     ClearService clearService;
 
-    public SQLTests() throws DataAccessException {
+    public SQLTests() {
     }
 
     @BeforeAll
@@ -108,6 +105,24 @@ public class SQLTests {
         LoginResult loginNewResult = loginService.login(loginNewRequest);
         //bad password
         Assertions.assertEquals("Error: unauthorized", loginNewResult.message());
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Logout Test")
+    public void logoutTest() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
+        registerService.register(request);
+        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
+        registerService.register(newRequest);
+        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
+       //LOGIN
+        LoginResult result = loginService.login(loginRequest);
+        Assertions.assertEquals("Gerald",result.username());
+        String logoutAuthToken = result.authToken();
+        //TEST LOGOUT
+        LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
+        Assertions.assertEquals("Logged Out", logoutResult.message());
     }
 }
 
