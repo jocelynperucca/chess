@@ -32,8 +32,6 @@ public class SQLTests {
     public static void startServer() {
         server = new Server();
         var port = server.run(0);
-        System.out.println("Started test HTTP server on " + port);
-
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
     }
 
@@ -119,7 +117,7 @@ public class SQLTests {
     @DisplayName("Logout Negative Test")
     public void logoutNegative() throws DataAccessException {
         LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        LoginResult result = loginService.login(loginRequest);
+        loginService.login(loginRequest);
         String logoutAuthToken = "fj78-asd7-jkie6-8906y";
         //Bad authToken
         LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
