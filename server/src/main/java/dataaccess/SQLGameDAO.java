@@ -12,7 +12,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class SQLGameDAO implements GameDAO {
 
     public SQLGameDAO() throws DataAccessException, SQLException {
-        configureDatabase();
+       ConfigureDatabase.configureDatabase(createStatements);
     }
 
     public void addGame(GameData gameData) throws DataAccessException {
@@ -149,20 +149,5 @@ public class SQLGameDAO implements GameDAO {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-
-
-    private void configureDatabase() throws SQLException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
-
 
 }

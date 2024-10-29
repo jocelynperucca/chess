@@ -1,19 +1,15 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.SQLException;
-import java.sql.Statement;
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException, SQLException {
-            configureDatabase();
+            ConfigureDatabase.configureDatabase(createStatements);
     }
 
     public void createUser(UserData userData) throws DataAccessException {
@@ -114,20 +110,6 @@ public class SQLUserDAO implements UserDAO {
             );
             """
     };
-
-
-    private void configureDatabase() throws SQLException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 
 }
 
