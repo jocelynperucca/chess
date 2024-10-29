@@ -410,7 +410,29 @@ public class SQLTests {
 
         //Tries to delete it again, but is not found in database
         Assertions.assertDoesNotThrow(() -> authDAO.deleteAuthToken("authToken"));
+    }
 
+    @Test
+    @Order(25)
+    @DisplayName("Clear AuthTokens Test")
+    public void clearAuthTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        AuthData newAuthData = new AuthData("Jerry", "JerryAuth");
+
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+        authDAO.saveAuthToken(newAuthData);
+
+        //verify both authTokens are in the database
+        Assertions.assertNotNull(authDAO.getAuthToken("authToken"));
+        Assertions.assertNotNull(authDAO.getAuthToken("JerryAuth"));
+
+        //CLEAR
+        authDAO.clearAuthTokens();
+
+        //Verify both authTokens have been cleared
+        Assertions.assertNull(authDAO.getAuthToken("authToken"));
+        Assertions.assertNull(authDAO.getAuthToken("JerryAuth"));
     }
 
 
