@@ -308,6 +308,24 @@ public class SQLTests {
             gameDAO.updateGame(updatedGame, 1235);
         });
     }
+
+    @Test
+    @Order(18)
+    @DisplayName("Clear Games Test")
+    public void clearGamesTest() throws DataAccessException {
+        gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
+        gameDAO.addGame(new GameData(1235, "whiteUsername", "blackUsername", "otherGame", new ChessGame()));
+
+        //Verify both games were added to database
+        Assertions.assertEquals(2, gameDAO.listGames().size());
+
+        //CLEAR
+        gameDAO.clearGames();
+
+        //Verify ALL game were removed from database
+        Assertions.assertEquals(0, gameDAO.listGames().size());
+    }
+
 }
 
 
