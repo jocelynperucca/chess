@@ -19,6 +19,7 @@ public class SQLTests {
 
     private static Server server;
 
+    //INITIALIZERS
     UserDAO userDAO;
     AuthDAO authDAO;
     GameDAO gameDAO;
@@ -31,6 +32,7 @@ public class SQLTests {
     JoinGameService joinGameService;
     ClearService clearService;
 
+
     @BeforeAll
     public static void startServer() {
         server = new Server();
@@ -40,6 +42,7 @@ public class SQLTests {
 
     @BeforeEach
     public void start() throws DataAccessException, SQLException {
+        //CLEAR EVERYTHING AND REINITIALIZE
         userDAO = new SQLUserDAO();
         authDAO = new SQLAuthDAO();
         gameDAO = new SQLGameDAO();
@@ -59,6 +62,7 @@ public class SQLTests {
     @Order(1)
     @DisplayName("Create User")
     public void createUserTest() throws DataAccessException {
+        //create user
         UserData userData = new UserData("Jerry", "jocelyn", "jerry@gmail.com");
         userDAO.createUser(userData);
 
@@ -72,7 +76,10 @@ public class SQLTests {
     @Order(2)
     @DisplayName("Create User Negative")
     public void createUserNegative() {
+        //create user
        UserData userData = new UserData("Jocelyn", "jocelyn", null);
+
+       //try to add to database with null exception
        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
            userDAO.createUser(userData);
        });
@@ -83,10 +90,14 @@ public class SQLTests {
     @Order(3)
     @DisplayName("Get User Test")
     public void getUserTest() throws DataAccessException {
+        //create user
         UserData testUser = new UserData("Jerry", "password", "email@email.com");
         userDAO.createUser(testUser);
+
+        //define result from getUser function
         UserData getUser = userDAO.getUser("Jerry");
 
+        //verify
         Assertions.assertNotNull(getUser);
         Assertions.assertEquals("email@email.com", getUser.getEmail());
     }
@@ -95,10 +106,14 @@ public class SQLTests {
     @Order(4)
     @DisplayName("Get User Negative Test")
     public void getUserNegative() throws DataAccessException {
+        //create user
         UserData testUser = new UserData("Jerry", "password", "email@email.com");
         userDAO.createUser(testUser);
+
+        //define result from getUser function
         UserData getUser = userDAO.getUser(null);
 
+        //verify did not work
         Assertions.assertNull(getUser);
     }
 
@@ -106,9 +121,14 @@ public class SQLTests {
     @Order(5)
     @DisplayName("Verify Password")
     public void verifyPasswordTest() throws DataAccessException {
+        //Encrypt password
         String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
+
+        //create user
         UserData testUser = new UserData("testUser", hashedPassword, "test@example.com");
         userDAO.createUser(testUser);
+
+        //verify
         UserData verifiedUser = userDAO.verifyPassword(testUser, hashedPassword);
         Assertions.assertNotNull(verifiedUser);
     }
@@ -117,11 +137,14 @@ public class SQLTests {
     @Order(6)
     @DisplayName("Verify Password Negative")
     public void verifyPasswordNegative() throws DataAccessException {
+        //encrypt password
         String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
+
+        //create user
         UserData testUser = new UserData("testUser", hashedPassword, "test@example.com");
         userDAO.createUser(testUser);
 
-        //not a hashed password
+        //not a hashed password to verify/should be null
         UserData verifiedUser = userDAO.verifyPassword(testUser, "password");
         Assertions.assertNull(verifiedUser);
     }
@@ -130,6 +153,7 @@ public class SQLTests {
     @Order(7)
     @DisplayName("Clear User Test")
     public void clearUserTest() throws DataAccessException {
+        //create multiple users
         userDAO.createUser(new UserData("party", "password", "email"));
         userDAO.createUser(new UserData("Jerry", "password", "email"));
         userDAO.createUser(new UserData("Lee", "password", "email"));
@@ -139,39 +163,46 @@ public class SQLTests {
         Assertions.assertNotNull(userDAO.getUser("Jerry"));
         Assertions.assertNotNull(userDAO.getUser("party"));
 
+        //CLEAR
         userDAO.clearUsers();
 
-        //test if user is officially gone
+        //test if all users are gone
         Assertions.assertNull(userDAO.getUser("Lee"));
+        Assertions.assertNull(userDAO.getUser("Jerry"));
+        Assertions.assertNull(userDAO.getUser("party"));
+
     }
 
     @Test
     @Order(8)
     @DisplayName("Add Games Test")
     public void addGamesTest() throws DataAccessException {
-        //GameData specs
+        //Define GameData specs
         int gameID = 1234;
         String whiteUsername = "white";
         String blackUsername = "black";
         String gameName = "gameName";
         ChessGame game = new ChessGame();
 
+        //add game
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
-        //test if game is officialyl in database
+        //test if game is officially in database
         Assertions.assertEquals(1, gameDAO.listGames().size());
-
     }
 
     @Test
     @Order(9)
     @DisplayName("Add Game Negative Test")
     public void addGameNegative() throws DataAccessException {
+        //add game to database
         GameData firstGame = new GameData(1234, "whiteUsername", "blackUsername", "game", new ChessGame());
         gameDAO.addGame(firstGame);
 
+        //game data with duplicate gameID
         GameData duplicateGame = new GameData(1234, "player3", "player4", "testGame", new ChessGame());
 
+        //verify it cannot add
         assertThrows(DataAccessException.class, () -> {
             gameDAO.addGame(duplicateGame);
         });
@@ -181,12 +212,14 @@ public class SQLTests {
     @Order(10)
     @DisplayName("Find Game Test")
     public void findGameTest() throws DataAccessException {
-        //GameData specs
+        //Define GameData specs
         int gameID = 1234;
         String whiteUsername = "white";
         String blackUsername = "black";
         String gameName = "gameName";
         ChessGame game = new ChessGame();
+
+        //add game
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
         //find game and test if found game matches specs
@@ -198,7 +231,7 @@ public class SQLTests {
     @Order(11)
     @DisplayName("Find Game Negative Test")
     public void findGameNegative() throws DataAccessException {
-        //GameData specs
+        //Define GameData specs
         int gameID = 1234;
         String whiteUsername = "white";
         String blackUsername = "black";
@@ -206,7 +239,7 @@ public class SQLTests {
         ChessGame game = new ChessGame();
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
-        //find game and test if found game matches specs
+        //find game with non-existent gameID and test if found game matches specs/it should not
         Assertions.assertNull(gameDAO.findGame(1235));
     }
 
@@ -214,14 +247,17 @@ public class SQLTests {
     @Order(12)
     @DisplayName("List Games Test")
     public void listGamesTest() throws DataAccessException {
-        //GameData specs
+        //Define GameData specs
         int gameID = 1234;
         String whiteUsername = "Jocelyn";
         String blackUsername = "Jerry";
         String gameName = "gameName";
         ChessGame game = new ChessGame();
+
+        //add game
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
+        //verify game is in there by checking gamelist size
         Assertions.assertEquals(1, gameDAO.listGames().size());
     }
 
@@ -229,14 +265,17 @@ public class SQLTests {
     @Order(13)
     @DisplayName("List Games Negative Test")
     public void listGamesNegative() throws DataAccessException {
-        //GameData specs
+        //define GameData specs
         int gameID = 1234;
         String whiteUsername = "white";
         String blackUsername = "black";
         String gameName = "gameName";
         ChessGame game = new ChessGame();
+
+        //add game
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
+        //verify that only one game is in the list rather than 2
         Assertions.assertNotEquals(2, gameDAO.listGames().size());
     }
 
@@ -244,12 +283,14 @@ public class SQLTests {
     @Order(14)
     @DisplayName("Update Game Data Test")
     public void updateGameDataTest() throws DataAccessException {
+        //add game with whiteUsername as "whiteUsername"
         gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
 
         //Change whiteUsername
         gameDAO.updateGameData(1234, "WHITE", "Jocelyn");
         GameData gameData = gameDAO.findGame(1234);
 
+        //verify whiteUsername has been successfully changed
         Assertions.assertEquals("Jocelyn", gameData.getWhiteUsername());
     }
 
@@ -257,6 +298,7 @@ public class SQLTests {
     @Order(15)
     @DisplayName("Update Game Data Negative Test")
     public void updateGameDataNegative() throws DataAccessException {
+        //add game
         gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
 
         //Change whiteUsername with invalid color
@@ -269,7 +311,7 @@ public class SQLTests {
     @Order(16)
     @DisplayName("Update Test")
     public void updateGame() throws DataAccessException {
-        //intialize original ChessGame data
+        //initialize original ChessGame data
         int testGameID = 1234;
         ChessGame initialGame = new ChessGame();
         GameData initialGameData = new GameData(testGameID,"whitePlayer", "blackPlayer", "Sample", initialGame);
@@ -294,7 +336,7 @@ public class SQLTests {
     @Order(17)
     @DisplayName("Update Negative Test")
     public void updateGameNegative() throws DataAccessException {
-        //intialize original ChessGame data
+        //initialize original ChessGame data
         int testGameID = 1234;
         ChessGame initialGame = new ChessGame();
         GameData initialGameData = new GameData(testGameID,"whitePlayer", "blackPlayer", "Sample", initialGame);
@@ -303,7 +345,7 @@ public class SQLTests {
         //create new game to update initial to
         ChessGame updatedGame = new ChessGame();
 
-        //bad game ID
+        //verify bad game ID
         assertThrows(DataAccessException.class, () -> {
             gameDAO.updateGame(updatedGame, 1235);
         });
@@ -313,6 +355,7 @@ public class SQLTests {
     @Order(18)
     @DisplayName("Clear Games Test")
     public void clearGamesTest() throws DataAccessException {
+        //add games
         gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
         gameDAO.addGame(new GameData(1235, "whiteUsername", "blackUsername", "otherGame", new ChessGame()));
 
@@ -330,11 +373,11 @@ public class SQLTests {
     @Order(19)
     @DisplayName("Save AuthToken Test")
     public void saveAuthTest() throws DataAccessException {
+        //creates and inserts authToken into Database
         AuthData authData = new AuthData("Jocelyn", "authToken");
-        //Inserts authToken into Database
         authDAO.saveAuthToken(authData);
 
-        //gets authData from authToken and compare to see if username comes back the same
+        //gets authData from authToken and verifies if username comes back the same
         AuthData result = authDAO.getAuthToken("authToken");
         Assertions.assertEquals("Jocelyn", result.getUsername());
     }
@@ -342,7 +385,8 @@ public class SQLTests {
     @Test
     @Order(20)
     @DisplayName("Save AuthToken Negative Test")
-    public void saveAuthNegativeTest() throws DataAccessException {
+    public void saveAuthNegativeTest() {
+        //create authData
         AuthData authData = new AuthData("Jocelyn", null);
 
         //Attempts to insert authToken into Database but can't because null
@@ -355,12 +399,11 @@ public class SQLTests {
     @Order(21)
     @DisplayName("Get AuthToken Test")
     public void getAuthTest() throws DataAccessException {
+        //creates and inserts authToken into Database
         AuthData authData = new AuthData("Jocelyn", "authToken");
-        //Inserts authToken into Database
         authDAO.saveAuthToken(authData);
 
-        //gets authData from authToken and compares to see if the authdata previously initialized
-        //is the same
+        //gets authData from authToken and compares to see if the authData previously initialized is the same
         AuthData result = authDAO.getAuthToken("authToken");
         Assertions.assertEquals(authData, result);
     }
@@ -369,9 +412,8 @@ public class SQLTests {
     @Order(22)
     @DisplayName("Get AuthToken Negative Test")
     public void getAuthNegativeTest() throws DataAccessException {
+        //creates and inserts authToken into Database
         AuthData authData = new AuthData("Jocelyn", "authToken");
-
-        //Inserts authToken into Database
         authDAO.saveAuthToken(authData);
 
         //With a non-existent authToken, should return null
@@ -382,8 +424,8 @@ public class SQLTests {
     @Order(23)
     @DisplayName("Delete AuthToken Test")
     public void deleteAuthTest() throws DataAccessException {
-        AuthData authData = new AuthData("Jocelyn", "authToken");
         //Inserts authToken into Database
+        AuthData authData = new AuthData("Jocelyn", "authToken");
         authDAO.saveAuthToken(authData);
 
         //Verify authToken made it to the database
@@ -398,8 +440,8 @@ public class SQLTests {
     @Order(24)
     @DisplayName("Delete AuthToken Negative Test")
     public void deleteAuthNegativeTest() throws DataAccessException {
-        AuthData authData = new AuthData("Jocelyn", "authToken");
         //Inserts authToken into Database
+        AuthData authData = new AuthData("Jocelyn", "authToken");
         authDAO.saveAuthToken(authData);
 
         //Verify authToken made it to the database
@@ -416,6 +458,7 @@ public class SQLTests {
     @Order(25)
     @DisplayName("Clear AuthTokens Test")
     public void clearAuthTest() throws DataAccessException {
+        //creates new authData
         AuthData authData = new AuthData("Jocelyn", "authToken");
         AuthData newAuthData = new AuthData("Jerry", "JerryAuth");
 
@@ -434,9 +477,6 @@ public class SQLTests {
         Assertions.assertNull(authDAO.getAuthToken("authToken"));
         Assertions.assertNull(authDAO.getAuthToken("JerryAuth"));
     }
-
-
-
 }
 
 

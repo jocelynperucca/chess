@@ -19,7 +19,7 @@ public class Server {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
 
-
+        //implements SQL DAO's as the databases
         try {
             DatabaseManager.createDatabase();
             userDAO = new SQLUserDAO();
@@ -29,6 +29,7 @@ public class Server {
             throw new RuntimeException(e);
         }
 
+        //initialize all services with SQL DAO's
         RegisterService registerService = new RegisterService(userDAO, authDAO);
         LoginService loginService = new LoginService(userDAO, authDAO);
         LogoutService logoutService = new LogoutService(authDAO);
@@ -56,8 +57,4 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-
-
-
-
 }
