@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import org.junit.jupiter.api.*;
+import org.mindrot.jbcrypt.BCrypt;
 import passoff.server.TestServerFacade;
 import server.Server;
 import service.*;
@@ -109,28 +110,26 @@ public class SQLTests {
 
     @Test
     @Order(5)
-    @DisplayName("Logout Test")
-    public void logoutTest() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-       //LOGIN
-        LoginResult result = loginService.login(loginRequest);
-        Assertions.assertEquals("Gerald",result.username());
-        String logoutAuthToken = result.authToken();
-        //TEST LOGOUT
-        LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
-        Assertions.assertEquals("Logged Out", logoutResult.message());
+    @DisplayName("Verify Password")
+    public void verifyPasswordTest() throws DataAccessException {
+        String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
+        UserData testUser = new UserData("testUser", hashedPassword, "test@example.com");
+        userDAO.createUser(testUser);
+        UserData verifiedUser = userDAO.verifyPassword(testUser, hashedPassword);
+        Assertions.assertNotNull(verifiedUser);
     }
 
     @Test
     @Order(6)
-    @DisplayName("Logout Negative Test")
-    public void logoutNegative() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        loginService.login(loginRequest);
-        String logoutAuthToken = "fj78-asd7-jkie6-8906y";
-        //Bad authToken
-        LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
-        Assertions.assertEquals("Error: unauthorized", logoutResult.message());
+    @DisplayName("Verify Password Negative")
+    public void verifyPasswordNegative() throws DataAccessException {
+        String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
+        UserData testUser = new UserData("testUser", hashedPassword, "test@example.com");
+        userDAO.createUser(testUser);
+
+        //not a hashed password
+        UserData verifiedUser = userDAO.verifyPassword(testUser, "password");
+        Assertions.assertNull(verifiedUser);
     }
 
     @Test
