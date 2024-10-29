@@ -7,6 +7,7 @@ import server.Server;
 import service.*;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 public class SQLTests {
 
@@ -128,6 +129,21 @@ public class SQLTests {
         LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
         Assertions.assertEquals("Error: unauthorized", logoutResult.message());
     }
+
+    @Test
+    @Order(7)
+    @DisplayName("List Games Test")
+    public void listGamesTest() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        ListGamesResult listGamesResult = listGamesService.listGames(result.authToken());
+        Assertions.assertEquals("Listed Games", listGamesResult.message());
+        //see if game was actually listed
+        Assertions.assertEquals(1, listGamesResult.games().size());
+    }
+
+
 
 }
 
