@@ -326,6 +326,44 @@ public class SQLTests {
         Assertions.assertEquals(0, gameDAO.listGames().size());
     }
 
+    @Test
+    @Order(19)
+    @DisplayName("Save AuthToken Test")
+    public void saveAuthTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+
+        //gets authData from authToken and compare to see if username comes back the same
+        AuthData result = authDAO.getAuthToken("authToken");
+        Assertions.assertEquals("Jocelyn", result.getUsername());
+    }
+
+    @Test
+    @Order(20)
+    @DisplayName("Save AuthToken Negative Test")
+    public void saveAuthNegativeTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", null);
+
+        //Attempts to insert authToken into Database but can't because null
+        assertThrows(DataAccessException.class, () -> {
+            authDAO.saveAuthToken(authData);
+        });
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("Get AuthToken Test")
+    public void getAuthTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+
+        //gets authData from authToken and compare to see if username comes back the same
+        AuthData result = authDAO.getAuthToken("authToken");
+        Assertions.assertEquals(authData, result);
+    }
+
 }
 
 
