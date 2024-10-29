@@ -9,13 +9,12 @@ import service.*;
 import java.sql.SQLException;
 import java.util.Collection;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLTests {
 
     private static TestServerFacade serverFacade;
 
     private static Server server;
-
-    private static Class<?> databaseManagerClass;
 
     UserDAO userDAO;
     AuthDAO authDAO;
@@ -28,9 +27,6 @@ public class SQLTests {
     CreateGameService createGameService;
     JoinGameService joinGameService;
     ClearService clearService;
-
-    public SQLTests() {
-    }
 
     @BeforeAll
     public static void startServer() {
@@ -212,8 +208,39 @@ public class SQLTests {
         Assertions.assertEquals("Error: already taken", joinGameResult.message());
     }
 
+    @Test
+    @Order(13)
+    @DisplayName("Clear Test")
+    public void clearTest() throws DataAccessException {
+        //Login, create and join games, then logout
+        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        CreateGameResult otherResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
+        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("testGame"), result.authToken());
+        joinGameService.joinGame(new JoinGameRequest("WHITE", createGameResult.gameID()), result.authToken());
+        joinGameService.joinGame(new JoinGameRequest("BLACK", otherResult.gameID()), result.authToken());
+        logoutService.logout(result.authToken());
 
+        //Register more people
+        registerService.register(new RegisterRequest("potato", "bag", "potatobag@gmail.com"));
+        registerService.register(new RegisterRequest("lee", "jensen", "leejensen@gmail.com"));
 
+        //verify he has been registered
+        UserData userData = userDAO.getUser("lee");
+        Assertions.assertNotNull(userData);
+
+        //CLEAR
+        clearService.clear();
+
+        //verify there are no more games in the database
+        Collection<GameData> listGames = gameDAO.listGames();
+        Assertions.assertEquals(0, listGames.size());
+
+        //verify he has been cleared along with the others
+        Assertions.assertNull(userDAO.getUser("lee"));
+        Assertions.assertNull(userDAO.getUser("Jocelyn"));
+    }
 }
 
 
