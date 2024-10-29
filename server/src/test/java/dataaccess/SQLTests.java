@@ -184,8 +184,33 @@ public class SQLTests {
         Assertions.assertEquals("Error: unauthorized", createGameResult.message());
     }
 
+    @Test
+    @Order(11)
+    @DisplayName("Join Game Test")
+    public void joinGameTest() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
+        JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest, result.authToken());
+        Assertions.assertEquals("Joined Game", joinGameResult.message());
+    }
 
-
+    @Test
+    @Order(12)
+    @DisplayName("Join Game Negative Test")
+    public void joinGameNegative() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
+        joinGameService.joinGame(joinGameRequest, result.authToken());
+        JoinGameRequest otherJoinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
+        JoinGameResult joinGameResult = joinGameService.joinGame(otherJoinGameRequest, result.authToken());
+        Assertions.assertEquals("Error: already taken", joinGameResult.message());
+    }
 
 
 
