@@ -62,20 +62,26 @@ public class SQLTests {
 
     @Test
     @Order(1)
-    @DisplayName("Register Positive")
-    public void registerTest() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Jerry", "jocelyn", "jerry@gmail.com");
-        RegisterResult result = registerService.register(request);
-        Assertions.assertEquals("created", result.message());
+    @DisplayName("Create User")
+    public void createUserTest() throws DataAccessException {
+        UserData userData = new UserData("Jerry", "jocelyn", "jerry@gmail.com");
+        userDAO.createUser(userData);
+
+        //verify user is created
+        UserData foundUser = userDAO.getUser("Jerry");
+        Assertions.assertNotNull(foundUser);
+        Assertions.assertEquals("jerry@gmail.com", userData.getEmail());
     }
 
     @Test
     @Order(2)
-    @DisplayName("Register Negative")
-    public void registerNegative() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Jerry", null, "jerry@gmail.com");
-        RegisterResult result = registerService.register(request);
-        Assertions.assertEquals("Error: bad request", result.message());
+    @DisplayName("Create User Negative")
+    public void createUserNegative() throws DataAccessException {
+       UserData userData = new UserData("Jocelyn", "jocelyn", null);
+       DataAccessException exception = Assertions.assertThrows(DataAccessException.class, () -> {
+           userDAO.createUser(userData);
+       });
+       Assertions.assertTrue(exception.getMessage().contains("unable to add user"));
     }
 
     @Test
