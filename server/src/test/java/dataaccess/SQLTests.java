@@ -171,6 +171,19 @@ public class SQLTests {
         Assertions.assertEquals(3, listGamesResult.games().size());
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("Create Game Negative Test")
+    public void createGameNegative() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
+        logoutService.logout(result.authToken());
+        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("testGame"), result.authToken());
+        Assertions.assertEquals("Error: unauthorized", createGameResult.message());
+    }
+
 
 
 

@@ -184,7 +184,6 @@ public class MemoryDAOTests {
         Assertions.assertEquals(0, listGames.size());
         Assertions.assertNull(userDAO.getUser("jocelyn"));
         Assertions.assertNull(authDAO.getAuthToken(authToken));
-
     }
 
 
