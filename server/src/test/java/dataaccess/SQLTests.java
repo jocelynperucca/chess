@@ -216,8 +216,8 @@ public class SQLTests {
     public void listGamesTest() throws DataAccessException {
         //GameData specs
         int gameID = 1234;
-        String whiteUsername = "white";
-        String blackUsername = "black";
+        String whiteUsername = "Jocelyn";
+        String blackUsername = "Jerry";
         String gameName = "gameName";
         ChessGame game = new ChessGame();
         gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
