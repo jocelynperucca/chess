@@ -8,11 +8,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import passoff.server.TestServerFacade;
 import server.Server;
 import service.*;
-
 import java.sql.SQLException;
-import java.util.Collection;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLTests {
@@ -73,7 +71,7 @@ public class SQLTests {
     @Test
     @Order(2)
     @DisplayName("Create User Negative")
-    public void createUserNegative() throws DataAccessException {
+    public void createUserNegative() {
        UserData userData = new UserData("Jocelyn", "jocelyn", null);
        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
            userDAO.createUser(userData);
@@ -241,6 +239,32 @@ public class SQLTests {
 
         Assertions.assertNotEquals(2, gameDAO.listGames().size());
     }
+
+    @Test
+    @Order(14)
+    @DisplayName("Update Game Data Test")
+    public void updateGameDataTest() throws DataAccessException {
+        gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
+
+        //Change whiteUsername
+        gameDAO.updateGameData(1234, "WHITE", "Jocelyn");
+        GameData gameData = gameDAO.findGame(1234);
+
+        Assertions.assertEquals("Jocelyn", gameData.getWhiteUsername());
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("Update Game Data Negative Test")
+    public void updateGameDataNegative() throws DataAccessException {
+        gameDAO.addGame(new GameData(1234, "whiteUsername", "blackUsername", "gameName", new ChessGame()));
+
+        //Change whiteUsername with invalid color
+        assertThrows(DataAccessException.class, () -> {
+            gameDAO.updateGameData(1234, "PURPLE", "Jocelyn");
+        });
+    }
+
 
     @Test
     @Order(14)
