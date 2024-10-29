@@ -359,9 +359,22 @@ public class SQLTests {
         //Inserts authToken into Database
         authDAO.saveAuthToken(authData);
 
-        //gets authData from authToken and compare to see if username comes back the same
+        //gets authData from authToken and compares to see if the authdata previously initialized
+        //is the same
         AuthData result = authDAO.getAuthToken("authToken");
         Assertions.assertEquals(authData, result);
+    }
+
+    @Test
+    @Order(22)
+    @DisplayName("Get AuthToken Negative Test")
+    public void getAuthNegativeTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+
+        //With a non-existent authToken, should return null
+        Assertions.assertNull(authDAO.getAuthToken("badAuth"));
     }
 
 }
