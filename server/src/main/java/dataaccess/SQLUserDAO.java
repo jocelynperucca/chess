@@ -59,20 +59,21 @@ public class SQLUserDAO implements UserDAO {
         }
 
         String query = "SELECT username, password FROM user WHERE username = ?";
+        try (var connection = DatabaseManager.getConnection();
+             var ps = connection.prepareStatement(query)) {
 
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var ps = connection.prepareStatement(query)) {
-                ps.setString(1, username);
+            ps.setString(1, username);
+            var rs = ps.executeQuery();
 
-                try(var rs = ps.executeQuery()) {
-                    if(rs.next()) {
-                        String storedPassword = rs.getString("password");
-                        if (BCrypt.checkpw(password, storedPassword)) {
-                            return userData;
-                        }
-                    }
-                }
+            if (!rs.next()) {
+                return null;
             }
+
+            String storedPassword = rs.getString("password");
+            if (BCrypt.checkpw(password, storedPassword)) {
+                return userData;
+            }
+
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to verify user: %s", e.getMessage()));
         }
