@@ -370,12 +370,50 @@ public class SQLTests {
     @DisplayName("Get AuthToken Negative Test")
     public void getAuthNegativeTest() throws DataAccessException {
         AuthData authData = new AuthData("Jocelyn", "authToken");
+
         //Inserts authToken into Database
         authDAO.saveAuthToken(authData);
 
         //With a non-existent authToken, should return null
         Assertions.assertNull(authDAO.getAuthToken("badAuth"));
     }
+
+    @Test
+    @Order(23)
+    @DisplayName("Delete AuthToken Test")
+    public void deleteAuthTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+
+        //Verify authToken made it to the database
+        Assertions.assertNotNull(authDAO.getAuthToken("authToken"));
+
+        //Delete authToken and make sure it's not in Database
+        authDAO.deleteAuthToken("authToken");
+        Assertions.assertNull(authDAO.getAuthToken("authToken"));
+    }
+
+    @Test
+    @Order(24)
+    @DisplayName("Delete AuthToken Negative Test")
+    public void deleteAuthNegativeTest() throws DataAccessException {
+        AuthData authData = new AuthData("Jocelyn", "authToken");
+        //Inserts authToken into Database
+        authDAO.saveAuthToken(authData);
+
+        //Verify authToken made it to the database
+        Assertions.assertNotNull(authDAO.getAuthToken("authToken"));
+
+        //Delete authToken and make sure it's not in Database
+        authDAO.deleteAuthToken("authToken");
+
+        //Tries to delete it again, but is not found in database
+        Assertions.assertDoesNotThrow(() -> authDAO.deleteAuthToken("authToken"));
+
+    }
+
+
 
 }
 
