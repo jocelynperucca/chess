@@ -303,6 +303,7 @@ public class SQLTests {
         //create new game to update initial to
         ChessGame updatedGame = new ChessGame();
 
+        //bad game ID
         assertThrows(DataAccessException.class, () -> {
             gameDAO.updateGame(updatedGame, 1235);
         });
