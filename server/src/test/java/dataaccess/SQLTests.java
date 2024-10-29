@@ -92,6 +92,23 @@ public class SQLTests {
         Assertions.assertEquals("Logged In", loginResult.message());
         Assertions.assertEquals("Gerald", loginResult.username());
     }
+
+    @Test
+    @Order(4)
+    @DisplayName("Login Negative")
+    public void loginNegative() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
+        registerService.register(request);
+        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
+        registerService.register(newRequest);
+        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
+        //this login should work
+        loginService.login(loginRequest);
+        LoginRequest loginNewRequest = new LoginRequest("Jocelyn", "jocelynJean");
+        LoginResult loginNewResult = loginService.login(loginNewRequest);
+        //bad password
+        Assertions.assertEquals("Error: unauthorized", loginNewResult.message());
+    }
 }
 
 
