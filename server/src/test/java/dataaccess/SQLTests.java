@@ -143,6 +143,19 @@ public class SQLTests {
         Assertions.assertEquals(1, listGamesResult.games().size());
     }
 
+    @Test
+    @Order(8)
+    @DisplayName("List Games Negative Test")
+    public void listGamesNegative() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
+        LoginResult result = loginService.login(loginRequest);
+        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
+        ListGamesResult listGamesResult = listGamesService.listGames("bogusAuth");
+        Assertions.assertEquals("Error: unauthorized", listGamesResult.message());
+        //Check if can obtain game list
+        Assertions.assertNull(listGamesResult.games());
+    }
+
 
 
 }
