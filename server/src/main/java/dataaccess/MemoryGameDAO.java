@@ -46,7 +46,9 @@ public class MemoryGameDAO implements GameDAO {
         }
     }
 
-    public void updateGame(ChessGame game, int gameID) {}
+    public void updateGame(ChessGame game, int gameID) {
+        //TODO: phase 6
+        }
 
 
     //clear all games in GameDAO

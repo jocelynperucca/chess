@@ -11,20 +11,22 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLGameDAO implements GameDAO {
 
+    //creates game database based on createStatements down below
     public SQLGameDAO() throws DataAccessException, SQLException {
        ConfigureDatabase.configureDatabase(createStatements);
     }
 
+    //adds a game to the database based on predetermined gameData
     public void addGame(GameData gameData) throws DataAccessException {
         var statement = "INSERT INTO game (gameId, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+
+        //get all GameData information
         int gameID = gameData.getGameID();
         String whiteUsername = gameData.getWhiteUsername();
         String blackUsername = gameData.getBlackUsername();
         String gameName = gameData.getGameName();
         ChessGame game = gameData.getGame();
         String gameJson = new Gson().toJson(game);
-        //var json = new Gson().toJson(userData);
-        //var id = executeUpdate(statement, username, password, email);
 
         try (var connection = DatabaseManager.getConnection()) {
             try (var fullStatement = connection.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
@@ -38,9 +40,9 @@ public class SQLGameDAO implements GameDAO {
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to add game: %s", e.getMessage()));
         }
-
     }
 
+    //finds a specific game based on given gameID and returns all GameData
     public GameData findGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID=?";
@@ -62,7 +64,7 @@ public class SQLGameDAO implements GameDAO {
         return null;
     }
 
-
+    //Goes through every game in the database and lists the GameData for each one
     public Collection<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
@@ -76,11 +78,12 @@ public class SQLGameDAO implements GameDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to find games: %s", e.getMessage()));
-
         }
+
         return result;
     }
 
+    //updates different usernames within the game database once a user has claimed a spot and color
     public void updateGameData(int gameID, String playerColor, String username) throws DataAccessException {
         var statement = "UPDATE game SET ";
         GameData game = findGame(gameID);
@@ -100,9 +103,8 @@ public class SQLGameDAO implements GameDAO {
             ps.setString(1, username);
             ps.setInt(2, gameID);
 
-            //see if it actually changed
+            //see if there was actually a change
             int rowsUpdated = ps.executeUpdate();
-
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Error: didn't update");
             }
@@ -111,6 +113,7 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    //Once we reach phase 6, this will update the state of ChessGame and the board
     public void updateGame(ChessGame game, int gameID) throws DataAccessException {
         if (game == null || findGame(gameID) == null) {
             throw new DataAccessException("Incorrect Game Information for Update");
@@ -145,7 +148,7 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-
+    //clears everything from game database
     public void clearGames() throws DataAccessException {
         var statement = "TRUNCATE game";
         try(var conn = DatabaseManager.getConnection()) {
@@ -157,7 +160,7 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-
+    //private function to read in GameData by individual games
     private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
         var whiteUsername = rs.getString("whiteUsername");
@@ -169,8 +172,7 @@ public class SQLGameDAO implements GameDAO {
         return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
     }
 
-
-
+    //SQL to create game database
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  game (

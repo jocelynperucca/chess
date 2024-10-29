@@ -2,6 +2,7 @@ package dataaccess;
 
 import java.sql.SQLException;
 
+//Defines function to configure database to use in each DAO depending on the SQL statements given
 public class ConfigureDatabase {
     public static void configureDatabase(String[] createStatements) throws SQLException, DataAccessException {
         DatabaseManager.createDatabase();

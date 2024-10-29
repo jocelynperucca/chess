@@ -6,12 +6,16 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLAuthDAO implements AuthDAO {
 
+    //creates auth database based on createStatements down below
     public SQLAuthDAO() throws DataAccessException, SQLException {
         ConfigureDatabase.configureDatabase(createStatements);
     }
 
+    //inserts new authToken into auth database
     public void saveAuthToken(AuthData authData) throws DataAccessException {
         var statement = "INSERT INTO auth (username, authToken) VALUES (?, ?)";
+
+        //get all AuthData information
         String username = authData.getUsername();
         String authToken = authData.getAuthToken();
 
@@ -26,6 +30,7 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    //retrieves authData given a set authToken
     public AuthData getAuthToken(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, authToken FROM auth WHERE authToken=?";
@@ -45,6 +50,7 @@ public class SQLAuthDAO implements AuthDAO {
         return null;
     }
 
+    //deletes just on row in auth database
     public void deleteAuthToken(String authToken) throws DataAccessException {
         var statement = "DELETE FROM auth WHERE authToken = ?";
         try (var conn = DatabaseManager.getConnection()) {
@@ -58,6 +64,7 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    //clears everything in auth database
     public void clearAuthTokens() throws DataAccessException {
         var statement = "TRUNCATE auth";
         try(var conn = DatabaseManager.getConnection()) {
@@ -70,6 +77,7 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
+    //SQL to create auth database
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auth (

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.GameData;
 import java.util.Collection;
 
+// Defines methods for managing games, including saving, retrieving, deleting, updating, and clearing gameData.
 public interface GameDAO {
 
     void addGame(GameData gameData) throws DataAccessException;
