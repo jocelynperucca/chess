@@ -75,7 +75,7 @@ public class SQLGameDAO implements GameDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to find user: %s", e.getMessage()));
+            throw new DataAccessException(String.format("unable to find games: %s", e.getMessage()));
 
         }
         return result;

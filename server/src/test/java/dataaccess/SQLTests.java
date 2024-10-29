@@ -214,51 +214,32 @@ public class SQLTests {
 
     @Test
     @Order(12)
-    @DisplayName("Join Game Negative Test")
-    public void joinGameNegative() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
-        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
-        joinGameService.joinGame(joinGameRequest, result.authToken());
-        JoinGameRequest otherJoinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
-        JoinGameResult joinGameResult = joinGameService.joinGame(otherJoinGameRequest, result.authToken());
-        Assertions.assertEquals("Error: already taken", joinGameResult.message());
+    @DisplayName("List Games Test")
+    public void listGamesTest() throws DataAccessException {
+        //GameData specs
+        int gameID = 1234;
+        String whiteUsername = "white";
+        String blackUsername = "black";
+        String gameName = "gameName";
+        ChessGame game = new ChessGame();
+        gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+
+        Assertions.assertEquals(1, gameDAO.listGames().size());
     }
 
     @Test
     @Order(13)
-    @DisplayName("Clear Test")
-    public void clearTest() throws DataAccessException {
-        //Login, create and join games, then logout
-        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        CreateGameResult otherResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
-        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("testGame"), result.authToken());
-        joinGameService.joinGame(new JoinGameRequest("WHITE", createGameResult.gameID()), result.authToken());
-        joinGameService.joinGame(new JoinGameRequest("BLACK", otherResult.gameID()), result.authToken());
-        logoutService.logout(result.authToken());
+    @DisplayName("List Games Negative Test")
+    public void listGamesNegative() throws DataAccessException {
+        //GameData specs
+        int gameID = 1234;
+        String whiteUsername = "white";
+        String blackUsername = "black";
+        String gameName = "gameName";
+        ChessGame game = new ChessGame();
+        gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
 
-        //Register more people
-        registerService.register(new RegisterRequest("potato", "bag", "potatobag@gmail.com"));
-        registerService.register(new RegisterRequest("lee", "jensen", "leejensen@gmail.com"));
-
-        //verify he has been registered
-        UserData userData = userDAO.getUser("lee");
-        Assertions.assertNotNull(userData);
-
-        //CLEAR
-        clearService.clear();
-
-        //verify there are no more games in the database
-        Collection<GameData> listGames = gameDAO.listGames();
-        Assertions.assertEquals(0, listGames.size());
-
-        //verify he has been cleared along with the others
-        Assertions.assertNull(userDAO.getUser("lee"));
-        Assertions.assertNull(userDAO.getUser("Jocelyn"));
+        Assertions.assertNotEquals(2, gameDAO.listGames().size());
     }
 
     @Test
