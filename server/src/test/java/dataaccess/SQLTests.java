@@ -1,5 +1,7 @@
 package dataaccess;
 
+import model.LoginRequest;
+import model.LoginResult;
 import model.RegisterRequest;
 import model.RegisterResult;
 import org.junit.jupiter.api.*;
@@ -29,6 +31,9 @@ public class SQLTests {
     JoinGameService joinGameService;
     ClearService clearService;
 
+    public SQLTests() throws DataAccessException {
+    }
+
     @BeforeAll
     public static void startServer() {
         server = new Server();
@@ -57,6 +62,7 @@ public class SQLTests {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Register Positive")
     public void registerTest() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("Gerald", "jocelyn", "gerald@gmail.com");
@@ -65,11 +71,26 @@ public class SQLTests {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Register Negative")
     public void registerNegative() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("Gerald", null, "gerald@gmail.com");
         RegisterResult result = registerService.register(request);
         Assertions.assertEquals("Error: bad request", result.message());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Login Test")
+    public void loginTest() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
+        registerService.register(request);
+        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
+        registerService.register(newRequest);
+        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
+        LoginResult loginResult = loginService.login(loginRequest);
+        Assertions.assertEquals("Logged In", loginResult.message());
+        Assertions.assertEquals("Gerald", loginResult.username());
     }
 }
 
