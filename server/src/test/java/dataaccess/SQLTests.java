@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.*;
 import org.junit.jupiter.api.*;
 import passoff.server.TestServerFacade;
@@ -238,6 +240,31 @@ public class SQLTests {
         //verify he has been cleared along with the others
         Assertions.assertNull(userDAO.getUser("lee"));
         Assertions.assertNull(userDAO.getUser("Jocelyn"));
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("Update Test")
+    public void updateGame() throws DataAccessException {
+        //intialize original ChessGame data
+        int testGameID = 1234;
+        ChessGame initialGame = new ChessGame();
+        GameData initialGameData = new GameData(testGameID,"whitePlayer", "blackPlayer", "Sample", initialGame);
+        gameDAO.addGame(initialGameData);
+
+        //create new game to update initial to
+        ChessGame updatedGame = new ChessGame();
+        gameDAO.updateGame(updatedGame, testGameID);
+
+        //make sure the game is still valid
+        GameData retrievedGameData = gameDAO.findGame(testGameID);
+        Assertions.assertNotNull(retrievedGameData);
+
+        //Deserialize and verify they're the same
+        ChessGame retrievedGame = retrievedGameData.getGame();
+        String expectedGameJson = new Gson().toJson(updatedGame);
+        String actualGameJson = new Gson().toJson(retrievedGame);
+        Assertions.assertEquals(expectedGameJson, actualGameJson);
     }
 }
 

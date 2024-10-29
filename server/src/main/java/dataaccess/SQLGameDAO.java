@@ -111,6 +111,40 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    public void updateGame(ChessGame game, int gameID) throws DataAccessException {
+        if (game == null || findGame(gameID) == null) {
+            throw new DataAccessException("Incorrect Game Information for Update");
+        }
+
+        String selectString = "SELECT gameID FROM game WHERE gameID=?";
+        String updateString = "UPDATE game SET game=? WHERE gameID=?";
+
+        try (var conn = DatabaseManager.getConnection();
+             var selectStatement = conn.prepareStatement(selectString)) {
+
+            // Confirm the game ID exists in the database
+            selectStatement.setInt(1, gameID);
+            try (var rs = selectStatement.executeQuery()) {
+                if (rs.next()) {
+                    try (var updateStatement = conn.prepareStatement(updateString)) {
+                        // Serialize the game object to JSON
+                        Gson gson = new Gson();
+                        String gameJson = gson.toJson(game);
+
+                        // Set parameters and execute update
+                        updateStatement.setString(1, gameJson);
+                        updateStatement.setInt(2, gameID);
+                        updateStatement.executeUpdate();
+                    }
+                } else {
+                    throw new DataAccessException("Game ID not found for update.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game: " + e.getMessage());
+        }
+    }
+
 
     public void clearGames() throws DataAccessException {
         var statement = "TRUNCATE game";
