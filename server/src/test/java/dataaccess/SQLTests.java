@@ -141,6 +141,7 @@ public class SQLTests {
 
         userDAO.clearUsers();
 
+        //test if user is officially gone
         Assertions.assertNull(userDAO.getUser("Lee"));
     }
 
