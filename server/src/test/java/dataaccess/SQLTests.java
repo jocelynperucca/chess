@@ -86,24 +86,25 @@ public class SQLTests {
 
     @Test
     @Order(3)
-    @DisplayName("Login Test")
-    public void loginTest() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        LoginResult loginResult = loginService.login(loginRequest);
-        Assertions.assertEquals("Logged In", loginResult.message());
-        Assertions.assertEquals("Gerald", loginResult.username());
+    @DisplayName("Get User Test")
+    public void getUserTest() throws DataAccessException {
+        UserData testUser = new UserData("Jerry", "password", "email@email.com");
+        userDAO.createUser(testUser);
+        UserData getUser = userDAO.getUser("Jerry");
+
+        Assertions.assertNotNull(getUser);
+        Assertions.assertEquals("email@email.com", getUser.getEmail());
     }
 
     @Test
     @Order(4)
-    @DisplayName("Login Negative")
-    public void loginNegative() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        loginService.login(loginRequest);
-        LoginRequest loginNewRequest = new LoginRequest("Jocelyn", "jocelynJean");
-        LoginResult loginNewResult = loginService.login(loginNewRequest);
-        //bad password
-        Assertions.assertEquals("Error: unauthorized", loginNewResult.message());
+    @DisplayName("Get User Negative Test")
+    public void getUserNegative() throws DataAccessException {
+        UserData testUser = new UserData("Jerry", "password", "email@email.com");
+        userDAO.createUser(testUser);
+        UserData getUser = userDAO.getUser(null);
+
+        Assertions.assertNull(getUser);
     }
 
     @Test
