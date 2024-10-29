@@ -56,13 +56,18 @@ public class SQLTests {
 
         serverFacade.clear();
 
+        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
+        registerService.register(request);
+        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
+        registerService.register(newRequest);
+
     }
 
     @Test
     @Order(1)
     @DisplayName("Register Positive")
     public void registerTest() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Gerald", "jocelyn", "gerald@gmail.com");
+        RegisterRequest request = new RegisterRequest("Jerry", "jocelyn", "jerry@gmail.com");
         RegisterResult result = registerService.register(request);
         Assertions.assertEquals("created", result.message());
     }
@@ -71,7 +76,7 @@ public class SQLTests {
     @Order(2)
     @DisplayName("Register Negative")
     public void registerNegative() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Gerald", null, "gerald@gmail.com");
+        RegisterRequest request = new RegisterRequest("Jerry", null, "jerry@gmail.com");
         RegisterResult result = registerService.register(request);
         Assertions.assertEquals("Error: bad request", result.message());
     }
@@ -80,10 +85,6 @@ public class SQLTests {
     @Order(3)
     @DisplayName("Login Test")
     public void loginTest() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
-        registerService.register(request);
-        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
-        registerService.register(newRequest);
         LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
         LoginResult loginResult = loginService.login(loginRequest);
         Assertions.assertEquals("Logged In", loginResult.message());
@@ -94,12 +95,7 @@ public class SQLTests {
     @Order(4)
     @DisplayName("Login Negative")
     public void loginNegative() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
-        registerService.register(request);
-        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
-        registerService.register(newRequest);
         LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        //this login should work
         loginService.login(loginRequest);
         LoginRequest loginNewRequest = new LoginRequest("Jocelyn", "jocelynJean");
         LoginResult loginNewResult = loginService.login(loginNewRequest);
@@ -111,10 +107,6 @@ public class SQLTests {
     @Order(5)
     @DisplayName("Logout Test")
     public void logoutTest() throws DataAccessException {
-        RegisterRequest request = new RegisterRequest("Gerald", "geraldean", "gerald@gmail.com");
-        registerService.register(request);
-        RegisterRequest newRequest = new RegisterRequest("Jocelyn", "jocelynjean", "jocelyn@gmail.com");
-        registerService.register(newRequest);
         LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
        //LOGIN
         LoginResult result = loginService.login(loginRequest);
@@ -124,6 +116,19 @@ public class SQLTests {
         LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
         Assertions.assertEquals("Logged Out", logoutResult.message());
     }
+
+    @Test
+    @Order(6)
+    @DisplayName("Logout Negative Test")
+    public void logoutNegative() throws DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
+        LoginResult result = loginService.login(loginRequest);
+        String logoutAuthToken = "fj78-asd7-jkie6-8906y";
+        //Bad authToken
+        LogoutResult logoutResult = logoutService.logout(logoutAuthToken);
+        Assertions.assertEquals("Error: unauthorized", logoutResult.message());
+    }
+
 }
 
 
