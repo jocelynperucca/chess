@@ -12,6 +12,8 @@ import service.*;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SQLTests {
 
@@ -73,7 +75,7 @@ public class SQLTests {
     @DisplayName("Create User Negative")
     public void createUserNegative() throws DataAccessException {
        UserData userData = new UserData("Jocelyn", "jocelyn", null);
-       DataAccessException exception = Assertions.assertThrows(DataAccessException.class, () -> {
+       DataAccessException exception = assertThrows(DataAccessException.class, () -> {
            userDAO.createUser(userData);
        });
        Assertions.assertTrue(exception.getMessage().contains("unable to add user"));
@@ -147,56 +149,67 @@ public class SQLTests {
 
     @Test
     @Order(8)
-    @DisplayName("List Games Negative Test")
-    public void listGamesNegative() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        ListGamesResult listGamesResult = listGamesService.listGames("bogusAuth");
-        Assertions.assertEquals("Error: unauthorized", listGamesResult.message());
-        //Check if you can obtain game list
-        Assertions.assertNull(listGamesResult.games());
+    @DisplayName("Add Games Test")
+    public void addGamesTest() throws DataAccessException {
+        //GameData specs
+        int gameID = 1234;
+        String whiteUsername = "white";
+        String blackUsername = "black";
+        String gameName = "gameName";
+        ChessGame game = new ChessGame();
+
+        gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+
+        //test if game is officialyl in database
+        Assertions.assertEquals(1, gameDAO.listGames().size());
+
     }
 
     @Test
     @Order(9)
-    @DisplayName("Create Game Test")
-    public void createGameTest() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Gerald", "geraldean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
-        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("checkGame"), result.authToken());
-        Assertions.assertEquals("Created Game", createGameResult.message());
-        //check that all 3 games are in list
-        ListGamesResult listGamesResult = listGamesService.listGames(result.authToken());
-        Assertions.assertEquals(3, listGamesResult.games().size());
+    @DisplayName("Add Game Negative Test")
+    public void addGameNegative() throws DataAccessException {
+        GameData firstGame = new GameData(1234, "whiteUsername", "blackUsername", "game", new ChessGame());
+        gameDAO.addGame(firstGame);
+
+        GameData duplicateGame = new GameData(1234, "player3", "player4", "testGame", new ChessGame());
+
+        assertThrows(DataAccessException.class, () -> {
+            gameDAO.addGame(duplicateGame);
+        });
     }
 
     @Test
     @Order(10)
-    @DisplayName("Create Game Negative Test")
-    public void createGameNegative() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
-        logoutService.logout(result.authToken());
-        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("testGame"), result.authToken());
-        Assertions.assertEquals("Error: unauthorized", createGameResult.message());
+    @DisplayName("Find Game Test")
+    public void findGameTest() throws DataAccessException {
+        //GameData specs
+        int gameID = 1234;
+        String whiteUsername = "white";
+        String blackUsername = "black";
+        String gameName = "gameName";
+        ChessGame game = new ChessGame();
+        gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+
+        //find game and test if found game matches specs
+        GameData gameData = gameDAO.findGame(gameID);
+        Assertions.assertEquals("gameName", gameData.getGameName());
     }
 
     @Test
     @Order(11)
-    @DisplayName("Join Game Test")
-    public void joinGameTest() throws DataAccessException {
-        LoginRequest loginRequest = new LoginRequest("Jocelyn", "jocelynjean");
-        LoginResult result = loginService.login(loginRequest);
-        createGameService.createGame(new CreateGameRequest("gameName"), result.authToken());
-        CreateGameResult createGameResult = createGameService.createGame(new CreateGameRequest("newGame"), result.authToken());
-        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
-        JoinGameResult joinGameResult = joinGameService.joinGame(joinGameRequest, result.authToken());
-        Assertions.assertEquals("Joined Game", joinGameResult.message());
+    @DisplayName("Find Game Negative Test")
+    public void findGameNegative() throws DataAccessException {
+        //GameData specs
+        int gameID = 1234;
+        String whiteUsername = "white";
+        String blackUsername = "black";
+        String gameName = "gameName";
+        ChessGame game = new ChessGame();
+        gameDAO.addGame(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+
+        //find game and test if found game matches specs
+        Assertions.assertNull(gameDAO.findGame(1235));
     }
 
     @Test
