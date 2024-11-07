@@ -41,7 +41,7 @@ public class ServerFacade {
     public ChessGame joinGame(String playerColor, int gameID, AuthData authToken) throws ResponseException {
         var path = "/game";
         var request = new JoinGameRequest(playerColor,gameID);
-        return this.makeRequest("GET", path, request, ChessGame.class, authToken);
+        return this.makeRequest("PUT", path, request, ChessGame.class, authToken);
     }
 
     public Collection<GameData> listGames(AuthData authToken) throws ResponseException {
