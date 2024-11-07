@@ -1,8 +1,8 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
-import model.UserData;
+import model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,25 +19,46 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public AuthData login(UserData userData) {
+    public AuthData register(UserData userData) throws ResponseException {
+        var path = "/user";
+        var request = new RegisterRequest(userData.getUsername(), userData.getPassword(), userData.getEmail());
+        return this.makeRequest("POST", path, request, AuthData.class, null);
+    }
+
+    public AuthData login(UserData userData) throws ResponseException {
         var path = "/session";
-        return this.makeRequest();
+        var request = new LoginRequest(userData.getUsername(), userData.getPassword());
+        return this.makeRequest("POST", path, request, AuthData.class, null);
+    }
+
+    public GameData createGame(String gameName, AuthData authToken) throws ResponseException {
+        var path = "/game";
+        var request = new CreateGameRequest(gameName);
+        return this.makeRequest("POST", path, request, GameData.class, authToken);
+    }
+
+    public ChessGame joinGame(String playerColor, int gameID) throws ResponseException {
 
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
 
+            // Set Authorization header if auth token is provided
+            if (auth != null) {
+                http.setRequestProperty("Authorization", auth.getAuthToken());
+            }
+
+            http.setDoOutput(true);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new Exception("", ex.getMessage());
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
@@ -62,5 +83,16 @@ public class ServerFacade {
             }
         }
         return response;
+    }
+
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+        var status = http.getResponseCode();
+        if (!isSuccessful(status)) {
+            throw new ResponseException(status, "failure: " + status);
+        }
+    }
+
+    private boolean isSuccessful(int status) {
+        return status / 100 == 2;
     }
 }
