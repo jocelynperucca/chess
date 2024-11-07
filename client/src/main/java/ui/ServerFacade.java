@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -37,7 +38,22 @@ public class ServerFacade {
         return this.makeRequest("POST", path, request, GameData.class, authToken);
     }
 
-    public ChessGame joinGame(String playerColor, int gameID) throws ResponseException {
+    public ChessGame joinGame(String playerColor, int gameID, AuthData authToken) throws ResponseException {
+        var path = "/game";
+        var request = new JoinGameRequest(playerColor,gameID);
+        return this.makeRequest("GET", path, request, ChessGame.class, authToken);
+    }
+
+    public Collection<GameData> listGames(AuthData authToken) throws ResponseException {
+        var path = "/game";
+        record listGamesResponse(Collection<GameData> games) {}
+        var response = this.makeRequest("GET", path, null, listGamesResponse.class, authToken);
+        return response.games;
+    }
+
+    public void clear() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null, null);
 
     }
 
