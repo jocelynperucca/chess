@@ -6,8 +6,8 @@ public class ChessBoardDraw {
         // ANSI reset sequence for clearing styles between squares
         final String RESET = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
 
-        // Print column labels
-        System.out.print("   ");
+        // Print top column labels
+        System.out.print("    "); // Extra space for alignment
         for (char col = 'a'; col <= 'h'; col++) {
             System.out.print(col + " ");
         }
@@ -15,7 +15,7 @@ public class ChessBoardDraw {
 
         // Loop to print each row of the chessboard
         for (int row = 0; row < 8; row++) {
-            // Print row label
+            // Print row label on the left
             System.out.print((row + 1) + "  "); // Row numbers (1-8)
 
             for (int col = 0; col < 8; col++) {
@@ -26,8 +26,17 @@ public class ChessBoardDraw {
                     System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.EMPTY + RESET + " ");
                 }
             }
-            System.out.println(); // Newline after each row
+
+            // Print row label on the right
+            System.out.println("  " + (row + 1)); // Row numbers (1-8) on the right side
         }
+
+        // Print bottom column labels
+        System.out.print("    "); // Extra space for alignment
+        for (char col = 'a'; col <= 'h'; col++) {
+            System.out.print(col + " ");
+        }
+        System.out.println(); // Newline after bottom column labels
     }
 
 }
