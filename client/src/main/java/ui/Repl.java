@@ -17,8 +17,8 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print("\n> ");
             System.out.println(client.help());
+            System.out.print("\n> ");
             String input = scanner.nextLine();
             if (input.equalsIgnoreCase("quit")) {
                 System.out.println("Exiting chess program. Goodbye!");

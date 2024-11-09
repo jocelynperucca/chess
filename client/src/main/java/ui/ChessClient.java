@@ -40,7 +40,7 @@ public class ChessClient {
                 default -> help();
             };
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return e.getMessage();
         }
     }
 
@@ -71,7 +71,6 @@ public class ChessClient {
     }
 
     public String login(PrintStream out) throws ResponseException {
-        assertSignedIn();
         out.println("Login:");
         out.print("Enter username: ");
         String userName = scanner.nextLine();
