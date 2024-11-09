@@ -65,6 +65,21 @@ public class ChessClient {
         }
     }
 
+    public String login() throws ResponseException {
+        assertSignedIn();
+        out.println("Login:");
+        out.print("Enter username: ");
+        String userName = scanner.nextLine();
+        out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        if (userName.isEmpty() || password.isEmpty()) {
+            out.println("Not a valid username or password entry.");
+            return "Login failed: missing info";
+        }
+
+    }
+
 
 
     public String help() {
