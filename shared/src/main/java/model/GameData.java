@@ -47,4 +47,10 @@ public class GameData {
     public void setBlackUsername(String username) {
         blackUsername = username;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Game ID: %d, Name: %s, White: %s, Black: %s",
+                gameID, gameName, whiteUsername, blackUsername);
+    }
 }
