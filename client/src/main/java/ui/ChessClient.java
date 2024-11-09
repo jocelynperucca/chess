@@ -15,6 +15,7 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
     Scanner scanner = new Scanner(System.in);
     private final ServerFacade server;
+    private AuthData authData;
 
     public ChessClient(String serverUrl) {
         this.out = new PrintStream(System.out, true);
@@ -32,6 +33,7 @@ public class ChessClient {
             return switch (cmd) {
                 case "register" -> register(out);
                 case "login" -> login(out);
+                case "logout" -> logout(out);
 
                 default -> help();
             };
@@ -83,6 +85,7 @@ public class ChessClient {
         try {
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
+            authData = new AuthData(authToken, userName);
             state = State.SIGNEDIN;
             return "Login successful!";
         } catch (ResponseException e) {
@@ -93,9 +96,11 @@ public class ChessClient {
     public String logout(PrintStream out) {
         out.println("Logging out");
         try {
-            server.log
+            server.logout(authData);
+            return "Logged Out";
+        } catch (ResponseException e) {
+            return "Couldn't logout: " + e.getMessage();
         }
-
     }
 
 
