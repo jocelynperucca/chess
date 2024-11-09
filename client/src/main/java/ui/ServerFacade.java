@@ -51,11 +51,18 @@ public class ServerFacade {
         return response.games;
     }
 
+    public void logout(AuthData authData) throws ResponseException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, null, authData);
+    }
+
     public void clear() throws ResponseException {
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
 
     }
+
+
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws ResponseException {
         try {

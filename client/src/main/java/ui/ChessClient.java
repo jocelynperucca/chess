@@ -31,6 +31,7 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(out);
+                case "login" -> login(out);
 
                 default -> help();
             };
@@ -82,11 +83,18 @@ public class ChessClient {
         try {
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
+            state = State.SIGNEDIN;
             return "Login successful!";
         } catch (ResponseException e) {
             return "Login failed: " + e.getMessage();
         }
+    }
 
+    public String logout(PrintStream out) {
+        out.println("Logging out");
+        try {
+            server.log
+        }
 
     }
 
