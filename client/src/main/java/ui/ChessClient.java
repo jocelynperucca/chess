@@ -1,7 +1,11 @@
 package ui;
 
-import org.eclipse.jetty.util.Scanner;
+//import org.eclipse.jetty.util.Scanner;
+import model.AuthData;
+import model.UserData;
 
+import java.util.Objects;
+import java.util.Scanner;
 import java.io.PrintStream;
 import java.util.Arrays;
 
@@ -9,10 +13,12 @@ public class ChessClient {
 
     private final PrintStream out;
     private State state = State.SIGNEDOUT;
-    Scanner scanner = new Scanner();
+    Scanner scanner = new Scanner(System.in);
+    private final ServerFacade server;
 
     public ChessClient(String serverUrl) {
         this.out = new PrintStream(System.out, true);
+        server = new ServerFacade(serverUrl);
     }
 
     public void beforeLogin(PrintStream out) {
@@ -24,17 +30,43 @@ public class ChessClient {
             var cmd = (tokens.length > 0) ? tokens [0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "register" -> register
+                case "register" -> register(out);
+
                 default -> help();
             };
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void register(PrintStream out) {
+    public String register(PrintStream out) {
         out.println("register");
         out.print("Choose Username: ");
-        String userName = scanner
+        String userName = scanner.nextLine();
+        out.print("New password: ");
+        String password = scanner.nextLine();
+        out.print("Enter email: ");
+        String email = scanner.nextLine();
+
+        if(Objects.equals(userName, "") || Objects.equals(password, "") || Objects.equals(email, "")) {
+            out.println("You are missing some of the key information");
+        }
+
+        UserData userData = new UserData(userName, password, email);
+
+        try {
+            AuthData loginResponse = server.register(userData);
+            String authToken = loginResponse.getAuthToken();
+            AuthData authData = new AuthData(userName, authToken);
+            do {
+
+            }
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 
 
 
