@@ -2,8 +2,10 @@ package ui;
 
 //import org.eclipse.jetty.util.Scanner;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 import java.io.PrintStream;
@@ -93,15 +95,40 @@ public class ChessClient {
         }
     }
 
-    public String logout(PrintStream out) {
+    public String logout(PrintStream out) throws ResponseException {
+        assertSignedIn();
         out.println("Logging out");
         try {
             server.logout(authData);
+            state = State.SIGNEDOUT;
             return "Logged Out";
         } catch (ResponseException e) {
             return "Couldn't logout: " + e.getMessage();
         }
     }
+
+    public String listGames(PrintStream out) throws ResponseException {
+        assertSignedIn(); // Ensure the user is signed in
+        out.println("Fetching game list...");
+
+        // Retrieve the list of games from the server
+        Collection<GameData> games = server.listGames(authData);
+
+        if (games == null || games.isEmpty()) {
+            out.println("No games available.");
+            return "No games available.";
+        }
+
+        StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
+        for (GameData game : games) {
+            gameListBuilder.append("- ").append(game.toString()).append("\n"); // Assuming `GameData` has a meaningful `toString` implementation
+        }
+
+        String gameList = gameListBuilder.toString();
+        out.println(gameList); // Print to the console
+        return gameList;       // Return the formatted list
+    }
+
 
 
 
