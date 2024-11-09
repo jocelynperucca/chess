@@ -40,7 +40,7 @@ public class ChessClient {
     }
 
     public String register(PrintStream out) {
-        out.println("register");
+        out.println("Registering a new account:");
         out.print("Choose Username: ");
         String userName = scanner.nextLine();
         out.print("New password: ");
@@ -48,8 +48,9 @@ public class ChessClient {
         out.print("Enter email: ");
         String email = scanner.nextLine();
 
-        if(Objects.equals(userName, "") || Objects.equals(password, "") || Objects.equals(email, "")) {
+        if (userName.isEmpty() || password.isEmpty() || email.isEmpty()) {
             out.println("You are missing some of the key information");
+            return "Registration failed: missing information";
         }
 
         UserData userData = new UserData(userName, password, email);
@@ -57,36 +58,32 @@ public class ChessClient {
         try {
             AuthData loginResponse = server.register(userData);
             String authToken = loginResponse.getAuthToken();
-            AuthData authData = new AuthData(userName, authToken);
-            do {
-
-            }
+            state = State.SIGNEDIN;  // Update state to signed in
+            return "Registration successful!";
         } catch (ResponseException e) {
-            throw new RuntimeException(e);
+            return "Registration failed: " + e.getMessage();
         }
     }
 
 
 
-
-
     public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - register <USERNAME> <PASSWORD> <EMAIL> - register an account
-                    - login <USERNAME> <PASSWORD> - sign in
-                    - quit - exit chess program
-                    - help - show what commands you can do
+        return switch (state) {
+            case SIGNEDOUT -> """
+                    - register - Register an account
+                    - login <USERNAME> <PASSWORD> - Sign in
+                    - quit - Exit chess program
+                    - help - Show available commands
                     """;
-        }
-        return """
-                - logout - sign out of account
-                - create game - <NAME> - start a game
-                - list games - see all possible games
-                - play game - <GAMEID> <WHITE|BLACK> - join a game with a specified color
-                - observe game - <GAMEID> - watch an ongoing game
-                - help - see what commands you can do
-                """;
+            case SIGNEDIN -> """
+                    - logout - Sign out
+                    - create game <NAME> - Start a game
+                    - list games - List all available games
+                    - play game <GAMEID> <WHITE|BLACK> - Join a game as white or black
+                    - observe game <GAMEID> - Watch an ongoing game
+                    - help - Show available commands
+                    """;
+        };
     }
 
     private void assertSignedIn() throws ResponseException {

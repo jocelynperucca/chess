@@ -10,13 +10,22 @@ public class Repl {
     }
 
     public void run() {
-        System.out.print(EscapeSequences.ERASE_SCREEN);
+        System.out.print("\033[2J"); // ANSI escape code to clear the screen
 
         System.out.println("Welcome to Chess!");
-        System.out.print(client.help());
+        System.out.println(client.help());
 
         Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("\n> ");
+            String input = scanner.nextLine();
+            if (input.equalsIgnoreCase("quit")) {
+                System.out.println("Exiting chess program. Goodbye!");
+                break;
+            }
 
+            String result = client.eval(input);
+            System.out.println(result);
         }
     }
 
