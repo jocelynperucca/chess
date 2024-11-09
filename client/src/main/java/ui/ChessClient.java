@@ -56,8 +56,8 @@ public class ChessClient {
         UserData userData = new UserData(userName, password, email);
 
         try {
-            AuthData loginResponse = server.register(userData);
-            String authToken = loginResponse.getAuthToken();
+            AuthData registerResponse = server.register(userData);
+            String authToken = registerResponse.getAuthToken();
             state = State.SIGNEDIN;  // Update state to signed in
             return "Registration successful!";
         } catch (ResponseException e) {
@@ -65,7 +65,7 @@ public class ChessClient {
         }
     }
 
-    public String login() throws ResponseException {
+    public String login(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Login:");
         out.print("Enter username: ");
@@ -77,6 +77,16 @@ public class ChessClient {
             out.println("Not a valid username or password entry.");
             return "Login failed: missing info";
         }
+
+        UserData userData = new UserData(userName, password, null);
+        try {
+            AuthData loginResponse = server.login(userData);
+            String authToken = loginResponse.getAuthToken();
+            return "Login successful!";
+        } catch (ResponseException e) {
+            return "Login failed: " + e.getMessage();
+        }
+
 
     }
 
