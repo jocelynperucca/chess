@@ -38,6 +38,13 @@ public class Server {
         JoinGameService joinGameService = new JoinGameService(authDAO,gameDAO);
         ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
 
+        try {
+            clearService.clear(); // Ensures database is cleared every time server starts
+        } catch (DataAccessException e) {
+            System.err.println("Failed to clear database at startup: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+
 
         //ENDPOINTS
         Spark.delete("/db", new ClearHandler(clearService));

@@ -4,9 +4,7 @@ package ui;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Scanner;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -24,9 +22,6 @@ public class ChessClient {
         server = new ServerFacade(serverUrl);
     }
 
-    public void beforeLogin(PrintStream out) {
-    }
-
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
@@ -37,10 +32,13 @@ public class ChessClient {
                 case "login" -> login(out);
                 case "logout" -> logout(out);
                 case "list" -> listGames(out);
+                case "join" -> joinGame(out);
+                case "help" -> help();
 
-                default -> help();
+                default -> loginScreen();
             };
         } catch (Exception e) {
+            out.println("Invalid command");
             return e.getMessage();
         }
     }
@@ -129,8 +127,84 @@ public class ChessClient {
         return gameList;       // Return the formatted list
     }
 
+    public String joinGame(PrintStream out) throws ResponseException {
+        assertSignedIn();
+        out.println("Joining Game...");
 
+        Collection<GameData> games = server.listGames(authData);
 
+        if (games == null || games.isEmpty()) {
+            return "No games available.";
+        }
+
+        StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
+        for (GameData game : games) {
+            gameListBuilder.append("- ").append(game.toString()).append("\n"); // Assuming `GameData` has a meaningful `toString` implementation
+        }
+
+        String gameList = gameListBuilder.toString();
+        out.println(gameList); // Print to the console
+        out.print("Game ID you want to join: ");
+        int gameID;
+        try {
+            gameID = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            return "Invalid game ID format";
+        }
+
+        out.print("Enter 'white' or 'black' to choose your player color");
+        String playerColor = scanner.nextLine();
+
+        try {
+            server.joinGame(playerColor, gameID, authData);
+            String message = "Successfully joined game ID " + gameID + " as " + playerColor;
+            out.println(message);
+            return message;
+        } catch (ResponseException e) {
+            out.println("Failed to join game");
+            return e.getMessage();
+        }
+    }
+
+    public String createGame(PrintStream out) {
+        out.println("Creating Game...");
+
+        out.print("Enter a name for your game: ");
+        String gameName = scanner.nextLine();
+
+        if (gameName.isEmpty()) {
+            return "Game name cannot be empty";
+        }
+
+        try {
+            GameData newGame = server.createGame(gameName, authData);
+            String message = "Game: " + newGame.getGameName() + " GameID: " + newGame.getGameID();
+            out.println("Join the game through the menu to start playing");
+            return message;
+        } catch (ResponseException e) {
+            return "Failed to create game";
+        }
+    }
+
+    public String loginScreen() {
+        return switch (state) {
+            case SIGNEDOUT -> """
+                    - register
+                    - login <USERNAME> <PASSWORD>
+                    - quit
+                    - help - show available commands
+                    """;
+            case SIGNEDIN -> """
+                    - logout
+                    - create game <NAME>
+                    - list games (list)
+                    - join game (join) <GAMEID> <WHITE|BLACK>
+                    - observe game (observe) <GAMEID>
+                    - help - Show available commands
+                    """;
+        };
+
+    }
 
     public String help() {
         return switch (state) {

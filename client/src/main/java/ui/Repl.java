@@ -19,7 +19,7 @@ public class Repl {
         while (true) {
             System.out.println();
             System.out.println("What do you want to do?");
-            System.out.println(client.help());
+            System.out.println(client.loginScreen());
             System.out.print("\n> ");
             String input = scanner.nextLine();
             if (input.equalsIgnoreCase("quit")) {
