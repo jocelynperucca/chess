@@ -17,6 +17,8 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            System.out.println();
+            System.out.println("What do you want to do?");
             System.out.println(client.help());
             System.out.print("\n> ");
             String input = scanner.nextLine();

@@ -36,6 +36,7 @@ public class ChessClient {
                 case "register" -> register(out);
                 case "login" -> login(out);
                 case "logout" -> logout(out);
+                case "list" -> listGames(out);
 
                 default -> help();
             };
@@ -86,7 +87,7 @@ public class ChessClient {
         try {
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
-            authData = new AuthData(authToken, userName);
+            authData = new AuthData(userName, authToken);
             state = State.SIGNEDIN;
             return "Login successful!";
         } catch (ResponseException e) {
