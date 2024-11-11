@@ -31,6 +31,7 @@ public class ChessClient {
                 case "register" -> register(out);
                 case "login" -> login(out);
                 case "logout" -> logout(out);
+                case "create" -> createGame(out);
                 case "list" -> listGames(out);
                 case "join" -> joinGame(out);
                 case "help" -> help();
@@ -152,13 +153,12 @@ public class ChessClient {
             return "Invalid game ID format";
         }
 
-        out.print("Enter 'white' or 'black' to choose your player color");
+        out.print("Enter 'white' or 'black' to choose your player color: ");
         String playerColor = scanner.nextLine();
 
         try {
             server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game ID " + gameID + " as " + playerColor;
-            out.println(message);
             return message;
         } catch (ResponseException e) {
             out.println("Failed to join game");
@@ -178,7 +178,7 @@ public class ChessClient {
 
         try {
             GameData newGame = server.createGame(gameName, authData);
-            String message = "Game: " + newGame.getGameName() + " GameID: " + newGame.getGameID();
+            String message = "Game: " + gameName + " GameID: " + newGame.getGameID();
             out.println("Join the game through the menu to start playing");
             return message;
         } catch (ResponseException e) {
