@@ -11,14 +11,11 @@ public class ChessBoardDraw {
         // Background color for the board labels
         final String LABEL_BACKGROUND = EscapeSequences.SET_BG_COLOR_BLUE;
         final String RESET = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
-        board.resetBoard();
 
         // Print top column labels with light blue background for clarity
         System.out.print(LABEL_BACKGROUND);
-        System.out.print("   ");
-        for (char col = 'a'; col <= 'h'; col++) {
-            System.out.print(" " + col + " ");
-        }
+        System.out.print("    ");
+        System.out.print("a   b   c"  +  "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         System.out.print(RESET);
         System.out.println();
 
@@ -33,7 +30,7 @@ public class ChessBoardDraw {
 
                 // Alternate square colors
                 if ((row + col) % 2 == 0) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_WHITE);
+                    System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
                 } else {
                     System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
                 }
@@ -48,15 +45,13 @@ public class ChessBoardDraw {
             }
 
             // Print row number on the right side
-            System.out.println(LABEL_BACKGROUND + " " + row + RESET);
+            System.out.println(LABEL_BACKGROUND + " " + row + " " + RESET);
         }
 
         // Print bottom column labels
         System.out.print(LABEL_BACKGROUND);
-        System.out.print("   ");
-        for (char col = 'a'; col <= 'h'; col++) {
-            System.out.print(" " + col + " ");
-        }
+        System.out.print("    ");
+        System.out.print("a   b   c"  +  "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         System.out.print(RESET);
         System.out.println();
     }

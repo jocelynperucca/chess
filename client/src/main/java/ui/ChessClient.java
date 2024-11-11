@@ -172,6 +172,7 @@ public class ChessClient {
         try {
             server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game #" + selectedNumber + " as " + playerColor;
+            chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
             return message;
         } catch (ResponseException e) {
