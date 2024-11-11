@@ -8,20 +8,33 @@ import chess.ChessPosition;
 public class ChessBoardDraw {
 
     public static void drawChessBoard(ChessBoard board) {
-        // Background color for the board labels
+        // Draw the chessboard in the default orientation
+        drawChessBoardOrientation(board, true);
+
+        // Print a line separator between orientations
+        System.out.println("\n");
+
+        // Draw the chessboard in the reversed orientation
+        drawChessBoardOrientation(board, false);
+    }
+
+    private static void drawChessBoardOrientation(ChessBoard board, boolean normalOrientation) {
         final String LABEL_BACKGROUND = EscapeSequences.SET_BG_COLOR_BLUE;
         final String RESET = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
 
-        // Print top column labels with light blue background for clarity
-        System.out.print(LABEL_BACKGROUND);
-        System.out.print("    ");
-        System.out.print("a   b   c"  +  "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
-        System.out.print(RESET);
-        System.out.println();
+        // Print top column labels
+        System.out.print(LABEL_BACKGROUND + "    ");
+        System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
+        System.out.print(RESET + "\n");
+
+        // Determine row range based on orientation
+        int startRow = normalOrientation ? 8 : 1;
+        int endRow = normalOrientation ? 1 : 8;
+        int rowStep = normalOrientation ? -1 : 1;
 
         // Loop to print each row of the chessboard
-        for (int row = 8; row >= 1; row--) { // Start from row 8 for standard board orientation
-            // Print row number on the left side
+        for (int row = startRow; row != endRow + rowStep; row += rowStep) {
+            // Print row label on the left side
             System.out.print(LABEL_BACKGROUND + " " + row + " " + RESET);
 
             for (int col = 1; col <= 8; col++) {
@@ -30,9 +43,9 @@ public class ChessBoardDraw {
 
                 // Alternate square colors
                 if ((row + col) % 2 == 0) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
-                } else {
                     System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY);
+                } else {
+                    System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
                 }
 
                 // Print piece symbol or empty space
@@ -44,16 +57,14 @@ public class ChessBoardDraw {
                 System.out.print(RESET); // Reset color after each square
             }
 
-            // Print row number on the right side
+            // Print row label on the right side
             System.out.println(LABEL_BACKGROUND + " " + row + " " + RESET);
         }
 
         // Print bottom column labels
-        System.out.print(LABEL_BACKGROUND);
-        System.out.print("    ");
-        System.out.print("a   b   c"  +  "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
-        System.out.print(RESET);
-        System.out.println();
+        System.out.print(LABEL_BACKGROUND + "    ");
+        System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
+        System.out.print(RESET + "\n");
     }
 
     /**
