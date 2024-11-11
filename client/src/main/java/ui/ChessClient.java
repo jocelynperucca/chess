@@ -1,10 +1,10 @@
 package ui;
 
 //import org.eclipse.jetty.util.Scanner;
+import chess.ChessBoard;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import java.util.*;
 import java.io.PrintStream;
 
@@ -16,6 +16,7 @@ public class ChessClient {
     private final ServerFacade server;
     private AuthData authData;
     ChessBoardDraw chessBoardDraw = new ChessBoardDraw();
+    private final ChessBoard chessBoard = new ChessBoard();
 
     public ChessClient(String serverUrl) {
         this.out = new PrintStream(System.out, true);
@@ -171,7 +172,7 @@ public class ChessClient {
         try {
             server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game #" + selectedNumber + " as " + playerColor;
-            ChessBoardDraw.drawChessBoard();
+            ChessBoardDraw.drawChessBoard(chessBoard);
             return message;
         } catch (ResponseException e) {
             return "Failed to join game, check player color or status of game";
