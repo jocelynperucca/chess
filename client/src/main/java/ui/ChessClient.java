@@ -4,10 +4,9 @@ package ui;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import java.util.Collection;
-import java.util.Scanner;
+
+import java.util.*;
 import java.io.PrintStream;
-import java.util.Arrays;
 
 public class ChessClient {
 
@@ -39,8 +38,7 @@ public class ChessClient {
                 default -> loginScreen();
             };
         } catch (Exception e) {
-            out.println("Invalid command");
-            return e.getMessage();
+            return ("Invalid command");
         }
     }
 
@@ -63,10 +61,9 @@ public class ChessClient {
         try {
             AuthData registerResponse = server.register(userData);
             String authToken = registerResponse.getAuthToken();
-            state = State.SIGNEDIN;  // Update state to signed in
             return "Registration successful!";
         } catch (ResponseException e) {
-            return "Registration failed: " + e.getMessage();
+            return "Registration failed: ";
         }
     }
 
@@ -90,7 +87,7 @@ public class ChessClient {
             state = State.SIGNEDIN;
             return "Login successful!";
         } catch (ResponseException e) {
-            return "Login failed: " + e.getMessage();
+            return "Login failed: ";
         }
     }
 
@@ -102,7 +99,7 @@ public class ChessClient {
             state = State.SIGNEDOUT;
             return "Logged Out";
         } catch (ResponseException e) {
-            return "Couldn't logout: " + e.getMessage();
+            return "Couldn't logout";
         }
     }
 
@@ -119,12 +116,13 @@ public class ChessClient {
         }
 
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
+        int counter = 1;
         for (GameData game : games) {
-            gameListBuilder.append("- ").append(game.toString()).append("\n"); // Assuming `GameData` has a meaningful `toString` implementation
+            gameListBuilder.append(counter).append(". ").append(game.toString()).append("\n"); // Number each game
+            counter++;
         }
 
         String gameList = gameListBuilder.toString();
-        out.println(gameList); // Print to the console
         return gameList;       // Return the formatted list
     }
 
@@ -138,31 +136,41 @@ public class ChessClient {
             return "No games available.";
         }
 
+        // Store games in an ArrayList to allow access by index
+        List<GameData> gameList = new ArrayList<>(games);
+
+        // Display games with sequential numbering
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
-        for (GameData game : games) {
-            gameListBuilder.append("- ").append(game.toString()).append("\n"); // Assuming `GameData` has a meaningful `toString` implementation
+        for (int i = 0; i < gameList.size(); i++) {
+            gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
 
-        String gameList = gameListBuilder.toString();
-        out.println(gameList); // Print to the console
-        out.print("Game ID you want to join: ");
-        int gameID;
+        String gameDisplay = gameListBuilder.toString();
+        out.println(gameDisplay); // Print to the console
+
+        out.print("Enter the number of the game you want to join: ");
+        int selectedNumber;
         try {
-            gameID = Integer.parseInt(scanner.nextLine());
+            selectedNumber = Integer.parseInt(scanner.nextLine());
+            if (selectedNumber < 1 || selectedNumber > gameList.size()) {
+                return "Invalid selection: please enter a valid game number.";
+            }
         } catch (NumberFormatException e) {
-            return "Invalid game ID format";
+            return "Invalid format: please enter a number.";
         }
+
+        GameData selectedGame = gameList.get(selectedNumber - 1); // Get the selected game
+        int gameID = selectedGame.getGameID(); // Retrieve the actual game ID
 
         out.print("Enter 'white' or 'black' to choose your player color: ");
         String playerColor = scanner.nextLine();
 
         try {
             server.joinGame(playerColor, gameID, authData);
-            String message = "Successfully joined game ID " + gameID + " as " + playerColor;
+            String message = "Successfully joined game #" + selectedNumber + " as " + playerColor;
             return message;
         } catch (ResponseException e) {
-            out.println("Failed to join game");
-            return e.getMessage();
+           return ("Failed to join game");
         }
     }
 
@@ -178,7 +186,7 @@ public class ChessClient {
 
         try {
             GameData newGame = server.createGame(gameName, authData);
-            String message = "Game: " + gameName + " GameID: " + newGame.getGameID();
+            String message = "Game created: " + gameName;
             out.println("Join the game through the menu to start playing");
             return message;
         } catch (ResponseException e) {
@@ -200,6 +208,7 @@ public class ChessClient {
                     - list games (list)
                     - join game (join) <GAMEID> <WHITE|BLACK>
                     - observe game (observe) <GAMEID>
+                    = quit
                     - help - Show available commands
                     """;
         };
@@ -220,6 +229,7 @@ public class ChessClient {
                     - list games - List all available games
                     - play game <GAMEID> <WHITE|BLACK> - Join a game as white or black
                     - observe game <GAMEID> - Watch an ongoing game
+                    - quit - Exit chess program
                     - help - Show available commands
                     """;
         };
