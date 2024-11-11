@@ -15,6 +15,7 @@ public class ChessClient {
     Scanner scanner = new Scanner(System.in);
     private final ServerFacade server;
     private AuthData authData;
+    ChessBoardDraw chessBoardDraw = new ChessBoardDraw();
 
     public ChessClient(String serverUrl) {
         this.out = new PrintStream(System.out, true);
@@ -107,23 +108,24 @@ public class ChessClient {
         assertSignedIn(); // Ensure the user is signed in
         out.println("Fetching game list...");
 
-        // Retrieve the list of games from the server
         Collection<GameData> games = server.listGames(authData);
 
         if (games == null || games.isEmpty()) {
-            out.println("No games available.");
             return "No games available.";
         }
 
+        // Store games in an ArrayList and reverse the order
+        List<GameData> gameList = new ArrayList<>(games);
+        Collections.reverse(gameList); // Reverse to display oldest first
+
+        // Display games with sequential numbering
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
-        int counter = 1;
-        for (GameData game : games) {
-            gameListBuilder.append(counter).append(". ").append(game.toString()).append("\n"); // Number each game
-            counter++;
+        for (int i = 0; i < gameList.size(); i++) {
+            gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
 
-        String gameList = gameListBuilder.toString();
-        return gameList;       // Return the formatted list
+        String gameDisplay = gameListBuilder.toString();
+        return gameDisplay; // Print to the console
     }
 
     public String joinGame(PrintStream out) throws ResponseException {
@@ -136,8 +138,9 @@ public class ChessClient {
             return "No games available.";
         }
 
-        // Store games in an ArrayList to allow access by index
+        // Store games in an ArrayList and reverse the order
         List<GameData> gameList = new ArrayList<>(games);
+        Collections.reverse(gameList); // Reverse to display oldest first
 
         // Display games with sequential numbering
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
@@ -168,9 +171,10 @@ public class ChessClient {
         try {
             server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game #" + selectedNumber + " as " + playerColor;
+            ChessBoardDraw.drawChessBoard();
             return message;
         } catch (ResponseException e) {
-           return ("Failed to join game");
+            return "Failed to join game, check player color or status of game";
         }
     }
 

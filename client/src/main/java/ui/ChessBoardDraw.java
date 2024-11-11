@@ -9,7 +9,7 @@ public class ChessBoardDraw {
         // Print top column labels
         System.out.print("    "); // Extra space for alignment
         for (char col = 'a'; col <= 'h'; col++) {
-            System.out.print(col + " ");
+            System.out.print(col + "  ");
         }
         System.out.println(); // Newline after column labels
 
@@ -21,9 +21,9 @@ public class ChessBoardDraw {
             for (int col = 0; col < 8; col++) {
                 // Alternate colors: even cells in a row are one color, odd cells another
                 if ((row + col) % 2 == 0) {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY + EscapeSequences.EMPTY + RESET + " ");
+                    System.out.print(EscapeSequences.SET_BG_COLOR_WHITE + EscapeSequences.EMPTY + RESET);
                 } else {
-                    System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.EMPTY + RESET + " ");
+                    System.out.print(EscapeSequences.SET_BG_COLOR_DARK_GREY + EscapeSequences.EMPTY + RESET);
                 }
             }
 

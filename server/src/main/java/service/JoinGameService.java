@@ -38,7 +38,7 @@ public class JoinGameService {
             String user = authDao.getAuthToken(authToken).getUsername();
             joinGameResult = new JoinGameResult("");
 
-            if (playerColor == null || (!playerColor.equals("BLACK") && !playerColor.equals("WHITE"))) {
+            if (playerColor == null || (!playerColor.equalsIgnoreCase("BLACK") && !playerColor.equalsIgnoreCase("WHITE"))) {
                 joinGameResult = new JoinGameResult("Error: bad request");
 
             } else if (playerColor.equalsIgnoreCase("WHITE") && gameData.getWhiteUsername() != null) {
