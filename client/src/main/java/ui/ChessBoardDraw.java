@@ -25,7 +25,7 @@ public class ChessBoardDraw {
 
         // Print top column labels
         System.out.print(labelBackground + "    ");
-        if (normalOrientation) {
+        if (!normalOrientation) {
             System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         } else {
             System.out.print("h   g   f" + "\u2005" + "  e" + "\u2005" + "  d  " + "\u2005" + "c   b " + "\u2005" + " a    " + "\u2009");
@@ -72,7 +72,7 @@ public class ChessBoardDraw {
 
         // Print bottom column labels
         System.out.print(labelBackground + "    ");
-        if (normalOrientation) {
+        if (!normalOrientation) {
             System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         } else {
             System.out.print("h   g   f" + "\u2005" + "  e" + "\u2005" + "  d  " + "\u2005" + "c   b " + "\u2005" + " a    " + "\u2009");
