@@ -9,13 +9,13 @@ public class Repl {
         client = new ChessClient(serverUrl);
     }
 
+    //run UI program for client
     public void run() {
         System.out.print("\033[2J"); // ANSI escape code to clear the screen
-
         System.out.println("Welcome to Chess!");
-
-
         Scanner scanner = new Scanner(System.in);
+
+        //loop through login until "quit" command is called by user
         while (true) {
             System.out.println();
             System.out.println("What do you want to do?");

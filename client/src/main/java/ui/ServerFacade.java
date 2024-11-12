@@ -3,7 +3,6 @@ package ui;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,6 +19,7 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    //HTTP requests for each endpoint for client
     public AuthData register(UserData userData) throws ResponseException {
         var path = "/user";
         var request = new RegisterRequest(userData.getUsername(), userData.getPassword(), userData.getEmail());
@@ -56,6 +56,8 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, authData);
     }
 
+
+    //Process request
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -100,6 +102,7 @@ public class ServerFacade {
         return response;
     }
 
+    //function to handle not successful requests
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
@@ -107,6 +110,7 @@ public class ServerFacade {
         }
     }
 
+    //function to determine if the request is successful
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
