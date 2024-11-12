@@ -65,4 +65,14 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
+
+    public void clearData() {
+        try {
+            ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
+            clearService.clear(); // Clear all data from database tables
+        } catch (DataAccessException e) {
+            System.err.println("Failed to clear database: " + e.getMessage());
+        }
+    }
+
 }
