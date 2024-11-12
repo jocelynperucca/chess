@@ -171,7 +171,7 @@ public class ChessClient {
 
         try {
             server.joinGame(playerColor, gameID, authData);
-            String message = "Successfully joined game #" + selectedNumber + " as " + playerColor;
+            String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
             return message;
@@ -230,7 +230,7 @@ public class ChessClient {
         int gameID = selectedGame.getGameID(); // Retrieve the actual game ID
         ChessBoardDraw.drawChessBoard(chessBoard);
 
-        return "Observing game # " + selectedNumber;
+        return "Observing game: " + selectedGame.getGameName();
     }
 
     public String loginScreen() {
