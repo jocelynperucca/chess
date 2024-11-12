@@ -29,16 +29,21 @@ public class ChessBoardDraw {
         System.out.print(reset + "\n");
 
         // Determine row range based on orientation
-        int startRow = normalOrientation ? 8 : 1;
-        int endRow = normalOrientation ? 1 : 8;
-        int rowStep = normalOrientation ? -1 : 1;
+        int startRow = !normalOrientation ? 8 : 1;
+        int endRow = !normalOrientation ? 1 : 8;
+        int rowStep = !normalOrientation ? -1 : 1;
 
         // Loop to print each row of the chessboard
         for (int row = startRow; row != endRow + rowStep; row += rowStep) {
             // Print row label on the left side
             System.out.print(labelBackground + " " + row + " " + reset);
 
-            for (int col = 1; col <= 8; col++) {
+            // Determine column range based on orientation
+            int startCol = !normalOrientation ? 1 : 8;
+            int endCol = !normalOrientation ? 8 : 1;
+            int colStep = !normalOrientation ? 1 : -1;
+
+            for (int col = startCol; col != endCol + colStep; col += colStep) {
                 ChessPosition position = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(position);
 
@@ -67,6 +72,7 @@ public class ChessBoardDraw {
         System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         System.out.print(reset + "\n");
     }
+
 
     /**
      * Returns the ANSI symbol for the given chess piece based on its type and color.
