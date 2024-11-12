@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -100,7 +101,19 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> {
             facade.createGame(null, authData);
         });
+    }
 
+    @Test
+    @DisplayName("Join Game Positive")
+    public void joinGamePositive() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        GameData gameData = facade.createGame("test", authData);
+        ChessGame chessGame = facade.joinGame("white", gameData.getGameID(), authData);
+
+       //ensure chessGame was actually created and joinGame went through
+        Assertions.assertNotNull(chessGame);
     }
 
 }
