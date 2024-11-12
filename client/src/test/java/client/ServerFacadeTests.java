@@ -1,18 +1,15 @@
 package client;
 
 import chess.ChessGame;
-import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import spark.Response;
-import ui.ChessClient;
 import ui.ResponseException;
 import ui.ServerFacade;
-
 import java.util.Collection;
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 
 public class ServerFacadeTests {
@@ -26,7 +23,6 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
-        ChessClient chessClient = new ChessClient("http://localhost:" + port);
     }
 
     @AfterAll
@@ -34,13 +30,8 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
-    }
-
-    @Test
+    @Order(1)
     @DisplayName("Positive Register")
     public void registerPostive() throws Exception {
         UserData userData = new UserData("player1", "password", "p1@email.com");
@@ -50,6 +41,7 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Negative Register")
     public void registerNegative() {
         UserData userData = new UserData(null, "password", "p1@email.com");
@@ -61,19 +53,21 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Login Positive")
     public void loginPositive() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
         //ensure authToken from login is made
         Assertions.assertNotNull(authData.getAuthToken());
+        facade.logout(authData);
     }
 
     @Test
+    @Order(4)
     @DisplayName("Login Negative")
     public void loginNegative() throws ResponseException {
-        UserData userData = new UserData("player1", "password", "p1@email.com");
+        UserData userData = new UserData(null, "password", "p1@email.com");
 
         //try to log in without registering
         Assertions.assertThrows(ResponseException.class, () -> {
@@ -82,91 +76,101 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(5)
     @DisplayName("Create Game Positive")
     public void createGamePositive() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
         GameData gameData = facade.createGame("test", authData);
 
         //check gameData was actually returned
         Assertions.assertNotNull(gameData);
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(6)
     @DisplayName("Create Game Negative")
     public void createGameNegative() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
 
         //check gameData was actually returned
         Assertions.assertThrows(Exception.class, () -> {
             facade.createGame(null, authData);
         });
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(7)
     @DisplayName("Join Game Positive")
     public void joinGamePositive() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
-        GameData gameData = facade.createGame("test", authData);
+        GameData gameData = facade.createGame("testing", authData);
         ChessGame chessGame = facade.joinGame("white", gameData.getGameID(), authData);
 
        //ensure chessGame was actually created and joinGame went through
         Assertions.assertNotNull(chessGame);
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(8)
     @DisplayName("Join Game Negative")
     public void joinGameNegative() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
         GameData gameData = facade.createGame("test", authData);
 
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.joinGame("purple", gameData.getGameID(), authData);
         });
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(9)
     @DisplayName("List Games Positive")
     public void listGamesPositive() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
-        facade.createGame("test", authData);
+        facade.createGame("tests", authData);
         facade.createGame("newTest", authData);
 
         Collection<GameData> gameList = facade.listGames(authData);
-        //ensure all games are present in list
-        Assertions.assertEquals(gameList.size(), 2);
+        //ensure all games are present in list from before and now
+        Assertions.assertEquals(gameList.size(), 5);
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(10)
     @DisplayName("List Games Negative")
     public void listGamesNegative() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
-        facade.createGame("test", authData);
-        facade.createGame("newTest", authData);
         AuthData badAuth = new AuthData("username", "badAuth");
 
         //should not be able to list games with bad authData
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.listGames(badAuth);
         });
+
+        facade.logout(authData);
     }
 
     @Test
+    @Order(11)
     @DisplayName("Logout Postive")
     public void logoutPositive() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         AuthData authData = facade.login(userData);
         facade.logout(authData);
 
@@ -177,10 +181,10 @@ public class ServerFacadeTests {
     }
 
     @Test
+    @Order(12)
     @DisplayName("Logout Negative")
     public void logoutNegative() throws ResponseException {
         UserData userData = new UserData("player1", "password", "p1@email.com");
-        facade.register(userData);
         facade.login(userData);
         AuthData badAuth = new AuthData(userData.getUsername(), "badAuth");
 
@@ -188,5 +192,4 @@ public class ServerFacadeTests {
             facade.logout(badAuth);
         });
     }
-
 }
