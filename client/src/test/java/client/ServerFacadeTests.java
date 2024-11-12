@@ -160,7 +160,20 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.listGames(badAuth);
         });
+    }
 
+    @Test
+    @DisplayName("Logout Postive")
+    public void logoutPositive() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        facade.logout(authData);
+
+        //This should not let you create a game since you're logged out
+        Assertions.assertThrows(ResponseException.class, () -> {
+            facade.createGame("test", authData);
+        });
     }
 
 }
