@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,6 +11,8 @@ import spark.Response;
 import ui.ChessClient;
 import ui.ResponseException;
 import ui.ServerFacade;
+
+import java.util.Collection;
 
 
 public class ServerFacadeTests {
@@ -127,6 +130,25 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.joinGame("purple", gameData.getGameID(), authData);
         });
+    }
+
+    @Test
+    @DisplayName("List Games Positive")
+    public void listGamesPositive() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        facade.createGame("test", authData);
+        facade.createGame("newTest", authData);
+
+        Collection<GameData> gameList = facade.listGames(authData);
+        //ensure all games are present in list
+        Assertions.assertEquals(gameList.size(), 2);
+    }
+
+    @Test
+    @DisplayName('List Games Negative')
+    public void listGamesNegative() {
 
     }
 
