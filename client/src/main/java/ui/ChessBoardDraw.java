@@ -20,13 +20,13 @@ public class ChessBoardDraw {
     }
 
     private static void drawChessBoardOrientation(ChessBoard board, boolean normalOrientation) {
-        final String LABEL_BACKGROUND = EscapeSequences.SET_BG_COLOR_BLUE;
-        final String RESET = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
+        final String labelBackground = EscapeSequences.SET_BG_COLOR_BLUE;
+        final String reset = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
 
         // Print top column labels
-        System.out.print(LABEL_BACKGROUND + "    ");
+        System.out.print(labelBackground + "    ");
         System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
-        System.out.print(RESET + "\n");
+        System.out.print(reset + "\n");
 
         // Determine row range based on orientation
         int startRow = normalOrientation ? 8 : 1;
@@ -36,7 +36,7 @@ public class ChessBoardDraw {
         // Loop to print each row of the chessboard
         for (int row = startRow; row != endRow + rowStep; row += rowStep) {
             // Print row label on the left side
-            System.out.print(LABEL_BACKGROUND + " " + row + " " + RESET);
+            System.out.print(labelBackground + " " + row + " " + reset);
 
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
@@ -55,17 +55,17 @@ public class ChessBoardDraw {
                 } else {
                     System.out.print(EscapeSequences.EMPTY);
                 }
-                System.out.print(RESET); // Reset color after each square
+                System.out.print(reset); // Reset color after each square
             }
 
             // Print row label on the right side
-            System.out.println(LABEL_BACKGROUND + " " + row + " " + RESET);
+            System.out.println(labelBackground + " " + row + " " + reset);
         }
 
         // Print bottom column labels
-        System.out.print(LABEL_BACKGROUND + "    ");
+        System.out.print(labelBackground + "    ");
         System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
-        System.out.print(RESET + "\n");
+        System.out.print(reset + "\n");
     }
 
     /**
