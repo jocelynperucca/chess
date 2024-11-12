@@ -15,7 +15,6 @@ public class ChessClient {
     Scanner scanner = new Scanner(System.in);
     private final ServerFacade server;
     private AuthData authData;
-    ChessBoardDraw chessBoardDraw = new ChessBoardDraw();
     private final ChessBoard chessBoard = new ChessBoard();
 
     public ChessClient(String serverUrl) {
@@ -27,18 +26,17 @@ public class ChessClient {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens [0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(out);
                 case "login" -> login(out);
                 case "logout" -> logout(out);
                 case "create" -> createGame(out);
                 case "list" -> listGames(out);
-                case "join" -> joinGame(out);
+                case "play" -> joinGame(out);
                 case "observe" -> observe(out);
                 case "help" -> help();
 
-                default -> loginScreen();
+                default -> "Invalid command";
             };
         } catch (Exception e) {
             return ("Invalid command");
@@ -62,15 +60,14 @@ public class ChessClient {
         UserData userData = new UserData(userName, password, email);
 
         try {
-            AuthData registerResponse = server.register(userData);
-            String authToken = registerResponse.getAuthToken();
+            server.register(userData);
             return "Registration successful!";
         } catch (ResponseException e) {
             return "Registration failed: ";
         }
     }
 
-    public String login(PrintStream out) throws ResponseException {
+    public String login(PrintStream out) {
         out.println("Login:");
         out.print("Enter username: ");
         String userName = scanner.nextLine();
@@ -142,15 +139,7 @@ public class ChessClient {
 
         // Store games in an ArrayList and reverse the order
         List<GameData> gameList = new ArrayList<>(games);
-        Collections.reverse(gameList); // Reverse to display oldest first
-
-        // Display games with sequential numbering
-        StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
-        for (int i = 0; i < gameList.size(); i++) {
-            gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
-        }
-
-        String gameDisplay = gameListBuilder.toString();
+        Collections.reverse(gameList); // Reverse to display to mirror what happens in listGames
 
         out.print("Enter the number of the game you want to join: ");
         int selectedNumber;
@@ -191,7 +180,7 @@ public class ChessClient {
         }
 
         try {
-            GameData newGame = server.createGame(gameName, authData);
+            server.createGame(gameName, authData);
             String message = "Game created: " + gameName;
             out.println("Join the game through the menu to start playing");
             return message;
@@ -203,6 +192,7 @@ public class ChessClient {
     public String observe(PrintStream out) throws ResponseException {
 
         Collection<GameData> games = server.listGames(authData);
+
         // Store games in an ArrayList and reverse the order
         List<GameData> gameList = new ArrayList<>(games);
         Collections.reverse(gameList); // Reverse to display oldest first
@@ -212,8 +202,6 @@ public class ChessClient {
         for (int i = 0; i < gameList.size(); i++) {
             gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
-
-        String gameDisplay = gameListBuilder.toString();
 
         out.print("Enter the number of the game you want to observe: ");
         int selectedNumber;
@@ -227,7 +215,6 @@ public class ChessClient {
         }
 
         GameData selectedGame = gameList.get(selectedNumber - 1); // Get the selected game
-        int gameID = selectedGame.getGameID(); // Retrieve the actual game ID
         ChessBoardDraw.drawChessBoard(chessBoard);
 
         return "Observing game: " + selectedGame.getGameName();
@@ -245,13 +232,12 @@ public class ChessClient {
                     - logout
                     - create game (create)
                     - list games (list)
-                    - join game (join)
+                    - play game (play)
                     - observe game (observe)
                     = quit
                     - help - Show available commands
                     """;
         };
-
     }
 
     public String help() {
@@ -266,7 +252,7 @@ public class ChessClient {
                     - logout - Sign out
                     - create game - Start a game
                     - list games - List all available games
-                    - join game - Join a game as white or black
+                    - play game - Join a game as white or black
                     - observe game - Watch an ongoing game
                     - quit - Exit chess program
                     - help - Show available commands
