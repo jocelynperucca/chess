@@ -147,8 +147,19 @@ public class ServerFacadeTests {
     }
 
     @Test
-    @DisplayName('List Games Negative')
-    public void listGamesNegative() {
+    @DisplayName("List Games Negative")
+    public void listGamesNegative() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        facade.createGame("test", authData);
+        facade.createGame("newTest", authData);
+        AuthData badAuth = new AuthData("username", "badAuth");
+
+        //should not be able to list games with bad authData
+        Assertions.assertThrows(ResponseException.class, () -> {
+            facade.listGames(badAuth);
+        });
 
     }
 
