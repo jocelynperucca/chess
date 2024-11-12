@@ -116,4 +116,18 @@ public class ServerFacadeTests {
         Assertions.assertNotNull(chessGame);
     }
 
+    @Test
+    @DisplayName("Join Game Negative")
+    public void joinGameNegative() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        GameData gameData = facade.createGame("test", authData);
+
+        Assertions.assertThrows(ResponseException.class, () -> {
+            facade.joinGame("purple", gameData.getGameID(), authData);
+        });
+
+    }
+
 }
