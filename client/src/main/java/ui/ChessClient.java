@@ -68,7 +68,8 @@ public class ChessClient {
 
         //try to register with given userData, throw exception if not
         try {
-            server.register(userData);
+            authData = server.register(userData);
+            state = State.SIGNEDIN;
             return "Registration successful!";
         } catch (ResponseException e) {
             return "Registration failed: ";
@@ -116,7 +117,7 @@ public class ChessClient {
             state = State.SIGNEDOUT;
             return "Logged Out";
         } catch (ResponseException e) {
-            return "Couldn't logout";
+            return e.getMessage();
         }
     }
 
