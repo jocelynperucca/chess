@@ -87,8 +87,19 @@ public class ServerFacadeTests {
 
         //check gameData was actually returned
         Assertions.assertNotNull(gameData);
+    }
 
+    @Test
+    @DisplayName("Create Game Negative")
+    public void createGameNegative() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
 
+        //check gameData was actually returned
+        Assertions.assertThrows(Exception.class, () -> {
+            facade.createGame(null, authData);
+        });
 
     }
 
