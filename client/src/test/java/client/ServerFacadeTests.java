@@ -176,4 +176,17 @@ public class ServerFacadeTests {
         });
     }
 
+    @Test
+    @DisplayName("Logout Negative")
+    public void logoutNegative() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        facade.login(userData);
+        AuthData badAuth = new AuthData(userData.getUsername(), "badAuth");
+
+        Assertions.assertThrows(ResponseException.class, () -> {
+            facade.logout(badAuth);
+        });
+    }
+
 }
