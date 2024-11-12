@@ -66,7 +66,7 @@ public class ServerFacadeTests {
     @Test
     @Order(4)
     @DisplayName("Login Negative")
-    public void loginNegative() throws ResponseException {
+    public void loginNegative() {
         UserData userData = new UserData(null, "password", "p1@email.com");
 
         //try to log in without registering
