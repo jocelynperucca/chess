@@ -57,13 +57,13 @@ public class ChessBoardDraw {
                     System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
                 }
 
-                // Print piece symbol or empty space
+                // Print piece or empty
                 if (piece != null) {
                     System.out.print(getPieceSymbol(piece));
                 } else {
                     System.out.print(EscapeSequences.EMPTY);
                 }
-                System.out.print(reset); // Reset color after each square
+                System.out.print(reset);
             }
 
             // Print row label on the right side
@@ -79,10 +79,7 @@ public class ChessBoardDraw {
         }        System.out.print(reset + "\n");
     }
 
-
-    /**
-     * Returns the ANSI symbol for the given chess piece based on its type and color.
-     */
+    //Returns the symbol for the given chess piece based on its type and color.
     private static String getPieceSymbol(ChessPiece piece) {
         switch (piece.getPieceType()) {
             case KING:
@@ -98,7 +95,7 @@ public class ChessBoardDraw {
             case PAWN:
                 return piece.getTeamColor() == ChessGame.TeamColor.WHITE ? EscapeSequences.WHITE_PAWN : EscapeSequences.BLACK_PAWN;
             default:
-                return EscapeSequences.EMPTY; // Fallback for unknown pieces
+                return EscapeSequences.EMPTY;
         }
     }
 }

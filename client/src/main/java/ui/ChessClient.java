@@ -1,6 +1,5 @@
 package ui;
 
-//import org.eclipse.jetty.util.Scanner;
 import chess.ChessBoard;
 import model.AuthData;
 import model.GameData;
@@ -22,10 +21,13 @@ public class ChessClient {
         server = new ServerFacade(serverUrl);
     }
 
+    //evaluation of any given user command
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens [0] : "help";
+
+            //Switch statement for given commands based on user input
             return switch (cmd) {
                 case "register" -> register(out);
                 case "login" -> login(out);
@@ -35,7 +37,7 @@ public class ChessClient {
                 case "play" -> joinGame(out);
                 case "observe" -> observe(out);
                 case "help" -> help();
-
+                case " " -> help();
                 default -> "Invalid command";
             };
         } catch (Exception e) {
@@ -43,7 +45,10 @@ public class ChessClient {
         }
     }
 
+    //function to register on the client end
     public String register(PrintStream out) {
+
+        //register ui and set username, password, and email based on user input
         out.println("Registering a new account:");
         out.print("Choose Username: ");
         String userName = scanner.nextLine();
@@ -52,13 +57,16 @@ public class ChessClient {
         out.print("Enter email: ");
         String email = scanner.nextLine();
 
+        //check if valid
         if (userName.isEmpty() || password.isEmpty() || email.isEmpty()) {
             out.println("You are missing some of the key information");
             return "Registration failed: missing information";
         }
 
+        //set userData
         UserData userData = new UserData(userName, password, email);
 
+        //try to register with given userData, throw exception if not
         try {
             server.register(userData);
             return "Registration successful!";
@@ -67,19 +75,26 @@ public class ChessClient {
         }
     }
 
+    //function to log in from the client end
     public String login(PrintStream out) {
+
+        //user interface for login and set username and password
         out.println("Login:");
         out.print("Enter username: ");
         String userName = scanner.nextLine();
         out.print("Enter password: ");
         String password = scanner.nextLine();
 
+        //check if valid/empty
         if (userName.isEmpty() || password.isEmpty()) {
             out.println("Not a valid username or password entry.");
             return "Login failed: missing info";
         }
 
+        //userData to log in
         UserData userData = new UserData(userName, password, null);
+
+        //try to login with given userdata, throw exception if not
         try {
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
@@ -91,9 +106,11 @@ public class ChessClient {
         }
     }
 
+    //function to logout from the client end
     public String logout(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Logging out");
+
         try {
             server.logout(authData);
             state = State.SIGNEDOUT;
@@ -103,8 +120,9 @@ public class ChessClient {
         }
     }
 
+    //function to list games from the client end
     public String listGames(PrintStream out) throws ResponseException {
-        assertSignedIn(); // Ensure the user is signed in
+        assertSignedIn();
         out.println("Fetching game list...");
 
         Collection<GameData> games = server.listGames(authData);
@@ -123,10 +141,12 @@ public class ChessClient {
             gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
 
+        //assign gameDisplay and output it to the console
         String gameDisplay = gameListBuilder.toString();
-        return gameDisplay; // Print to the console
+        return gameDisplay;
     }
 
+    //Function to join game from the client end
     public String joinGame(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Joining Game...");
@@ -141,6 +161,7 @@ public class ChessClient {
         List<GameData> gameList = new ArrayList<>(games);
         Collections.reverse(gameList); // Reverse to display to mirror what happens in listGames
 
+        //set number
         out.print("Enter the number of the game you want to join: ");
         int selectedNumber;
         try {
@@ -152,12 +173,15 @@ public class ChessClient {
             return "Invalid format: please enter a number.";
         }
 
-        GameData selectedGame = gameList.get(selectedNumber - 1); // Get the selected game
-        int gameID = selectedGame.getGameID(); // Retrieve the actual game ID
+        //Get selected game and set gameID
+        GameData selectedGame = gameList.get(selectedNumber - 1);
+        int gameID = selectedGame.getGameID();
 
+        //set player color
         out.print("Enter 'white' or 'black' to choose your player color: ");
         String playerColor = scanner.nextLine();
 
+        //try to join game, if not, return exception
         try {
             server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
@@ -172,6 +196,7 @@ public class ChessClient {
     public String createGame(PrintStream out) {
         out.println("Creating Game...");
 
+        //Set game name
         out.print("Enter a name for your game: ");
         String gameName = scanner.nextLine();
 
@@ -179,6 +204,7 @@ public class ChessClient {
             return "Game name cannot be empty";
         }
 
+        //try to create game with given name, throws exception if cannot
         try {
             server.createGame(gameName, authData);
             String message = "Game created: " + gameName;
@@ -191,11 +217,10 @@ public class ChessClient {
 
     public String observe(PrintStream out) throws ResponseException {
 
-        Collection<GameData> games = server.listGames(authData);
-
         // Store games in an ArrayList and reverse the order
+        Collection<GameData> games = server.listGames(authData);
         List<GameData> gameList = new ArrayList<>(games);
-        Collections.reverse(gameList); // Reverse to display oldest first
+        Collections.reverse(gameList);
 
         // Display games with sequential numbering
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
@@ -203,6 +228,7 @@ public class ChessClient {
             gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
 
+        //Choose game number to observe
         out.print("Enter the number of the game you want to observe: ");
         int selectedNumber;
         try {
@@ -213,13 +239,17 @@ public class ChessClient {
         } catch (NumberFormatException e) {
             return "Invalid format: please enter a number.";
         }
+        //get selectedGame number
+        GameData selectedGame = gameList.get(selectedNumber - 1);
 
-        GameData selectedGame = gameList.get(selectedNumber - 1); // Get the selected game
+        //Draw chessboard depending on the board at the time
         ChessBoardDraw.drawChessBoard(chessBoard);
 
+        //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
     }
 
+    //Default login Screen depending on if they are logged in or out
     public String loginScreen() {
         return switch (state) {
             case SIGNEDOUT -> """
@@ -240,6 +270,7 @@ public class ChessClient {
         };
     }
 
+    //Help menu
     public String help() {
         return switch (state) {
             case SIGNEDOUT -> """
@@ -260,6 +291,7 @@ public class ChessClient {
         };
     }
 
+    //private function to make sure user is signed in
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must sign in");
