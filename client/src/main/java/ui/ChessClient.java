@@ -35,6 +35,7 @@ public class ChessClient {
                 case "create" -> createGame(out);
                 case "list" -> listGames(out);
                 case "join" -> joinGame(out);
+                case "observe" -> observe(out);
                 case "help" -> help();
 
                 default -> loginScreen();
@@ -150,7 +151,6 @@ public class ChessClient {
         }
 
         String gameDisplay = gameListBuilder.toString();
-        out.println(gameDisplay); // Print to the console
 
         out.print("Enter the number of the game you want to join: ");
         int selectedNumber;
@@ -200,20 +200,53 @@ public class ChessClient {
         }
     }
 
+    public String observe(PrintStream out) throws ResponseException {
+
+        Collection<GameData> games = server.listGames(authData);
+        // Store games in an ArrayList and reverse the order
+        List<GameData> gameList = new ArrayList<>(games);
+        Collections.reverse(gameList); // Reverse to display oldest first
+
+        // Display games with sequential numbering
+        StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
+        for (int i = 0; i < gameList.size(); i++) {
+            gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
+        }
+
+        String gameDisplay = gameListBuilder.toString();
+
+        out.print("Enter the number of the game you want to join: ");
+        int selectedNumber;
+        try {
+            selectedNumber = Integer.parseInt(scanner.nextLine());
+            if (selectedNumber < 1 || selectedNumber > gameList.size()) {
+                return "Invalid selection: please enter a valid game number.";
+            }
+        } catch (NumberFormatException e) {
+            return "Invalid format: please enter a number.";
+        }
+
+        GameData selectedGame = gameList.get(selectedNumber - 1); // Get the selected game
+        int gameID = selectedGame.getGameID(); // Retrieve the actual game ID
+        ChessBoardDraw.drawChessBoard(chessBoard);
+
+        return "Observing game # " + selectedNumber;
+    }
+
     public String loginScreen() {
         return switch (state) {
             case SIGNEDOUT -> """
                     - register
-                    - login <USERNAME> <PASSWORD>
+                    - login
                     - quit
                     - help - show available commands
                     """;
             case SIGNEDIN -> """
                     - logout
-                    - create game <NAME>
+                    - create game (create)
                     - list games (list)
-                    - join game (join) <GAMEID> <WHITE|BLACK>
-                    - observe game (observe) <GAMEID>
+                    - join game (join)
+                    - observe game (observe)
                     = quit
                     - help - Show available commands
                     """;
@@ -225,16 +258,16 @@ public class ChessClient {
         return switch (state) {
             case SIGNEDOUT -> """
                     - register - Register an account
-                    - login <USERNAME> <PASSWORD> - Sign in
+                    - login - Sign in
                     - quit - Exit chess program
                     - help - Show available commands
                     """;
             case SIGNEDIN -> """
                     - logout - Sign out
-                    - create game <NAME> - Start a game
+                    - create game - Start a game
                     - list games - List all available games
-                    - play game <GAMEID> <WHITE|BLACK> - Join a game as white or black
-                    - observe game <GAMEID> - Watch an ongoing game
+                    - play game - Join a game as white or black
+                    - observe game - Watch an ongoing game
                     - quit - Exit chess program
                     - help - Show available commands
                     """;
