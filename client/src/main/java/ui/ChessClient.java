@@ -266,7 +266,7 @@ public class ChessClient {
                     - logout - Sign out
                     - create game - Start a game
                     - list games - List all available games
-                    - play game - Join a game as white or black
+                    - join game - Join a game as white or black
                     - observe game - Watch an ongoing game
                     - quit - Exit chess program
                     - help - Show available commands
