@@ -1,10 +1,12 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import spark.Response;
+import ui.ChessClient;
 import ui.ResponseException;
 import ui.ServerFacade;
 
@@ -20,6 +22,7 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         facade = new ServerFacade("http://localhost:" + port);
+        ChessClient chessClient = new ChessClient("http://localhost:" + port);
     }
 
     @AfterAll
@@ -72,6 +75,21 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.login(userData);
         });
+    }
+
+    @Test
+    @DisplayName("Create Game Positive")
+    public void createGamePositive() throws ResponseException {
+        UserData userData = new UserData("player1", "password", "p1@email.com");
+        facade.register(userData);
+        AuthData authData = facade.login(userData);
+        GameData gameData = facade.createGame("test", authData);
+
+        //check gameData was actually returned
+        Assertions.assertNotNull(gameData);
+
+
+
     }
 
 }
