@@ -215,7 +215,7 @@ public class ChessClient {
 
         String gameDisplay = gameListBuilder.toString();
 
-        out.print("Enter the number of the game you want to join: ");
+        out.print("Enter the number of the game you want to observe: ");
         int selectedNumber;
         try {
             selectedNumber = Integer.parseInt(scanner.nextLine());
