@@ -1,4 +1,5 @@
 package websocket.commands;
 
-public class ConnectCommand {
+public class ConnectCommand extends UserGameCommand {
+
 }
