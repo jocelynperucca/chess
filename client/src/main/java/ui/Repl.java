@@ -1,16 +1,17 @@
 package ui;
 
+import WebSocket.NotificationHandler;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.management.Notification;
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
     private final ChessClient client;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl);
+        client = new ChessClient(serverUrl, this);
     }
 
     //run UI program for client
@@ -36,8 +37,9 @@ public class Repl {
         }
     }
 
-    public void notify(NotificationMessage notificationMessage) {
-        System.out.println(EscapeSequences.SET_BG_COLOR_RED + notificationMessage.returnMessage());
-        //printPrompt();
+    @Override
+    public void notify(ServerMessage message) {
+        System.out.println(EscapeSequences.SET_BG_COLOR_RED + message);
+
     }
 }

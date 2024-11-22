@@ -1,6 +1,5 @@
 package WebSocket;
 
-import com.sun.nio.sctp.NotificationHandler;
 import ui.ResponseException;
 import com.google.gson.Gson;
 import websocket.messages.NotificationMessage;
