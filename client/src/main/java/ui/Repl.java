@@ -31,4 +31,9 @@ public class Repl {
             System.out.println(result);
         }
     }
+
+    public void notify(Notification notification) {
+        System.out.println(RED + notification.message());
+        printPrompt();
+    }
 }

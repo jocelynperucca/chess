@@ -1,5 +1,6 @@
 package ui;
 
+import WebSocket.WebSocketFacade;
 import chess.ChessBoard;
 import model.AuthData;
 import model.GameData;
@@ -14,11 +15,13 @@ public class ChessClient {
     Scanner scanner = new Scanner(System.in);
     private final ServerFacade server;
     private AuthData authData;
+    private final String serverUrl;
     private final ChessBoard chessBoard = new ChessBoard();
 
     public ChessClient(String serverUrl) {
         this.out = new PrintStream(System.out, true);
         server = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
     }
 
     //evaluation of any given user command
@@ -101,6 +104,7 @@ public class ChessClient {
             String authToken = loginResponse.getAuthToken();
             authData = new AuthData(userName, authToken);
             state = State.SIGNEDIN;
+            ws = new WebSocketFacade(serverUrl,)
             return "Login successful!";
         } catch (ResponseException e) {
             return "Login failed: ";
