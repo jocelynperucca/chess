@@ -18,6 +18,7 @@ public class ChessClient {
     private AuthData authData;
     private final String serverUrl;
     private final ChessBoard chessBoard = new ChessBoard();
+    private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
