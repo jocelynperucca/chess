@@ -1,5 +1,9 @@
 package ui;
 
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
+import javax.management.Notification;
 import java.util.Scanner;
 
 public class Repl {
@@ -32,8 +36,8 @@ public class Repl {
         }
     }
 
-    public void notify(Notification notification) {
-        System.out.println(RED + notification.message());
-        printPrompt();
+    public void notify(NotificationMessage notificationMessage) {
+        System.out.println(EscapeSequences.SET_BG_COLOR_RED + notificationMessage.returnMessage());
+        //printPrompt();
     }
 }
