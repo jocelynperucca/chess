@@ -12,6 +12,7 @@ public class Server {
     UserDAO userDAO;
     AuthDAO authDAO;
     GameDAO gameDAO;
+    private WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     //RUN SERVER AND ENDPOINTS
     public int run(int desiredPort) {
@@ -39,7 +40,10 @@ public class Server {
         ClearService clearService = new ClearService(authDAO, gameDAO, userDAO);
 
 
+
+
         //ENDPOINTS
+        Spark.webSocket("/connect", webSocketHandler);
         Spark.delete("/db", new ClearHandler(clearService));
         Spark.post("/user", new RegisterHandler(registerService));
         Spark.post("/session", new LoginHandler(loginService)) ;
