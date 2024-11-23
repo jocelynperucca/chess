@@ -5,4 +5,6 @@ public class ConnectCommand extends UserGameCommand {
         super(CommandType.CONNECT, authToken, gameID);
     }
 
+
+
 }
