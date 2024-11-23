@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
@@ -14,13 +15,17 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        UserGameCommand userGameCommand = new Gson().fromJson(message, Action.class);
+        UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
-            case CONNECT -> enter(userGameCommand.visitorName(), session);
-            case LEAVE -> exit(action.visitorName());
+            case CONNECT -> connect(new Gson().fromJson(message, ConnectCommand.class));
+            case LEAVE -> ;
             case MAKE_MOVE -> ;
             case RESIGN -> ;
         }
+    }
+
+    private void connect(ConnectCommand command) {
+        connections.add
     }
 
 }
