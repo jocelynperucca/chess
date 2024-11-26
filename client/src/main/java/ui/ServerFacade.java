@@ -1,5 +1,6 @@
 package ui;
 
+import WebSocket.WebSocketFacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
@@ -14,9 +15,14 @@ import java.util.Collection;
 
 public class ServerFacade {
     private final String serverUrl;
+    private WebSocketFacade ws;
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public void setWebsocket(WebSocketFacade ws) {
+        this.ws = ws;
     }
 
     //HTTP requests for each endpoint for client
@@ -60,6 +66,7 @@ public class ServerFacade {
     //Process request
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData auth) throws ResponseException {
         try {
+            ws.makeRequest(request);
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);

@@ -104,11 +104,12 @@ public class ChessClient {
 
         //try to login with given userdata, throw exception if not
         try {
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            server.setWebsocket(ws);
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
             authData = new AuthData(userName, authToken);
             state = State.SIGNEDIN;
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
             return "Login successful!";
         } catch (ResponseException e) {
             return "Login failed: ";

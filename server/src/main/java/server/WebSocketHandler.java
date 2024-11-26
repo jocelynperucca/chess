@@ -20,6 +20,7 @@ public class WebSocketHandler {
     UserDAO userDAO;
     AuthDAO authDAO;
     GameDAO gameDAO;
+    //private Session session;
 
 
     @OnWebSocketConnect
@@ -54,4 +55,10 @@ public class WebSocketHandler {
         connections.broadcast(userName, notification);
     }
 
+    private void addConnection(String authToken, Session session) throws DataAccessException {
+        if (authDAO.getAuthToken(authToken) == null) {
+            throw new IllegalArgumentException("Invalid authToken");
+        }
+        connections.add(authToken, session);
+    }
 }

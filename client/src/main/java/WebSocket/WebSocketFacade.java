@@ -1,12 +1,18 @@
 package WebSocket;
 
+import model.AuthData;
+import org.eclipse.jetty.server.Authentication;
 import ui.ResponseException;
 import com.google.gson.Gson;
+import websocket.commands.ConnectCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.NotificationMessage;
 import javax.websocket.*;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class WebSocketFacade extends Endpoint {
 
@@ -37,5 +43,14 @@ public class WebSocketFacade extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void makeRequest(Object request) throws ResponseException {
+        try {
+            String reqData = new Gson().toJson(request);
+            session.getBasicRemote().sendText(reqData);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
     }
 }

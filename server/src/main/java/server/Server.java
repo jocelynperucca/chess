@@ -43,7 +43,7 @@ public class Server {
 
 
         //ENDPOINTS
-        Spark.webSocket("/connect", webSocketHandler);
+        Spark.webSocket("/ws", webSocketHandler);
         Spark.delete("/db", new ClearHandler(clearService));
         Spark.post("/user", new RegisterHandler(registerService));
         Spark.post("/session", new LoginHandler(loginService)) ;
