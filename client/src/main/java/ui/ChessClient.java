@@ -197,6 +197,8 @@ public class ChessClient {
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.
             return message;
         } catch (ResponseException e) {
             return "Failed to join game, check player color or status of game";

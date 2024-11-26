@@ -1,11 +1,14 @@
 package WebSocket;
 
+import chess.ChessGame;
 import model.AuthData;
 import org.eclipse.jetty.server.Authentication;
 import ui.ResponseException;
 import com.google.gson.Gson;
 import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import javax.websocket.*;
 import java.io.IOException;
@@ -45,12 +48,24 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void makeRequest(Object request) throws ResponseException {
+    @ClientEndpoint
+    public interface ServerMessageListener {
+        void onLoadGame(LoadGameMessage message);
+        void onNotification(NotificationMessage message);
+        void onError(ErrorMessage message);
+    }
+
+    public void sendCommand(UserGameCommand userGameCommand) throws ResponseException {
         try {
-            String reqData = new Gson().toJson(request);
-            session.getBasicRemote().sendText(reqData);
+            String command = new Gson().toJson(userGameCommand);
+            session.getBasicRemote().sendText(command);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+    }
+
+    public void joinPlayerSend(int gameID, ChessGame.TeamColor teamColor, String authToken) throws ResponseException {
+        ConnectCommand connectCommand = new ConnectCommand(authToken, gameID);
+        sendCommand(connectCommand);
     }
 }
