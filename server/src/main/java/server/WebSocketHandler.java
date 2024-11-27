@@ -50,7 +50,7 @@ public class WebSocketHandler {
         connections.add(command.getAuthToken(), session);
         String authToken = command.getAuthToken();
         String userName = authDAO.getAuthToken(authToken).getUsername();
-        var message = String.format("% has connected", userName);
+        var message = String.format("%s has connected", userName);
         var notification = new NotificationMessage(message);
         connections.broadcast(userName, notification);
     }

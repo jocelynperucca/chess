@@ -3,6 +3,7 @@ package ui;
 import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
 import chess.ChessBoard;
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -200,6 +201,7 @@ public class ChessClient {
             ChessBoardDraw.drawChessBoard(chessBoard);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
             inGameplay = true;
+            ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());
             //HERE
             return message;
         } catch (ResponseException e) {
