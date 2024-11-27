@@ -20,6 +20,7 @@ public class ChessClient {
     private final ChessBoard chessBoard = new ChessBoard();
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
+    boolean inGameplay = false;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         this.out = new PrintStream(System.out, true);
@@ -198,7 +199,8 @@ public class ChessClient {
             chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.
+            inGameplay = true;
+            //HERE
             return message;
         } catch (ResponseException e) {
             return "Failed to join game, check player color or status of game";
@@ -279,29 +281,49 @@ public class ChessClient {
                     = quit
                     - help - Show available commands
                     """;
+
         };
+    }
+
+    public String gameplayScreen() {
+        return """
+                    - redraw chessboard
+                    - leave
+                    - make move
+                    - resign
+                    - highlight legal moves
+                    = quit
+                    - help - Show available commands
+                    """;
     }
 
     //Help menu
     public String help() {
         return switch (state) {
             case SIGNEDOUT -> """
-                    - register - Register an account
-                    - login - Sign in
-                    - quit - Exit chess program
-                    - help - Show available commands
-                    """;
-            case SIGNEDIN -> """
-                    - logout - Sign out
-                    - create game - Start a game
-                    - list games - List all available games
-                    - play game - Join a game as white or black
-                    - observe game - Watch an ongoing game
-                    - quit - Exit chess program
-                    - help - Show available commands
-                    """;
+                - register - Register an account
+                - login - Sign in
+                - quit - Exit chess program
+                - help - Show available commands
+                """;
+            case SIGNEDIN -> {
+                if (inGameplay) {
+                    yield gameplayScreen();
+                } else {
+                    yield """
+                        - logout - Sign out
+                        - create game - Start a game
+                        - list games - List all available games
+                        - play game - Join a game as white or black
+                        - observe game - Watch an ongoing game
+                        - quit - Exit chess program
+                        - help - Show available commands
+                        """;
+                }
+            }
         };
     }
+
 
     //private function to make sure user is signed in
     private void assertSignedIn() throws ResponseException {
