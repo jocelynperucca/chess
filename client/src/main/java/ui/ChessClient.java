@@ -274,18 +274,24 @@ public class ChessClient {
                     - quit
                     - help - show available commands
                     """;
-            case SIGNEDIN -> """
-                    - logout
-                    - create game (create)
-                    - list games (list)
-                    - play game (play)
-                    - observe game (observe)
-                    = quit
-                    - help - Show available commands
-                    """;
-
+            case SIGNEDIN -> {
+                if (inGameplay) {
+                    yield gameplayScreen();
+                } else {
+                    yield """
+                            - logout
+                            - create game (create)
+                            - list games (list)
+                            - play game (play)
+                            - observe game (observe)
+                            = quit
+                            - help - Show available commands
+                            """;
+                }
+            }
         };
     }
+
 
     public String gameplayScreen() {
         return """
@@ -294,6 +300,17 @@ public class ChessClient {
                     - make move
                     - resign
                     - highlight legal moves
+                    = quit
+                    - help - Show available commands
+                    """;
+    }
+    public String gameplayScreenHelp() {
+        return """
+                    - redraw chessboard - see the current state of the board
+                    - leave - leave the current state of the game
+                    - make move - enter in two coordinates to make a valid move
+                    - resign - give up the game
+                    - highlight legal moves - see what moves you can make
                     = quit
                     - help - Show available commands
                     """;
@@ -310,7 +327,7 @@ public class ChessClient {
                 """;
             case SIGNEDIN -> {
                 if (inGameplay) {
-                    yield gameplayScreen();
+                    yield gameplayScreenHelp();
                 } else {
                     yield """
                         - logout - Sign out
