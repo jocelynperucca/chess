@@ -1,12 +1,12 @@
 package WebSocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import model.AuthData;
 import org.eclipse.jetty.server.Authentication;
 import ui.ResponseException;
 import com.google.gson.Gson;
-import websocket.commands.ConnectCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -21,6 +21,7 @@ public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    private ServerMessageListener serverMessageListener;
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
@@ -48,6 +49,10 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
+    public void setMessageListener(ServerMessageListener messageListener) {
+        this.serverMessageListener = messageListener;
+    }
+
     @ClientEndpoint
     public interface ServerMessageListener {
         void onLoadGame(LoadGameMessage message);
@@ -67,5 +72,20 @@ public class WebSocketFacade extends Endpoint {
     public void joinPlayerSend(int gameID, ChessGame.TeamColor teamColor, String authToken) throws ResponseException {
         ConnectCommand connectCommand = new ConnectCommand(authToken, gameID);
         sendCommand(connectCommand);
+    }
+
+    public void makeMoveSend(String authToken, int gameID, ChessMove chessMove) throws ResponseException {
+        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(authToken, gameID, chessMove);
+        sendCommand(makeMoveCommand);
+    }
+
+    public void leaveSend(String authToken, int gameID) throws ResponseException {
+        LeaveCommand leaveCommand = new LeaveCommand(authToken, gameID);
+        sendCommand(leaveCommand);
+    }
+
+    public void resignSend(String authToken, int gamID) throws ResponseException {
+        ResignCommand resignCommand = new ResignCommand(authToken, gamID);
+        sendCommand(resignCommand);
     }
 }

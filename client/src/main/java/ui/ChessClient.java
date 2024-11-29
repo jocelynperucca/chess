@@ -274,6 +274,8 @@ public class ChessClient {
 
     }
 
+
+
     //Default login Screen depending on if they are logged in or out
     public String loginScreen() {
         return switch (state) {
