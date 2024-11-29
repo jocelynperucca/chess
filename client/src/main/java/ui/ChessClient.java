@@ -4,6 +4,7 @@ import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
@@ -23,6 +24,7 @@ public class ChessClient {
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
     boolean inGameplay = false;
+    private String playerColor;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         this.out = new PrintStream(System.out, true);
@@ -193,7 +195,7 @@ public class ChessClient {
 
         //set player color
         out.print("Enter 'white' or 'black' to choose your player color: ");
-        String playerColor = scanner.nextLine();
+        playerColor = scanner.nextLine();
 
         //try to join game, if not, return exception
         try {
@@ -283,6 +285,10 @@ public class ChessClient {
             out.println("Coordinate does not exist");
             makeMove(out);
         }
+        ChessPosition start = parseChessPosition(coordinates);
+        ChessPiece piece = chessBoard.getPiece(start);
+        if (piece.getTeamColor() != playerColor);
+        //FIGURE OUT SET COLOR
 
 
     }
