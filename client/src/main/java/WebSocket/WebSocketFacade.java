@@ -2,20 +2,20 @@ package WebSocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import model.AuthData;
-import org.eclipse.jetty.server.Authentication;
+import com.google.gson.JsonSyntaxException;
 import ui.ResponseException;
 import com.google.gson.Gson;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
+
 import javax.websocket.*;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+
 
 public class WebSocketFacade extends Endpoint {
 
@@ -58,6 +58,28 @@ public class WebSocketFacade extends Endpoint {
         void onLoadGame(LoadGameMessage message);
         void onNotification(NotificationMessage message);
         void onError(ErrorMessage message);
+    }
+
+    private void messageHandler(String message) {
+        try {
+            ServerMessage serverMessage = new Gson(). fromJson(message, ServerMessage.class);
+            switch (serverMessage.getServerMessageType()) {
+                case NOTIFICATION -> {
+                    NotificationMessage notifcationMessage = new Gson().fromJson(message, NotificationMessage.class);
+                    serverMessageListener.onNotification(notifcationMessage);
+                }
+                case LOAD_GAME -> {
+                    LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                    serverMessageListener.onLoadGame(loadGameMessage);
+                }
+                case ERROR -> {
+                    ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                    serverMessageListener.onError(errorMessage);
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void sendCommand(UserGameCommand userGameCommand) throws ResponseException {
