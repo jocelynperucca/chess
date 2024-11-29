@@ -4,6 +4,7 @@ import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPosition;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -278,6 +279,11 @@ public class ChessClient {
         out.println("Making Move...");
         out.println("Enter coordinates of piece you want to move: ");
         String coordinates = scanner.nextLine();
+        if (!validCoordinates(coordinates)) {
+            out.println("Coordinate does not exist");
+            makeMove(out);
+        }
+
 
     }
 
@@ -373,6 +379,16 @@ public class ChessClient {
         boolean isValidRow = Character.isDigit(num) && (num >= '1' && num <= '8');
 
         return isValidColumn && isValidRow;
+    }
+
+    public ChessPosition parseChessPosition(String coordinates) {
+        char letter = coordinates.charAt(0);
+        int number = coordinates.charAt(1) - '0';
+
+        int col = letter - 'a';
+        int row = 8 - number;
+
+        return new ChessPosition(row, col);
     }
 
 
