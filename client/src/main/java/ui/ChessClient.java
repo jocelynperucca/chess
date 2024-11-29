@@ -274,6 +274,13 @@ public class ChessClient {
 
     }
 
+    public void makeMove(PrintStream out) {
+        out.println("Making Move...");
+        out.println("Enter coordinates of piece you want to move: ");
+        String coordinates = scanner.nextLine();
+
+    }
+
 
 
     //Default login Screen depending on if they are logged in or out
@@ -352,6 +359,20 @@ public class ChessClient {
                 }
             }
         };
+    }
+
+    public boolean validCoordinates(String coordinate) {
+        if (coordinate.length() != 2) {
+            return false;
+        }
+        String columns = "abcdefgh";
+        char letter = coordinate.charAt(0);
+        char num = coordinate.charAt(1);
+
+        boolean isValidColumn = columns.contains(String.valueOf(letter));
+        boolean isValidRow = Character.isDigit(num) && (num >= '1' && num <= '8');
+
+        return isValidColumn && isValidRow;
     }
 
 
