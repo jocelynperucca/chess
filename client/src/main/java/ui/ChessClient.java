@@ -46,6 +46,7 @@ public class ChessClient {
                 case "play" -> joinGame(out);
                 case "observe" -> observe(out);
                 case "help" -> help();
+                case "redraw" -> redrawChessboard(out);
                 case " " -> help();
                 default -> "Invalid command";
             };
@@ -106,7 +107,7 @@ public class ChessClient {
 
         //try to login with given userdata, throw exception if not
         try {
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             server.setWebsocket(ws);
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
@@ -200,6 +201,7 @@ public class ChessClient {
             chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
+            server.setWebsocket(ws);
             inGameplay = true;
             ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());
             //HERE
@@ -263,6 +265,13 @@ public class ChessClient {
 
         //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
+    }
+
+    public String redrawChessboard(PrintStream out) {
+        out.println("Printing chessboard...");
+        ChessBoardDraw.drawChessBoard(chessBoard);
+        return "Current Chessboard";
+
     }
 
     //Default login Screen depending on if they are logged in or out
