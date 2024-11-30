@@ -50,6 +50,7 @@ public class ChessClient {
                 case "observe" -> observe(out);
                 case "help" -> help();
                 case "redraw" -> redrawChessboard(out);
+                case "make" -> makeMove(out);
                 case " " -> help();
                 default -> "Invalid command";
             };
@@ -277,7 +278,8 @@ public class ChessClient {
 
     }
 
-    public void makeMove(PrintStream out) {
+    public String makeMove(PrintStream out) throws ResponseException {
+        assertInGameplay();
         out.println("Making Move...");
         out.println("Enter coordinates of piece you want to move: ");
         String coordinates = scanner.nextLine();
@@ -287,9 +289,13 @@ public class ChessClient {
         }
         ChessPosition start = parseChessPosition(coordinates);
         ChessPiece piece = chessBoard.getPiece(start);
-        if (piece.getTeamColor() != playerColor);
-        //FIGURE OUT SET COLOR
+        ChessGame.TeamColor teamColor = stringtoTeamColor(playerColor);
+        if (piece.getTeamColor() != teamColor) {
+            out.println("This piece isn't yours, choose another");
+            makeMove(out);
+        }
 
+        return "Made move";
 
     }
 
@@ -378,8 +384,8 @@ public class ChessClient {
             return false;
         }
         String columns = "abcdefgh";
-        char letter = coordinate.charAt(0);
-        char num = coordinate.charAt(1);
+        char letter = coordinate.charAt(1);
+        char num = coordinate.charAt(0);
 
         boolean isValidColumn = columns.contains(String.valueOf(letter));
         boolean isValidRow = Character.isDigit(num) && (num >= '1' && num <= '8');
@@ -388,13 +394,24 @@ public class ChessClient {
     }
 
     public ChessPosition parseChessPosition(String coordinates) {
-        char letter = coordinates.charAt(0);
-        int number = coordinates.charAt(1) - '0';
+        char letter = coordinates.charAt(1);
+        int number = coordinates.charAt(0) - '0';
 
-        int col = letter - 'a';
-        int row = 8 - number;
+        int col = letter - 'a' + 1;
+        int row = number;
 
         return new ChessPosition(row, col);
+    }
+
+
+    private ChessGame.TeamColor stringtoTeamColor(String playerColor) {
+        if (playerColor.equalsIgnoreCase("white")) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (playerColor.equalsIgnoreCase("black")) {
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
+        }
     }
 
 
@@ -402,6 +419,12 @@ public class ChessClient {
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
             throw new ResponseException(400, "You must sign in");
+        }
+    }
+
+    private void assertInGameplay() throws ResponseException {
+        if (inGameplay != true) {
+            throw new ResponseException(400, "You must be in a game");
         }
     }
 }
