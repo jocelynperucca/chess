@@ -204,6 +204,7 @@ public class ChessClient {
         //try to join game, if not, return exception
         try {
             currentGame = server.joinGame(playerColor, gameID, authData);
+            currentGame = selectedGame.getGame();
             chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             //chessBoard.resetBoard();
