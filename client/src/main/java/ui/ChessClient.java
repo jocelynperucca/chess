@@ -3,9 +3,13 @@ package ui;
 import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
 import chess.*;
+import dataaccess.DataAccessException;
+import dataaccess.SQLGameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+
+import java.sql.SQLException;
 import java.util.*;
 import java.io.PrintStream;
 
@@ -23,6 +27,7 @@ public class ChessClient {
     boolean inGameplay = false;
     private String playerColor;
     private ChessGame currentGame;
+    private int gameID;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         this.out = new PrintStream(System.out, true);
@@ -190,7 +195,7 @@ public class ChessClient {
 
         //Get selected game and set gameID
         GameData selectedGame = gameList.get(selectedNumber - 1);
-        int gameID = selectedGame.getGameID();
+        gameID = selectedGame.getGameID();
 
         //set player color
         out.print("Enter 'white' or 'black' to choose your player color: ");
@@ -198,10 +203,10 @@ public class ChessClient {
 
         //try to join game, if not, return exception
         try {
-            server.joinGame(playerColor, gameID, authData);
+            currentGame = server.joinGame(playerColor, gameID, authData);
             chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
-            chessBoard.resetBoard();
+            //chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
             server.setWebsocket(ws);
@@ -289,7 +294,7 @@ public class ChessClient {
         ChessPosition start = parseChessPosition(coordinates);
         ChessPiece piece = chessBoard.getPiece(start);
         ChessGame.TeamColor teamColor = stringtoTeamColor(playerColor);
-        if (piece.getTeamColor() != teamColor) {
+        if (piece.getTeamColor() != currentGame.getTeamTurn() || piece.getTeamColor() != teamColor) {
             out.println("This piece isn't yours, choose another");
             makeMove(out);
         }
@@ -309,7 +314,15 @@ public class ChessClient {
         if (validMoves.contains(tryMove)) {
             currentGame.makeMove(tryMove);
             chessBoard = currentGame.getBoard();
+            currentGame.setBoard(chessBoard);
             ChessBoardDraw.drawChessBoard(chessBoard);
+
+            try {
+                SQLGameDAO sqlGameDAO = new SQLGameDAO();
+                sqlGameDAO.updateGame(currentGame, gameID);
+            } catch (SQLException | DataAccessException e) {
+                throw new RuntimeException(e);
+            }
 
 
         } else {

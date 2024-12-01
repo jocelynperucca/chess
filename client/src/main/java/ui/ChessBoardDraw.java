@@ -9,7 +9,7 @@ public class ChessBoardDraw {
 
     public static void drawChessBoard(ChessBoard board) {
         // Draw the chessboard in the default orientation
-        board.resetBoard();
+        //board.resetBoard();
         drawChessBoardOrientation(board, true);
 
         // Print a line separator between orientations

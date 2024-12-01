@@ -48,6 +48,10 @@ public class GameData {
         blackUsername = username;
     }
 
+    public void setGame(ChessGame newGame) {
+        game = newGame;
+    }
+
     @Override
     public String toString() {
         return String.format("Name: %s, White: %s, Black: %s",
