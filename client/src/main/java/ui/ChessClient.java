@@ -2,10 +2,7 @@ package ui;
 
 import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -20,11 +17,12 @@ public class ChessClient {
     private final ServerFacade server;
     private AuthData authData;
     private final String serverUrl;
-    private final ChessBoard chessBoard = new ChessBoard();
+    private ChessBoard chessBoard = new ChessBoard();
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
     boolean inGameplay = false;
     private String playerColor;
+    private ChessGame currentGame;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         this.out = new PrintStream(System.out, true);
@@ -201,6 +199,7 @@ public class ChessClient {
         //try to join game, if not, return exception
         try {
             server.joinGame(playerColor, gameID, authData);
+            chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard);
@@ -278,7 +277,7 @@ public class ChessClient {
 
     }
 
-    public String makeMove(PrintStream out) throws ResponseException {
+    public String makeMove(PrintStream out) throws ResponseException, InvalidMoveException {
         assertInGameplay();
         out.println("Making Move...");
         out.println("Enter coordinates of piece you want to move: ");
@@ -294,6 +293,30 @@ public class ChessClient {
             out.println("This piece isn't yours, choose another");
             makeMove(out);
         }
+        out.println("Enter coordinates where you want to move piece: ");
+        String endCoordinates = scanner.nextLine();
+        if (!validCoordinates(endCoordinates)) {
+            out.println("Coordinate does not exist");
+            makeMove(out);
+        }
+        ChessPosition end = parseChessPosition(endCoordinates);
+        //get game chessboard from gameData
+        //update board after successful move. make method for that
+
+        ChessGame game = new ChessGame();
+        ChessMove tryMove = new ChessMove(start, end, null);
+        Collection< ChessMove > validMoves = game.validMoves(start);
+        if (validMoves.contains(tryMove)) {
+            currentGame.makeMove(tryMove);
+            chessBoard = currentGame.getBoard();
+            ChessBoardDraw.drawChessBoard(chessBoard);
+
+
+        } else {
+            return "Invalid move, try again";
+
+        }
+
 
         return "Made move";
 
