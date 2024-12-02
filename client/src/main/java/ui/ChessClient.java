@@ -295,12 +295,18 @@ public class ChessClient {
         ChessPosition start = parseChessPosition(coordinates);
         ChessPiece piece = chessBoard.getPiece(start);
         ChessGame.TeamColor teamColor = stringtoTeamColor(playerColor);
-        if (piece.getTeamColor() != currentGame.getTeamTurn() || piece.getTeamColor() != teamColor) {
+
+        if (piece.getTeamColor() != currentGame.getTeamTurn()) {
+            return ("It's not your turn!");
+        }
+
+        if (piece.getTeamColor() != teamColor) {
             out.println("This piece isn't yours, choose another");
             makeMove(out);
         }
         out.println("Enter coordinates where you want to move piece: ");
         String endCoordinates = scanner.nextLine();
+
         if (!validCoordinates(endCoordinates)) {
             out.println("Coordinate does not exist");
             makeMove(out);
