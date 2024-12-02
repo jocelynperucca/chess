@@ -313,6 +313,12 @@ public class ChessClient {
         ChessMove tryMove = new ChessMove(start, end, null);
         Collection< ChessMove > validMoves = game.validMoves(start);
         if (validMoves.contains(tryMove)) {
+            if(canPromote(piece, tryMove)) {
+                out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
+                String promoteType = scanner.nextLine();
+                ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
+                tryMove = new ChessMove(start, end, promotionPiece);
+            }
             currentGame.makeMove(tryMove);
             chessBoard = currentGame.getBoard();
             currentGame.setBoard(chessBoard);
@@ -334,6 +340,21 @@ public class ChessClient {
 
         return "Made move";
 
+    }
+
+    private boolean canPromote(ChessPiece piece, ChessMove move) {
+        return ((piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.WHITE && move.getEndPosition().getRow() == 8)) ||
+                (piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.BLACK && move.getEndPosition().getRow() == 1);
+    }
+
+    private ChessPiece.PieceType setPieceType(String promotionType) {
+        return switch (promotionType.toUpperCase()) {
+            case "Q" -> ChessPiece.PieceType.QUEEN;
+            case "B" -> ChessPiece.PieceType.BISHOP;
+            case "N" -> ChessPiece.PieceType.KNIGHT;
+            case "R" -> ChessPiece.PieceType.ROOK;
+            default -> throw new IllegalArgumentException("Not a valid promotion type");
+        };
     }
 
 
