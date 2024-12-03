@@ -296,6 +296,9 @@ public class ChessClient {
         ChessPosition start = parseChessPosition(coordinates);
         ChessPiece piece = chessBoard.getPiece(start);
         ChessGame.TeamColor teamColor = stringtoTeamColor(playerColor);
+        if(piece == null) {
+            return "There is no piece there!";
+        }
 
         if (piece.getTeamColor() != currentGame.getTeamTurn()) {
             return ("It's not your turn!");
