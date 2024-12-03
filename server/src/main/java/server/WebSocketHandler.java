@@ -17,11 +17,9 @@ import java.sql.SQLException;
 @WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
-    UserDAO userDAO;
-    AuthDAO authDAO;
-    GameDAO gameDAO;
-    //private Session session;
-
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
@@ -40,25 +38,36 @@ public class WebSocketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(session, new Gson().fromJson(message, ConnectCommand.class));
-//            case LEAVE -> ;
-//            case MAKE_MOVE -> ;
-//            case RESIGN -> ;
+            // Other command handling (e.g., LEAVE, MAKE_MOVE, RESIGN) can be added here.
         }
     }
 
     private void connect(Session session, ConnectCommand command) throws DataAccessException, IOException {
-        connections.add(command.getAuthToken(), session);
         String authToken = command.getAuthToken();
-        String userName = authDAO.getAuthToken(authToken).getUsername();
-        var message = String.format("%s has connected", userName);
-        var notification = new NotificationMessage(message);
-        connections.broadcast(userName, notification);
-    }
+        int gameID = command.getGameID(); // gameID is now an int.
+        if (gameID <= 0 || authToken == null) {
+            throw new IllegalArgumentException("Invalid gameID or authToken");
+        }
 
-    private void addConnection(String authToken, Session session) throws DataAccessException {
+        // Validate authToken and retrieve user information
         if (authDAO.getAuthToken(authToken) == null) {
             throw new IllegalArgumentException("Invalid authToken");
         }
-        connections.add(authToken, session);
+        String userName = authDAO.getAuthToken(authToken).getUsername();
+
+        // Add connection grouped by gameID
+        connections.add(authToken, gameID, session);
+
+        // Notify other users in the same game
+        var message = String.format("%s has connected to game %d", userName, gameID);
+        var notification = new NotificationMessage(message);
+        connections.broadcast(gameID, userName, notification);
+    }
+
+    private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {
+        if (authDAO.getAuthToken(authToken) == null) {
+            throw new IllegalArgumentException("Invalid authToken");
+        }
+        connections.add(authToken, gameID, session);
     }
 }

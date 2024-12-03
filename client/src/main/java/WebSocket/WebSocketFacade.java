@@ -23,25 +23,49 @@ public class WebSocketFacade extends Endpoint {
     NotificationHandler notificationHandler;
     private ServerMessageListener serverMessageListener;
 
-    public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
+    public WebSocketFacade(String url, NotificationHandler notificationHandler, ServerMessageListener messageListener) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
             this.notificationHandler = notificationHandler;
+            this.serverMessageListener = messageListener;  // Ensure it's set here
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            //set message handle r
+            // Set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-                    notificationHandler.notify();
+                    handleMessage(message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+
+    private void handleMessage(String message) {
+        try {
+            ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+            switch (serverMessage.getServerMessageType()) {
+                case LOAD_GAME -> {
+                    LoadGameMessage lgMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                    serverMessageListener.onLoadGame(lgMessage);
+                }
+                case NOTIFICATION -> {
+                    //setMessageListener(serverMessageListener);
+                    NotificationMessage nMessage = new Gson().fromJson(message, NotificationMessage.class);
+                    serverMessageListener.onNotification(nMessage);
+                }
+                case ERROR -> {
+                    ErrorMessage eMessage = new Gson().fromJson(message, ErrorMessage.class);
+                    serverMessageListener.onError(eMessage);
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            System.err.println("Invalid JSON format: " + message);
         }
     }
 

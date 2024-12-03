@@ -8,6 +8,10 @@ import dataaccess.SQLGameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import server.ConnectionManager;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -24,6 +28,7 @@ public class ChessClient {
     private ChessBoard chessBoard = new ChessBoard();
     private WebSocketFacade ws;
     private final NotificationHandler notificationHandler;
+    private WebSocketFacade.ServerMessageListener serverMessageListener;
     boolean inGameplay = false;
     private String playerColor;
     private ChessGame currentGame;
@@ -34,6 +39,27 @@ public class ChessClient {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
+        this.serverMessageListener = new WebSocketFacade.ServerMessageListener() {
+            @Override
+            public void onLoadGame(LoadGameMessage message) {
+                // Handle game load
+                System.out.println("Game loaded: " + message);
+            }
+
+            @Override
+            public void onNotification(NotificationMessage message) {
+                // Handle notification
+                String setTextColorRed = EscapeSequences.SET_TEXT_COLOR_RED;
+                String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
+                System.out.println( ">>" + setTextColorRed + message.getMessage() + resetTextColor);
+            }
+
+            @Override
+            public void onError(ErrorMessage message) {
+                // Handle error
+                System.err.println("Error: " + message.getErrorMessage());
+            }
+        };
     }
 
     //evaluation of any given user command
@@ -210,7 +236,7 @@ public class ChessClient {
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             //chessBoard.resetBoard();
             ChessBoardDraw.drawChessBoard(chessBoard, null);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
             server.setWebsocket(ws);
             inGameplay = true;
             ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());

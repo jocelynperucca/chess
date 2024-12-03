@@ -1,5 +1,7 @@
 package websocket.messages;
 
+import com.google.gson.Gson;
+
 public class NotificationMessage extends ServerMessage {
     private final String message;
 
@@ -10,5 +12,9 @@ public class NotificationMessage extends ServerMessage {
 
     public String getMessage() {
         return message;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
     }
 }
