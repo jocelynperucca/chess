@@ -411,11 +411,11 @@ public class ChessClient {
 
     public String gameplayScreen() {
         return """
-                    - redraw chessboard
+                    - redraw chessboard (redraw)
                     - leave
-                    - make move
+                    - make move (make)
                     - resign
-                    - highlight legal moves
+                    - highlight legal moves (highlight)
                     = quit
                     - help - Show available commands
                     """;
