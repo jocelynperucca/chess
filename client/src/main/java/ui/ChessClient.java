@@ -51,7 +51,7 @@ public class ChessClient {
                 // Handle notification
                 String setTextColorRed = EscapeSequences.SET_TEXT_COLOR_RED;
                 String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
-                System.out.println( ">>" + setTextColorRed + message.getMessage() + resetTextColor);
+                System.out.println( ">> " + setTextColorRed + message.getMessage() + resetTextColor);
             }
 
             @Override

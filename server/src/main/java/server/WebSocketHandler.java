@@ -59,7 +59,7 @@ public class WebSocketHandler {
         connections.add(authToken, gameID, session);
 
         // Notify other users in the same game
-        var message = String.format("%s has connected to game %d", userName, gameID);
+        var message = String.format("%s has connected to game", userName);
         var notification = new NotificationMessage(message);
         connections.broadcast(gameID, userName, notification);
     }
