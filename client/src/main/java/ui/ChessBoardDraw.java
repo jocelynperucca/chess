@@ -1,25 +1,23 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+
+import java.util.Collection;
 
 public class ChessBoardDraw {
 
-    public static void drawChessBoard(ChessBoard board) {
+    public static void drawChessBoard(ChessBoard board, ChessPosition position) {
         // Draw the chessboard in the default orientation
-        //board.resetBoard();
-        drawChessBoardOrientation(board, true);
+        drawChessBoardOrientation(board, true, position);
 
         // Print a line separator between orientations
         System.out.println("\n");
 
         // Draw the chessboard in the reversed orientation
-        drawChessBoardOrientation(board, false);
+        drawChessBoardOrientation(board, false, position);
     }
 
-    private static void drawChessBoardOrientation(ChessBoard board, boolean normalOrientation) {
+    private static void drawChessBoardOrientation(ChessBoard board, boolean normalOrientation, ChessPosition selectedPosition) {
         final String labelBackground = EscapeSequences.SET_BG_COLOR_BLUE;
         final String reset = EscapeSequences.RESET_BG_COLOR + EscapeSequences.RESET_TEXT_COLOR;
 
@@ -29,7 +27,8 @@ public class ChessBoardDraw {
             System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         } else {
             System.out.print("h   g   f" + "\u2005" + "  e" + "\u2005" + "  d  " + "\u2005" + "c   b " + "\u2005" + " a    " + "\u2009");
-        }        System.out.print(reset + "\n");
+        }
+        System.out.print(reset + "\n");
 
         // Determine row range based on orientation
         int startRow = !normalOrientation ? 8 : 1;
@@ -46,9 +45,9 @@ public class ChessBoardDraw {
             int endCol = !normalOrientation ? 8 : 1;
             int colStep = !normalOrientation ? 1 : -1;
 
+            // Loop to print each column in the row
             for (int col = startCol; col != endCol + colStep; col += colStep) {
                 ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(position);
 
                 // Alternate square colors
                 if ((row + col) % 2 == 0) {
@@ -57,12 +56,36 @@ public class ChessBoardDraw {
                     System.out.print(EscapeSequences.SET_BG_COLOR_MAGENTA);
                 }
 
-                // Print piece or empty
-                if (piece != null) {
-                    System.out.print(getPieceSymbol(piece));
+                // Highlight valid moves for the selected piece
+                if (selectedPosition != null) {
+                    ChessPiece pieceAtSelectedPosition = board.getPiece(selectedPosition);
+                    if (pieceAtSelectedPosition != null) {
+                        Collection<ChessMove> validMoves = pieceAtSelectedPosition.pieceMoves(board, selectedPosition);
+                        ChessMove chessMove = new ChessMove(selectedPosition, position, null);
+
+                        // Highlight valid move squares in green
+                        if (validMoves != null && validMoves.contains(chessMove)) {
+                            System.out.print(EscapeSequences.SET_BG_COLOR_GREEN);
+                        }
+                    }
+                }
+
+                // Print the piece at the current position if it exists
+                ChessPiece pieceAtPosition = board.getPiece(position);
+                if (pieceAtPosition != null) {
+                    // Highlight the selected position itself in yellow
+                    if (position.equals(selectedPosition)) {
+                        System.out.print(EscapeSequences.SET_BG_COLOR_YELLOW);
+                    }
+
+                    // Print the piece symbol
+                    System.out.print(getPieceSymbol(pieceAtPosition));
                 } else {
+                    // Print empty space if no piece at the position
                     System.out.print(EscapeSequences.EMPTY);
                 }
+
+                // Reset any coloring
                 System.out.print(reset);
             }
 
@@ -76,10 +99,12 @@ public class ChessBoardDraw {
             System.out.print("a   b   c" + "\u2005" + "  d" + "\u2005" + "  e  " + "\u2005" + "f   g " + "\u2005" + " h    " + "\u2009");
         } else {
             System.out.print("h   g   f" + "\u2005" + "  e" + "\u2005" + "  d  " + "\u2005" + "c   b " + "\u2005" + " a    " + "\u2009");
-        }        System.out.print(reset + "\n");
+        }
+        System.out.print(reset + "\n");
     }
 
-    //Returns the symbol for the given chess piece based on its type and color.
+
+
     private static String getPieceSymbol(ChessPiece piece) {
         switch (piece.getPieceType()) {
             case KING:

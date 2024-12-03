@@ -54,6 +54,7 @@ public class ChessClient {
                 case "help" -> help();
                 case "redraw" -> redrawChessboard(out);
                 case "make" -> makeMove(out);
+                case "highlight" -> highlight(out);
                 case " " -> help();
                 default -> "Invalid command";
             };
@@ -208,7 +209,7 @@ public class ChessClient {
             chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             //chessBoard.resetBoard();
-            ChessBoardDraw.drawChessBoard(chessBoard);
+            ChessBoardDraw.drawChessBoard(chessBoard, null);
             ws = new WebSocketFacade(serverUrl, notificationHandler);
             server.setWebsocket(ws);
             inGameplay = true;
@@ -270,7 +271,7 @@ public class ChessClient {
         GameData selectedGame = gameList.get(selectedNumber - 1);
 
         //Draw chessboard depending on the board at the time
-        ChessBoardDraw.drawChessBoard(chessBoard);
+        ChessBoardDraw.drawChessBoard(chessBoard,null);
 
         //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
@@ -278,7 +279,7 @@ public class ChessClient {
 
     public String redrawChessboard(PrintStream out) {
         out.println("Printing chessboard...");
-        ChessBoardDraw.drawChessBoard(chessBoard);
+        ChessBoardDraw.drawChessBoard(chessBoard,null);
         return "Current Chessboard";
 
     }
@@ -328,7 +329,7 @@ public class ChessClient {
             currentGame.makeMove(tryMove);
             chessBoard = currentGame.getBoard();
             currentGame.setBoard(chessBoard);
-            ChessBoardDraw.drawChessBoard(chessBoard);
+            ChessBoardDraw.drawChessBoard(chessBoard, null);
 
             try {
                 SQLGameDAO sqlGameDAO = new SQLGameDAO();
@@ -337,13 +338,10 @@ public class ChessClient {
                 throw new RuntimeException(e);
             }
 
-
         } else {
             return "Invalid move, try again";
 
         }
-
-
         return "Made move";
 
     }
@@ -361,6 +359,21 @@ public class ChessClient {
             case "R" -> ChessPiece.PieceType.ROOK;
             default -> throw new IllegalArgumentException("Not a valid promotion type");
         };
+    }
+
+    public String highlight(PrintStream out) {
+        out.println("Highlighting moves...");
+        out.println("Enter coordinates of piece you want to check: ");
+        String coordinates = scanner.nextLine();
+        if(!validCoordinates(coordinates)) {
+            out.println("Coordinates don't exist");
+            highlight(out);
+        } else {
+            ChessPosition position = parseChessPosition(coordinates);
+            ChessPiece piece = chessBoard.getPiece(position);
+            ChessBoardDraw.drawChessBoard(chessBoard, position);
+        }
+        return "Available moves";
     }
 
 
