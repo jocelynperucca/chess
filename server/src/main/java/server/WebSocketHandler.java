@@ -61,7 +61,7 @@ public class WebSocketHandler {
         // Notify other users in the same game
         var message = String.format("%s has connected to game", userName);
         var notification = new NotificationMessage(message);
-        connections.broadcast(gameID, userName, notification);
+        connections.broadcast(gameID, authToken, notification);
     }
 
     private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {

@@ -30,7 +30,7 @@ public class ConnectionManager {
     }
 
     // Broadcast a message to all connections in a specific game, excluding a visitor
-    public void broadcast(int gameID, String excludeVisitorName, NotificationMessage notification) throws IOException {
+    public void broadcast(int gameID, String authToken, NotificationMessage notification) throws IOException {
         System.out.println("BROADCASTING" + gameID);
         List<Connection> connections = connectionsByGame.get(gameID);
         if (connections == null) return;
@@ -38,7 +38,7 @@ public class ConnectionManager {
         var removeList = new ArrayList<Connection>();
         for (var c : connections) {
             if (c.session.isOpen()) {
-                if (!c.authToken.equals(excludeVisitorName)) {
+                if (!c.authToken.equals(authToken)) {
                     String jsonMessage = notification.toJson();
                     c.send(jsonMessage);
                 }
