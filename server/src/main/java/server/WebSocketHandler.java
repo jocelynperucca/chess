@@ -6,6 +6,7 @@ import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -92,10 +93,12 @@ public class WebSocketHandler {
         session.getRemote().sendString(jsonMessage);
         String startMove = toChessCoordinates(move.getStartPosition());
         String endMove = toChessCoordinates(move.getEndPosition());
-        String moves = startMove + ", " + endMove;
+        String moves = startMove + "- " + endMove + " ";
+        AuthData authData = authDAO.getAuthToken(authToken);
+        String userName = authData.getUsername();
 
 
-        var notification = new NotificationMessage(moves + "Move made successfully");
+        var notification = new NotificationMessage(moves + userName + " made move successfully");
         connections.broadcast(gameID, authToken, notification);
     }
 
