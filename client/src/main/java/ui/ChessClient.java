@@ -56,7 +56,7 @@ public class ChessClient {
                 // Handle notification
                 String setTextColorRed = EscapeSequences.SET_TEXT_COLOR_RED;
                 String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
-                System.out.println( ">> " + setTextColorRed + message.getMessage() + resetTextColor);
+                System.out.println( setTextColorRed  + ">> " + message.getMessage() + resetTextColor);
             }
 
             @Override
@@ -370,9 +370,9 @@ public class ChessClient {
                 ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
                 tryMove = new ChessMove(start, end, promotionPiece);
             }
-            currentGame.makeMove(tryMove);
-            chessBoard = currentGame.getBoard();
-            currentGame.setBoard(chessBoard);
+//            currentGame.makeMove(tryMove);
+//            chessBoard = currentGame.getBoard();
+//            currentGame.setBoard(chessBoard);
             try {
                 ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
             } catch (ResponseException e) {
@@ -380,13 +380,13 @@ public class ChessClient {
             }
             //ChessBoardDraw.drawChessBoard(chessBoard, null);
 
-            try {
-                SQLGameDAO sqlGameDAO = new SQLGameDAO();
-                sqlGameDAO.updateGame(currentGame, gameID);
-            } catch (SQLException | DataAccessException e) {
-                throw new RuntimeException(e);
-            }
-
+//            try {
+//                SQLGameDAO sqlGameDAO = new SQLGameDAO();
+//                sqlGameDAO.updateGame(currentGame, gameID);
+//            } catch (SQLException | DataAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+//
         } else {
             return "Invalid move, try again";
 

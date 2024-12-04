@@ -2,6 +2,7 @@ package server;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
@@ -85,12 +86,17 @@ public class WebSocketHandler {
         chessGame.makeMove(move);
         gameDAO.updateGame(chessGame, gameID);
 
-        var notification = new NotificationMessage("Move made successfully");
-        connections.broadcast(gameID, authToken, notification);
-
         LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
         String jsonMessage = new Gson().toJson(loadGameMessage);
+        connections.broadcast(gameID, authToken, loadGameMessage);
         session.getRemote().sendString(jsonMessage);
+        String startMove = toChessCoordinates(move.getStartPosition());
+        String endMove = toChessCoordinates(move.getEndPosition());
+        String moves = startMove + ", " + endMove;
+
+
+        var notification = new NotificationMessage(moves + "Move made successfully");
+        connections.broadcast(gameID, authToken, notification);
     }
 
     private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {
@@ -98,5 +104,15 @@ public class WebSocketHandler {
             throw new IllegalArgumentException("Invalid authToken");
         }
         connections.add(authToken, gameID, session);
+    }
+
+    public String toChessCoordinates(ChessPosition position) {
+        int row = position.getRow();
+        int col = position.getColumn();
+
+        char letter = (char) ('a' + col - 1); // Convert column number to letter ('a' = 1, 'b' = 2, etc.)
+        int number = row; // Row remains as is.
+
+        return "" + number + letter; // Concatenate letter and number into a single string.
     }
 }

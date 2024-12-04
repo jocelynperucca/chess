@@ -2,6 +2,7 @@ package server;
 
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ConnectionManager {
     }
 
     // Broadcast a message to all connections in a specific game, excluding a visitor
-    public void broadcast(int gameID, String authToken, NotificationMessage notification) throws IOException {
+    public void broadcast(int gameID, String authToken, ServerMessage notification) throws IOException {
         System.out.println("BROADCASTING" + gameID);
         List<Connection> connections = connectionsByGame.get(gameID);
         if (connections == null) return;
