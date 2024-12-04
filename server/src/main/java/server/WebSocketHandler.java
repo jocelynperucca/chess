@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.GameData;
 import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -9,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
@@ -62,6 +64,10 @@ public class WebSocketHandler {
         var message = String.format("%s has connected to game", userName);
         var notification = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notification);
+        GameData gameData = gameDAO.findGame(gameID);
+        var loadGameMessage = new LoadGameMessage(gameData.getGame());
+        String jsonMessage = loadGameMessage.toJson();
+        session.getRemote().sendString(jsonMessage);
     }
 
     private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {

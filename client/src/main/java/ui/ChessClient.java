@@ -43,7 +43,12 @@ public class ChessClient {
             @Override
             public void onLoadGame(LoadGameMessage message) {
                 // Handle game load
-                System.out.println("Game loaded: " + message);
+                currentGame = message.getGame();
+                chessBoard = currentGame.getBoard();
+                ChessBoardDraw.drawChessBoard(chessBoard,null);
+                String setTextColorRed = EscapeSequences.SET_TEXT_COLOR_RED;
+                String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
+                System.out.println(setTextColorRed + ">> " + "Game Loaded" + resetTextColor);
             }
 
             @Override
@@ -231,11 +236,11 @@ public class ChessClient {
         //try to join game, if not, return exception
         try {
             currentGame = server.joinGame(playerColor, gameID, authData);
-            currentGame = selectedGame.getGame();
-            chessBoard = currentGame.getBoard();
+//            currentGame = selectedGame.getGame();
+//            chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
             //chessBoard.resetBoard();
-            ChessBoardDraw.drawChessBoard(chessBoard, null);
+            //ChessBoardDraw.drawChessBoard(chessBoard, null);
             ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
             server.setWebsocket(ws);
             inGameplay = true;
@@ -295,6 +300,12 @@ public class ChessClient {
         }
         //get selectedGame number
         GameData selectedGame = gameList.get(selectedNumber - 1);
+        gameID = selectedGame.getGameID();
+        ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
+        server.setWebsocket(ws);
+        currentGame = selectedGame.getGame();
+        chessBoard = currentGame.getBoard();
+        ws.joinPlayerSend(gameID, null, authData.getAuthToken());
 
         //Draw chessboard depending on the board at the time
         ChessBoardDraw.drawChessBoard(chessBoard,null);
@@ -358,6 +369,7 @@ public class ChessClient {
             currentGame.makeMove(tryMove);
             chessBoard = currentGame.getBoard();
             currentGame.setBoard(chessBoard);
+            ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
             ChessBoardDraw.drawChessBoard(chessBoard, null);
 
             try {
