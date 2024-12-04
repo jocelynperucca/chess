@@ -93,7 +93,7 @@ public class WebSocketHandler {
         session.getRemote().sendString(jsonMessage);
         String startMove = toChessCoordinates(move.getStartPosition());
         String endMove = toChessCoordinates(move.getEndPosition());
-        String moves = startMove + "- " + endMove + " ";
+        String moves = startMove + "-" + endMove + " ";
         AuthData authData = authDAO.getAuthToken(authToken);
         String userName = authData.getUsername();
 
