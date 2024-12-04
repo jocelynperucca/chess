@@ -244,7 +244,11 @@ public class ChessClient {
             ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
             server.setWebsocket(ws);
             inGameplay = true;
-            ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());
+            try {
+                ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());
+            } catch (ResponseException e) {
+                throw new RuntimeException(e);
+            }
             //HERE
             return message;
         } catch (ResponseException e) {
@@ -369,8 +373,12 @@ public class ChessClient {
             currentGame.makeMove(tryMove);
             chessBoard = currentGame.getBoard();
             currentGame.setBoard(chessBoard);
-            ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
-            ChessBoardDraw.drawChessBoard(chessBoard, null);
+            try {
+                ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
+            } catch (ResponseException e) {
+                throw new RuntimeException(e);
+            }
+            //ChessBoardDraw.drawChessBoard(chessBoard, null);
 
             try {
                 SQLGameDAO sqlGameDAO = new SQLGameDAO();

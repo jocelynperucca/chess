@@ -1,5 +1,8 @@
 package server;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.GameData;
@@ -9,6 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.ConnectCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -36,10 +40,11 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, InvalidMoveException {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(session, new Gson().fromJson(message, ConnectCommand.class));
+            case MAKE_MOVE -> makeMove(session, new Gson().fromJson(message, MakeMoveCommand.class));
             // Other command handling (e.g., LEAVE, MAKE_MOVE, RESIGN) can be added here.
         }
     }
@@ -67,6 +72,24 @@ public class WebSocketHandler {
         GameData gameData = gameDAO.findGame(gameID);
         var loadGameMessage = new LoadGameMessage(gameData.getGame());
         String jsonMessage = loadGameMessage.toJson();
+        session.getRemote().sendString(jsonMessage);
+    }
+
+    private void makeMove(Session session, MakeMoveCommand command) throws DataAccessException, InvalidMoveException, IOException {
+        String authToken = command.getAuthToken();
+        int gameID = command.getGameID();
+        ChessMove move = command.getMove();
+        GameData gameData = gameDAO.findGame(gameID);
+
+        ChessGame chessGame = gameData.getGame();
+        chessGame.makeMove(move);
+        gameDAO.updateGame(chessGame, gameID);
+
+        var notification = new NotificationMessage("Move made successfully");
+        connections.broadcast(gameID, authToken, notification);
+
+        LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
+        String jsonMessage = new Gson().toJson(loadGameMessage);
         session.getRemote().sendString(jsonMessage);
     }
 
