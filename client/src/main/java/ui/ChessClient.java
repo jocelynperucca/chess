@@ -87,6 +87,7 @@ public class ChessClient {
                 case "make" -> makeMove(out);
                 case "highlight" -> highlight(out);
                 case "leave" -> leave(out);
+                //case "resign" -> resign(out);
                 case " " -> help();
                 default -> "Invalid command";
             };

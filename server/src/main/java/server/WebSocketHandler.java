@@ -14,10 +14,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import websocket.commands.ConnectCommand;
-import websocket.commands.LeaveCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -51,6 +48,7 @@ public class WebSocketHandler {
             case CONNECT -> connect(session, new Gson().fromJson(message, ConnectCommand.class));
             case MAKE_MOVE -> makeMove(session, new Gson().fromJson(message, MakeMoveCommand.class));
             case LEAVE -> leave(session, new Gson().fromJson(message, LeaveCommand.class));
+            case RESIGN -> resign(session, new Gson().fromJson(message, ResignCommand.class));
             // Other command handling (e.g., LEAVE, MAKE_MOVE, RESIGN) can be added here.
         }
     }
@@ -135,8 +133,12 @@ public class WebSocketHandler {
 
         String confirmMessage = "You have left the game.";
         session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
+    }
+
+    private void resign(Session session, ResignCommand command) {
 
     }
+
 
     public String toChessCoordinates(ChessPosition position) {
         int row = position.getRow();
