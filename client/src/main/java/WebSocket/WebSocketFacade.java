@@ -84,7 +84,6 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-
     public void sendCommand(UserGameCommand userGameCommand) throws ResponseException {
         try {
             String command = new Gson().toJson(userGameCommand);

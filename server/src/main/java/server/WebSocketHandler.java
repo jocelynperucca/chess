@@ -15,6 +15,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.ConnectCommand;
+import websocket.commands.LeaveCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -49,6 +50,7 @@ public class WebSocketHandler {
         switch (userGameCommand.getCommandType()) {
             case CONNECT -> connect(session, new Gson().fromJson(message, ConnectCommand.class));
             case MAKE_MOVE -> makeMove(session, new Gson().fromJson(message, MakeMoveCommand.class));
+            case LEAVE -> leave(session, new Gson().fromJson(message, LeaveCommand.class));
             // Other command handling (e.g., LEAVE, MAKE_MOVE, RESIGN) can be added here.
         }
     }
@@ -118,6 +120,22 @@ public class WebSocketHandler {
             throw new IllegalArgumentException("Invalid authToken");
         }
         connections.add(authToken, gameID, session);
+    }
+
+    private void leave(Session session, LeaveCommand command) throws DataAccessException, IOException {
+        String authToken = command.getAuthToken();
+        int gameID = command.getGameID();
+
+        connections.remove(authToken, gameID);
+
+        String userName = authDAO.getAuthToken(authToken).getUsername();
+        String message = userName + " has left the game.";
+        var notification = new NotificationMessage(message);
+        connections.broadcast(gameID, authToken, notification);
+
+        String confirmMessage = "You have left the game.";
+        session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
+
     }
 
     public String toChessCoordinates(ChessPosition position) {

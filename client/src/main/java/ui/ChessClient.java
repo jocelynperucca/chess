@@ -86,6 +86,7 @@ public class ChessClient {
                 case "redraw" -> redrawChessboard(out);
                 case "make" -> makeMove(out);
                 case "highlight" -> highlight(out);
+                case "leave" -> leave(out);
                 case " " -> help();
                 default -> "Invalid command";
             };
@@ -419,10 +420,30 @@ public class ChessClient {
             highlight(out);
         } else {
             ChessPosition position = parseChessPosition(coordinates);
-            ChessPiece piece = chessBoard.getPiece(position);
             ChessBoardDraw.drawChessBoard(chessBoard, position);
         }
         return "Available moves";
+    }
+
+    public String leave(PrintStream out) throws ResponseException {
+        assertSignedIn();
+
+        if (currentGame == null) {
+            return "You're not in a game";
+        }
+
+        try {
+        ws.leaveSend(authData.getAuthToken(), gameID);
+        SQLGameDAO sqlGameDAO = new SQLGameDAO();
+        sqlGameDAO.removePlayer(gameID, playerColor);
+        currentGame = null;
+        inGameplay = false;
+
+        return "You have left the game.";
+        } catch (ResponseException | DataAccessException | SQLException e) {
+            return "Failed to leave game" + e.getMessage();
+        }
+
     }
 
 

@@ -20,10 +20,10 @@ public class ConnectionManager {
     }
 
     // Remove a connection by visitorName and gameID
-    public void remove(String visitorName, int gameID) {
+    public void remove(String authToken, int gameID) {
         List<Connection> connections = connectionsByGame.get(gameID);
         if (connections != null) {
-            connections.removeIf(c -> c.authToken.equals(visitorName));
+            connections.removeIf(c -> c.authToken.equals(authToken));
             if (connections.isEmpty()) {
                 connectionsByGame.remove(gameID); // Clean up empty game list
             }

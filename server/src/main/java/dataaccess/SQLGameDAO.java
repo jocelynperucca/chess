@@ -3,6 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
+
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -170,6 +172,21 @@ public class SQLGameDAO implements GameDAO {
         ChessGame chessGame = new Gson().fromJson(chessGameJson, ChessGame.class);
 
         return new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
+    }
+
+    public void removePlayer(int gameID, String playerColor) throws DataAccessException {
+        if (!playerColor.equalsIgnoreCase("WHITE") && !playerColor.equalsIgnoreCase("BLACK")) {
+            throw new DataAccessException("Invalid player color");
+        }
+        var statement = "UPDATE game SET " + playerColor + "Username" + " = NULL WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection(); var ps = conn.prepareStatement(statement)) {
+            ps.setInt(1, gameID);
+            int rowsUpdated = ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     //SQL to create game database
