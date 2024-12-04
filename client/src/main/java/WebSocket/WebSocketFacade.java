@@ -55,7 +55,6 @@ public class WebSocketFacade extends Endpoint {
                     serverMessageListener.onLoadGame(lgMessage);
                 }
                 case NOTIFICATION -> {
-                    //setMessageListener(serverMessageListener);
                     NotificationMessage nMessage = new Gson().fromJson(message, NotificationMessage.class);
                     serverMessageListener.onNotification(nMessage);
                 }
@@ -84,27 +83,7 @@ public class WebSocketFacade extends Endpoint {
         void onError(ErrorMessage message);
     }
 
-    private void messageHandler(String message) {
-        try {
-            ServerMessage serverMessage = new Gson(). fromJson(message, ServerMessage.class);
-            switch (serverMessage.getServerMessageType()) {
-                case NOTIFICATION -> {
-                    NotificationMessage notifcationMessage = new Gson().fromJson(message, NotificationMessage.class);
-                    serverMessageListener.onNotification(notifcationMessage);
-                }
-                case LOAD_GAME -> {
-                    LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
-                    serverMessageListener.onLoadGame(loadGameMessage);
-                }
-                case ERROR -> {
-                    ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
-                    serverMessageListener.onError(errorMessage);
-                }
-            }
-        } catch (JsonSyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 
     public void sendCommand(UserGameCommand userGameCommand) throws ResponseException {
         try {
