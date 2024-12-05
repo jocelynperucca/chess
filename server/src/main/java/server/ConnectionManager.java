@@ -34,7 +34,9 @@ public class ConnectionManager {
     public void broadcast(int gameID, String authToken, ServerMessage notification) throws IOException {
         System.out.println("BROADCASTING" + gameID);
         List<Connection> connections = connectionsByGame.get(gameID);
-        if (connections == null) return;
+        if (connections == null)  {
+            return;
+        }
 
         var removeList = new ArrayList<Connection>();
         for (var c : connections) {

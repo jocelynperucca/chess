@@ -1,7 +1,6 @@
 package ui;
-
-import WebSocket.NotificationHandler;
-import WebSocket.WebSocketFacade;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
 import chess.*;
 import model.AuthData;
 import model.GameData;
@@ -38,7 +37,6 @@ public class ChessClient {
         this.serverMessageListener = new WebSocketFacade.ServerMessageListener() {
             @Override
             public void onLoadGame(LoadGameMessage message) {
-                // Handle game load
                 currentGame = message.getGame();
                 chessBoard = currentGame.getBoard();
                 ChessBoardDraw.drawChessBoard(chessBoard,null);
@@ -47,7 +45,6 @@ public class ChessClient {
                 System.out.println(setTextColorRed + ">> " + "Game Loaded" + resetTextColor);
                 System.out.println("It is " + currentGame.getTeamTurn().toString() + " turn");
             }
-
             @Override
             public void onNotification(NotificationMessage message) {
                 // Handle notification
@@ -55,7 +52,6 @@ public class ChessClient {
                 String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
                 System.out.println( setTextColorRed  + ">> " + message.getMessage() + resetTextColor);
             }
-
             @Override
             public void onError(ErrorMessage message) {
                 // Handle error
@@ -63,13 +59,11 @@ public class ChessClient {
             }
         };
     }
-
     //evaluation of any given user command
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens [0] : "help";
-
             //Switch statement for given commands based on user input
             return switch (cmd) {
                 case "register" -> register(out);
@@ -92,10 +86,8 @@ public class ChessClient {
             return ("Invalid command");
         }
     }
-
     //function to register on the client end
     public String register(PrintStream out) {
-
         //register ui and set username, password, and email based on user input
         out.println("Registering a new account:");
         out.print("Choose Username: ");
@@ -126,7 +118,6 @@ public class ChessClient {
 
     //function to log in from the client end
     public String login(PrintStream out) {
-
         //user interface for login and set username and password
         out.println("Login:");
         out.print("Enter username: ");
@@ -145,7 +136,6 @@ public class ChessClient {
 
         //try to login with given userdata, throw exception if not
         try {
-            //ws = new WebSocketFacade(serverUrl, notificationHandler);
             server.setWebsocket(ws);
             AuthData loginResponse = server.login(userData);
             String authToken = loginResponse.getAuthToken();
@@ -156,12 +146,10 @@ public class ChessClient {
             return "Login failed: ";
         }
     }
-
     //function to logout from the client end
     public String logout(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Logging out");
-
         try {
             server.logout(authData);
             state = State.SIGNEDOUT;
@@ -170,18 +158,14 @@ public class ChessClient {
             return e.getMessage();
         }
     }
-
     //function to list games from the client end
     public String listGames(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Fetching game list...");
-
         Collection<GameData> games = server.listGames(authData);
-
         if (games == null || games.isEmpty()) {
             return "No games available.";
         }
-
         // Store games in an ArrayList and reverse the order
         List<GameData> gameList = new ArrayList<>(games);
         Collections.reverse(gameList); // Reverse to display oldest first
@@ -191,7 +175,6 @@ public class ChessClient {
         for (int i = 0; i < gameList.size(); i++) {
             gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
-
         //assign gameDisplay and output it to the console
         String gameDisplay = gameListBuilder.toString();
         return gameDisplay;
@@ -201,18 +184,12 @@ public class ChessClient {
     public String joinGame(PrintStream out) throws ResponseException {
         assertSignedIn();
         out.println("Joining Game...");
-
         Collection<GameData> games = server.listGames(authData);
-
         if (games == null || games.isEmpty()) {
             return "No games available.";
         }
-
-        // Store games in an ArrayList and reverse the order
         List<GameData> gameList = new ArrayList<>(games);
         Collections.reverse(gameList); // Reverse to display to mirror what happens in listGames
-
-        //set number
         out.print("Enter the number of the game you want to join: ");
         int selectedNumber;
         try {
@@ -227,16 +204,13 @@ public class ChessClient {
         //Get selected game and set gameID
         GameData selectedGame = gameList.get(selectedNumber - 1);
         gameID = selectedGame.getGameID();
-
         //set player color
         out.print("Enter 'white' or 'black' to choose your player color: ");
         playerColor = scanner.nextLine();
-
         //try to join game, if not, return exception
         try {
             currentGame = server.joinGame(playerColor, gameID, authData);
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
-
             ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
             server.setWebsocket(ws);
             inGameplay = true;
@@ -253,15 +227,12 @@ public class ChessClient {
 
     public String createGame(PrintStream out) {
         out.println("Creating Game...");
-
         //Set game name
         out.print("Enter a name for your game: ");
         String gameName = scanner.nextLine();
-
         if (gameName.isEmpty()) {
             return "Game name cannot be empty";
         }
-
         //try to create game with given name, throws exception if cannot
         try {
             server.createGame(gameName, authData);
@@ -274,18 +245,14 @@ public class ChessClient {
     }
 
     public String observe(PrintStream out) throws ResponseException {
-
         // Store games in an ArrayList and reverse the order
         Collection<GameData> games = server.listGames(authData);
         List<GameData> gameList = new ArrayList<>(games);
         Collections.reverse(gameList);
-
-        // Display games with sequential numbering
         StringBuilder gameListBuilder = new StringBuilder("Available Games:\n");
         for (int i = 0; i < gameList.size(); i++) {
             gameListBuilder.append(i + 1).append(". ").append(gameList.get(i).toString()).append("\n");
         }
-
         //Choose game number to observe
         out.print("Enter the number of the game you want to observe: ");
         int selectedNumber;
@@ -307,28 +274,22 @@ public class ChessClient {
         ws.joinPlayerSend(gameID, "observer", authData.getAuthToken());
         playerColor = "observer";
         asObserver = true;
-
         //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
     }
-
     public String redrawChessboard(PrintStream out) throws ResponseException {
         if (assertInGameplay() || assertObserver() ) {
             out.println("Printing chessboard...");
             ChessBoardDraw.drawChessBoard(chessBoard,null);
             return "Current Chessboard";
-
         } else {
             return "Issue drawing chessboard, try again";
-        }
-    }
-
+        }}
     public String makeMove(PrintStream out) throws ResponseException, InvalidMoveException {
         assertInGameplay();
         if (currentGame.isGameOver()) {
             return "Game is over, cannot make a move";
         }
-
         out.println("Making Move...");
         out.println("Enter coordinates of piece you want to move (Example 1a, 7c): ");
         String coordinates = scanner.nextLine();
@@ -342,18 +303,15 @@ public class ChessClient {
         if(piece == null) {
             return "There is no piece there!";
         }
-
         if (piece.getTeamColor() != teamColor) {
             out.println("This piece isn't yours, choose another");
             makeMove(out);
         }
         out.println("Enter coordinates where you want to move piece (Example 1a, 7c): ");
         String endCoordinates = scanner.nextLine();
-
         if (!validCoordinates(endCoordinates)) {
             out.println("Coordinate does not exist");
-            makeMove(out);
-        }
+            makeMove(out);}
         ChessPosition end = parseChessPosition(endCoordinates);
         ChessGame game = new ChessGame();
         ChessMove tryMove = new ChessMove(start, end, null);
@@ -362,23 +320,19 @@ public class ChessClient {
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
-
         if(canPromote(piece, tryMove)) {
             out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
             String promoteType = scanner.nextLine();
             ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
-            tryMove = new ChessMove(start, end, promotionPiece);
-        }
-
+            tryMove = new ChessMove(start, end, promotionPiece);}
         return "Made move";
-
     }
-
     private boolean canPromote(ChessPiece piece, ChessMove move) {
-        return ((piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.WHITE && move.getEndPosition().getRow() == 8)) ||
-                (piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.BLACK && move.getEndPosition().getRow() == 1);
+        return ((piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                && move.getEndPosition().getRow() == 8)) ||
+                (piece.getPieceType() == ChessPiece.PieceType.PAWN && piece.getTeamColor() == ChessGame.TeamColor.BLACK
+                        && move.getEndPosition().getRow() == 1);
     }
-
     private ChessPiece.PieceType setPieceType(String promotionType) {
         return switch (promotionType.toUpperCase()) {
             case "Q" -> ChessPiece.PieceType.QUEEN;
@@ -388,7 +342,6 @@ public class ChessClient {
             default -> throw new IllegalArgumentException("Not a valid promotion type");
         };
     }
-
     public String highlight(PrintStream out) throws ResponseException {
         if (assertObserver() || assertInGameplay()) {
             out.println("Highlighting moves...");
@@ -404,48 +357,31 @@ public class ChessClient {
             return "Available moves";
         } else {
             return "You are not authorized to do this";
-        }
-
-    }
-
+        }}
     public String leave(PrintStream out) throws ResponseException {
         assertSignedIn();
-
         if (currentGame == null) {
             return "You're not in a game";
         }
-
         try {
         ws.leaveSend(authData.getAuthToken(), gameID);
-
         currentGame = null;
         inGameplay = false;
         asObserver = false;
-
         return "You have left the game.";
         } catch (ResponseException e) {
             return "Failed to leave game" + e.getMessage();
-        }
-
-    }
-
+        }}
     public String resign(PrintStream out) throws ResponseException {
         assertInGameplay();
-        //assertObserver();
         try {
             ws.resignSend(authData.getAuthToken(), gameID);
-
             currentGame = null;
             inGameplay = false;
-
             return "Resigned";
         } catch (ResponseException e) {
             return "Could not resign" + e.getMessage();
-        }
-    }
-
-
-
+        }}
     //Default login Screen depending on if they are logged in or out
     public String loginScreen() {
         return switch (state) {
@@ -470,12 +406,7 @@ public class ChessClient {
                             = quit
                             - help - Show available commands
                             """;
-                }
-            }
-        };
-    }
-
-
+                }}};}
     public String gameplayScreen() {
         return """
                     - redraw chessboard (redraw)
@@ -485,9 +416,7 @@ public class ChessClient {
                     - highlight legal moves (highlight)
                     = quit
                     - help - Show available commands
-                    """;
-    }
-
+                    """;}
     public String gameplayScreenObserver() {
         return """
                     - redraw chessboard (redraw)
@@ -495,9 +424,7 @@ public class ChessClient {
                     - leave
                     = quit
                     - help - Show available commands
-                    """;
-    }
-
+                    """;}
     public String gameplayScreenHelpObserver() {
         return """
                     - redraw chessboard - see the current state of the board
@@ -505,11 +432,7 @@ public class ChessClient {
                     - leave - leave the current state of the game
                     = quit
                     - help - Show available commands
-                    """;
-    }
-
-
-
+                    """;}
     public String gameplayScreenHelp() {
         return """
                     - redraw chessboard - see the current state of the board
@@ -519,9 +442,7 @@ public class ChessClient {
                     - highlight legal moves - see what moves you can make
                     = quit
                     - help - Show available commands
-                    """;
-    }
-
+                    """;}
     //Help menu
     public String help() {
         return switch (state) {
@@ -546,59 +467,34 @@ public class ChessClient {
                         - quit - Exit chess program
                         - help - Show available commands
                         """;
-                }
-            }
-        };
-    }
-
+                }}};}
     public boolean validCoordinates(String coordinate) {
         if (coordinate.length() != 2) {
-            return false;
-        }
+            return false;}
         String columns = "abcdefgh";
         char letter = coordinate.charAt(1);
         char num = coordinate.charAt(0);
-
         boolean isValidColumn = columns.contains(String.valueOf(letter));
         boolean isValidRow = Character.isDigit(num) && (num >= '1' && num <= '8');
-
-        return isValidColumn && isValidRow;
-    }
-
+        return isValidColumn && isValidRow;}
     public ChessPosition parseChessPosition(String coordinates) {
         char letter = coordinates.charAt(1);
         int number = coordinates.charAt(0) - '0';
-
         int col = letter - 'a' + 1;
         int row = number;
-
-        return new ChessPosition(row, col);
-    }
-
-
+        return new ChessPosition(row, col);}
     private ChessGame.TeamColor stringtoTeamColor(String playerColor) {
         if (playerColor.equalsIgnoreCase("white")) {
             return ChessGame.TeamColor.WHITE;
         } else if (playerColor.equalsIgnoreCase("black")) {
             return ChessGame.TeamColor.BLACK;
         } else {
-            return null;
-        }
-    }
-
-
+            return null;}}
     //private function to make sure user is signed in
     private void assertSignedIn() throws ResponseException {
         if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
-        }
-    }
-
+            throw new ResponseException(400, "You must sign in");}}
     private boolean assertInGameplay() throws ResponseException {
-        return inGameplay;
-    }
-
+        return inGameplay;}
     private boolean assertObserver() {
-        return asObserver;
-    }
-}
+        return asObserver;}}

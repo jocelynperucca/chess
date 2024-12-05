@@ -1,6 +1,5 @@
-package WebSocket;
+package websocket;
 
-import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.JsonSyntaxException;
 import ui.ResponseException;

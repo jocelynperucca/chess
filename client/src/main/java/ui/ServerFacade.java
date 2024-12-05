@@ -1,6 +1,6 @@
 package ui;
 
-import WebSocket.WebSocketFacade;
+import websocket.WebSocketFacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;

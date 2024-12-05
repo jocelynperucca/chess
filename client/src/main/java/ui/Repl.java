@@ -1,10 +1,8 @@
 package ui;
 
-import WebSocket.NotificationHandler;
-import websocket.messages.NotificationMessage;
+import websocket.NotificationHandler;
 import websocket.messages.ServerMessage;
 
-import javax.management.Notification;
 import java.util.Scanner;
 
 public class Repl implements NotificationHandler {
@@ -37,9 +35,5 @@ public class Repl implements NotificationHandler {
         }
     }
 
-    @Override
-    public void notify(ServerMessage message) {
-        System.out.println(EscapeSequences.SET_BG_COLOR_RED + message);
 
-    }
 }

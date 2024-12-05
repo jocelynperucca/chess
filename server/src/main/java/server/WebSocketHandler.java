@@ -106,7 +106,6 @@ public class WebSocketHandler {
             String errorMessage = "ERROR: game over";
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
             return;
-
         }
 
         assertGameNotOver(gameID);
@@ -125,10 +124,7 @@ public class WebSocketHandler {
         }
 
         ChessGame.TeamColor playerColor;
-
         ChessGame chessGame = gameData.getGame();
-        String userNametest = authData.getUsername();
-        String userNamemaybe = gameData.getBlackUsername();
         if (Objects.equals(authData.getUsername(), gameData.getBlackUsername())) {
             playerColor = ChessGame.TeamColor.BLACK;
         } else {
@@ -139,60 +135,44 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
             return;
         }
-
         ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
         String userName = authData.getUsername();
-
         Collection< ChessMove > validMoves = chessGame.validMoves(start);
 
         if(validMoves.contains(move)) {
-            ChessPiece piece = chessGame.getBoard().getPiece(start);
             chessGame.makeMove(move);
             gameDAO.updateGame(chessGame, gameID);
-
-
             if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
                 String whiteUsername = gameData.getWhiteUsername();
                 var checkNotification = new NotificationMessage(whiteUsername + " is in checkmate");
-                String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
-                //session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
                 gameDAO.updateGame(chessGame,gameID);
-
             } else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
                 String whiteUsername = gameData.getWhiteUsername();
                 var checkNotification = new NotificationMessage(whiteUsername +" is in check");
                 String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
                 session.getRemote().sendString(jsonMessage);
-
             } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 String blackUsername = gameData.getBlackUsername();
                 var checkNotification = new NotificationMessage(blackUsername + " is in checkmate");
                 String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
-                //session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
                 gameDAO.updateGame(chessGame,gameID);
-
             } else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
                 String blackUsername = gameData.getBlackUsername();
                 var checkNotification = new NotificationMessage(blackUsername + " is in check");
                 String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
                 session.getRemote().sendString(jsonMessage);
-
             } else {
                 String startMove = toChessCoordinates(move.getStartPosition());
                 String endMove = toChessCoordinates(move.getEndPosition());
                 String moves = startMove + "-" + endMove + " ";
                 var notification = new NotificationMessage(moves + userName + " made move successfully");
-                connections.broadcast(gameID, authToken, notification);
-            }
-
-
+                connections.broadcast(gameID, authToken, notification);}
             if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
                 String whiteUsername = gameData.getWhiteUsername();
                 var checkNotification = new NotificationMessage(whiteUsername + " is in stalemate");
@@ -200,9 +180,7 @@ public class WebSocketHandler {
                 connections.broadcast(gameID, authToken, checkNotification);
                 session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
-                gameDAO.updateGame(chessGame,gameID);
-            }
-
+                gameDAO.updateGame(chessGame,gameID);}
             if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
                 String blackUsername = gameData.getBlackUsername();
                 var checkNotification = new NotificationMessage(blackUsername + " is in stalemate");
@@ -210,31 +188,15 @@ public class WebSocketHandler {
                 connections.broadcast(gameID, authToken, checkNotification);
                 session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
-                gameDAO.updateGame(chessGame,gameID);
-            }
-
+                gameDAO.updateGame(chessGame,gameID);}
             LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
             String jsonMessage = new Gson().toJson(loadGameMessage);
             connections.broadcast(gameID, authToken, loadGameMessage);
             session.getRemote().sendString(jsonMessage);
-
-
         } else {
             String errorMessage = "Error: Invalid move";
-            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
-            return;
-        }
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));}}
 
-
-
-    }
-
-    private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {
-        if (authDAO.getAuthToken(authToken) == null) {
-            throw new IllegalArgumentException("Invalid authToken");
-        }
-        connections.add(authToken, gameID, session, playerColor);
-    }
 
     private void leave(Session session, LeaveCommand command) throws DataAccessException, IOException {
         String authToken = command.getAuthToken();
