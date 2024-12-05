@@ -157,7 +157,6 @@ public class WebSocketHandler {
             } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 String blackUsername = gameData.getBlackUsername();
                 var checkNotification = new NotificationMessage(blackUsername + " is in checkmate");
-                String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
                 chessGame.setGameOver(true);
                 gameDAO.updateGame(chessGame,gameID);
@@ -210,8 +209,6 @@ public class WebSocketHandler {
             playerColor = "white";
         }
 
-
-        //GameData gameData = gameDAO.findGame(gameID);
         if (playerColor.equals("white")) {
             gameDAO.removePlayer(gameID, playerColor);
         } else if (playerColor.equals("black")) {
