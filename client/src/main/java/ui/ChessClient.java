@@ -442,7 +442,7 @@ public class ChessClient {
         assertInGameplay();
         //assertObserver();
         try {
-            ws.resignSend(authData.getAuthToken(), gameID, assertInGameplay());
+            ws.resignSend(authData.getAuthToken(), gameID);
 
             currentGame = null;
             inGameplay = false;

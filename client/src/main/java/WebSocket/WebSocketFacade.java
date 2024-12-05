@@ -108,8 +108,8 @@ public class WebSocketFacade extends Endpoint {
         sendCommand(leaveCommand);
     }
 
-    public void resignSend(String authToken, int gameID, boolean inGame) throws ResponseException {
-        ResignCommand resignCommand = new ResignCommand(authToken, gameID, inGame);
+    public void resignSend(String authToken, int gameID) throws ResponseException {
+        ResignCommand resignCommand = new ResignCommand(authToken, gameID);
         sendCommand(resignCommand);
     }
 }

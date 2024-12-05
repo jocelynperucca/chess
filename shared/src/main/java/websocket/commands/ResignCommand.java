@@ -1,15 +1,9 @@
 package websocket.commands;
 
 public class ResignCommand extends UserGameCommand {
-    private final boolean inGame;
 
-    public ResignCommand(String authToken, int gameID, boolean inGame) {
+    public ResignCommand(String authToken, int gameID) {
         super(CommandType.RESIGN, authToken, gameID);
-        this.inGame = inGame;
-    }
-
-    public boolean getInGame() {
-        return inGame;
     }
 
 }
