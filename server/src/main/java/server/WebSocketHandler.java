@@ -196,7 +196,7 @@ public class WebSocketHandler {
         chessGame.setGameOver(true);
         gameDAO.updateGame(chessGame, gameID);
 
-        connections.remove(authToken,gameID);
+        //connections.remove(authToken,gameID);
         String message = resignUsername + " has resigned. The game is now over";
         NotificationMessage notificationMessage = new NotificationMessage(message);
 

@@ -50,6 +50,7 @@ public class ChessClient {
                 String setTextColorRed = EscapeSequences.SET_TEXT_COLOR_RED;
                 String resetTextColor = EscapeSequences.RESET_TEXT_COLOR;
                 System.out.println(setTextColorRed + ">> " + "Game Loaded" + resetTextColor);
+                System.out.println("It is " + currentGame.getTeamTurn().toString() + " turn");
             }
 
             @Override
