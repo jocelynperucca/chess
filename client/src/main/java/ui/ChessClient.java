@@ -309,6 +309,7 @@ public class ChessClient {
         currentGame = selectedGame.getGame();
         chessBoard = currentGame.getBoard();
         ws.joinPlayerSend(gameID, "observer", authData.getAuthToken());
+        playerColor = "observer";
         asObserver = true;
 
         //Successfully entered game to observe
@@ -416,9 +417,12 @@ public class ChessClient {
         try {
         ws.leaveSend(authData.getAuthToken(), gameID);
         SQLGameDAO sqlGameDAO = new SQLGameDAO();
-        sqlGameDAO.removePlayer(gameID, playerColor);
+        if (playerColor != "observer") {
+            sqlGameDAO.removePlayer(gameID, playerColor);
+        }
         currentGame = null;
         inGameplay = false;
+        asObserver = false;
 
 
         return "You have left the game.";
