@@ -30,6 +30,7 @@ public class ChessClient {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade.ServerMessageListener serverMessageListener;
     boolean inGameplay = false;
+    boolean asObserver = false;
     private String playerColor;
     private ChessGame currentGame;
     private int gameID;
@@ -308,17 +309,21 @@ public class ChessClient {
         currentGame = selectedGame.getGame();
         chessBoard = currentGame.getBoard();
         ws.joinPlayerSend(gameID, "observer", authData.getAuthToken());
+        asObserver = true;
 
         //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
     }
 
     public String redrawChessboard(PrintStream out) throws ResponseException {
-        assertInGameplay();
-        out.println("Printing chessboard...");
-        ChessBoardDraw.drawChessBoard(chessBoard,null);
-        return "Current Chessboard";
+        if (assertInGameplay() || assertObserver() ) {
+            out.println("Printing chessboard...");
+            ChessBoardDraw.drawChessBoard(chessBoard,null);
+            return "Current Chessboard";
 
+        } else {
+            return "Issue drawing chessboard, try again";
+        }
     }
 
     public String makeMove(PrintStream out) throws ResponseException, InvalidMoveException {
@@ -425,6 +430,7 @@ public class ChessClient {
 
     public String resign(PrintStream out) throws ResponseException {
         assertInGameplay();
+        assertObserver();
         try {
             ws.resignSend(authData.getAuthToken(), gameID);
 
@@ -451,6 +457,8 @@ public class ChessClient {
             case SIGNEDIN -> {
                 if (inGameplay) {
                     yield gameplayScreen();
+                }else if (asObserver){
+                    yield gameplayScreenObserver();
                 } else {
                     yield """
                             - logout
@@ -478,6 +486,27 @@ public class ChessClient {
                     - help - Show available commands
                     """;
     }
+
+    public String gameplayScreenObserver() {
+        return """
+                    - redraw chessboard (redraw)
+                    - leave
+                    = quit
+                    - help - Show available commands
+                    """;
+    }
+
+    public String gameplayScreenHelpObserver() {
+        return """
+                    - redraw chessboard - see the current state of the board
+                    - leave - leave the current state of the game
+                    = quit
+                    - help - Show available commands
+                    """;
+    }
+
+
+
     public String gameplayScreenHelp() {
         return """
                     - redraw chessboard - see the current state of the board
@@ -502,6 +531,8 @@ public class ChessClient {
             case SIGNEDIN -> {
                 if (inGameplay) {
                     yield gameplayScreenHelp();
+                } else if(asObserver) {
+                    yield gameplayScreenHelpObserver();
                 } else {
                     yield """
                         - logout - Sign out
@@ -560,15 +591,11 @@ public class ChessClient {
         }
     }
 
-    private void assertInGameplay() throws ResponseException {
-        if (inGameplay != true) {
-            throw new ResponseException(400, "You must be in a game");
-        }
+    private boolean assertInGameplay() throws ResponseException {
+        return inGameplay;
     }
 
-    private void assertGameOver() {
-        if (currentGame.isGameOver()) {
-            throw new IllegalStateException("The game is over. No further moves can be made. Leave game to play again");
-        }
+    private boolean assertObserver() {
+        return asObserver;
     }
 }
