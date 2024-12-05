@@ -335,7 +335,7 @@ public class ChessClient {
         }
 
         out.println("Making Move...");
-        out.println("Enter coordinates of piece you want to move: ");
+        out.println("Enter coordinates of piece you want to move (Example 1a, 7c): ");
         String coordinates = scanner.nextLine();
         if (!validCoordinates(coordinates)) {
             out.println("Coordinate does not exist");
@@ -352,7 +352,7 @@ public class ChessClient {
             out.println("This piece isn't yours, choose another");
             makeMove(out);
         }
-        out.println("Enter coordinates where you want to move piece: ");
+        out.println("Enter coordinates where you want to move piece (Example 1a, 7c): ");
         String endCoordinates = scanner.nextLine();
 
         if (!validCoordinates(endCoordinates)) {
