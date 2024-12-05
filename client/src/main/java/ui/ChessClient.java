@@ -3,17 +3,12 @@ package ui;
 import WebSocket.NotificationHandler;
 import WebSocket.WebSocketFacade;
 import chess.*;
-import dataaccess.DataAccessException;
-import dataaccess.SQLGameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.ConnectionManager;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
-
-import java.sql.SQLException;
 import java.util.*;
 import java.io.PrintStream;
 
@@ -422,19 +417,13 @@ public class ChessClient {
 
         try {
         ws.leaveSend(authData.getAuthToken(), gameID);
-        SQLGameDAO sqlGameDAO = new SQLGameDAO();
-        if (playerColor != "observer") {
-            //sqlGameDAO.removePlayer(gameID, playerColor);
-            currentGame = sqlGameDAO.findGame(gameID).getGame();
-            sqlGameDAO.updateGame(currentGame, gameID);
 
-        }
         currentGame = null;
         inGameplay = false;
         asObserver = false;
 
         return "You have left the game.";
-        } catch (ResponseException | DataAccessException | SQLException e) {
+        } catch (ResponseException e) {
             return "Failed to leave game" + e.getMessage();
         }
 
