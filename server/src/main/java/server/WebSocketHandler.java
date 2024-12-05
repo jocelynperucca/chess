@@ -129,6 +129,7 @@ public class WebSocketHandler {
 
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
+        String userName = authData.getUsername();
 
         Collection< ChessMove > validMoves = chessGame.validMoves(start);
 
@@ -137,6 +138,61 @@ public class WebSocketHandler {
             chessGame.makeMove(move);
             gameDAO.updateGame(chessGame, gameID);
 
+            if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                String whiteUsername = gameData.getWhiteUsername();
+                var checkNotification = new NotificationMessage(whiteUsername +" is in check");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+            }
+            if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                String blackUsername = gameData.getBlackUsername();
+                var checkNotification = new NotificationMessage(blackUsername + " is in check");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+            }
+
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                String whiteUsername = gameData.getWhiteUsername();
+                var checkNotification = new NotificationMessage(whiteUsername + " is in checkmate");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+                chessGame.setGameOver(true);
+                gameDAO.updateGame(chessGame,gameID);
+            }
+
+            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                String blackUsername = gameData.getBlackUsername();
+                var checkNotification = new NotificationMessage(blackUsername + " is in checkmate");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+                chessGame.setGameOver(true);
+                gameDAO.updateGame(chessGame,gameID);
+            }
+
+            if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                String whiteUsername = gameData.getWhiteUsername();
+                var checkNotification = new NotificationMessage(whiteUsername + " is in stalemate");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+                chessGame.setGameOver(true);
+                gameDAO.updateGame(chessGame,gameID);
+            }
+
+            if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                String blackUsername = gameData.getBlackUsername();
+                var checkNotification = new NotificationMessage(blackUsername + " is in stalemate");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+                chessGame.setGameOver(true);
+                gameDAO.updateGame(chessGame,gameID);
+            }
+
             LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
             String jsonMessage = new Gson().toJson(loadGameMessage);
             connections.broadcast(gameID, authToken, loadGameMessage);
@@ -144,9 +200,6 @@ public class WebSocketHandler {
             String startMove = toChessCoordinates(move.getStartPosition());
             String endMove = toChessCoordinates(move.getEndPosition());
             String moves = startMove + "-" + endMove + " ";
-
-
-            String userName = authData.getUsername();
 
 
             var notification = new NotificationMessage(moves + userName + " made move successfully");

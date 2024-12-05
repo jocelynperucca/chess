@@ -394,18 +394,23 @@ public class ChessClient {
         };
     }
 
-    public String highlight(PrintStream out) {
-        out.println("Highlighting moves...");
-        out.println("Enter coordinates of piece you want to check: ");
-        String coordinates = scanner.nextLine();
-        if(!validCoordinates(coordinates)) {
-            out.println("Coordinates don't exist");
-            highlight(out);
+    public String highlight(PrintStream out) throws ResponseException {
+        if (assertObserver() || assertInGameplay()) {
+            out.println("Highlighting moves...");
+            out.println("Enter coordinates of piece you want to check: ");
+            String coordinates = scanner.nextLine();
+            if(!validCoordinates(coordinates)) {
+                out.println("Coordinates don't exist");
+                highlight(out);
+            } else {
+                ChessPosition position = parseChessPosition(coordinates);
+                ChessBoardDraw.drawChessBoard(chessBoard, position);
+            }
+            return "Available moves";
         } else {
-            ChessPosition position = parseChessPosition(coordinates);
-            ChessBoardDraw.drawChessBoard(chessBoard, position);
+            return "You are not authorized to do this";
         }
-        return "Available moves";
+
     }
 
     public String leave(PrintStream out) throws ResponseException {
@@ -495,6 +500,7 @@ public class ChessClient {
     public String gameplayScreenObserver() {
         return """
                     - redraw chessboard (redraw)
+                    - highlight legal moves (highlight)
                     - leave
                     = quit
                     - help - Show available commands
@@ -504,6 +510,7 @@ public class ChessClient {
     public String gameplayScreenHelpObserver() {
         return """
                     - redraw chessboard - see the current state of the board
+                    - highlight legal moves - see what moves you can make
                     - leave - leave the current state of the game
                     = quit
                     - help - Show available commands
