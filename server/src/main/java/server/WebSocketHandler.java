@@ -233,12 +233,31 @@ public class WebSocketHandler {
     private void leave(Session session, LeaveCommand command) throws DataAccessException, IOException {
         String authToken = command.getAuthToken();
         int gameID = command.getGameID();
+        AuthData authData = authDAO.getAuthToken(authToken);
+        GameData gameData = gameDAO.findGame(gameID);
 
-        connections.remove(authToken, gameID);
+        if (Objects.equals(authData.getUsername(), gameData.getBlackUsername())) {
+            playerColor = "black";
+        } else {
+            playerColor = "white";
+        }
+
+
+        //GameData gameData = gameDAO.findGame(gameID);
+        if (playerColor.equals("white")) {
+            gameDAO.removePlayer(gameID, playerColor);
+        } else if (playerColor.equals("black")) {
+            gameDAO.removePlayer(gameID, playerColor);
+        }
+        //gameDAO.updateGame(gameData.getGame(), gameID);
+
         String userName = authDAO.getAuthToken(authToken).getUsername();
         String message = userName + " has left the game.";
         var notification = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notification);
+
+        connections.remove(authToken, gameID);
+
 
 
         String confirmMessage = "You have left the game.";

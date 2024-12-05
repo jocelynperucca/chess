@@ -55,4 +55,9 @@ public class MemoryGameDAO implements GameDAO {
     public void clearGames() {
         games.clear();
     }
-}
+
+    public void removePlayer(int gameID, String playerColor) throws DataAccessException {
+
+    }
+
+    }

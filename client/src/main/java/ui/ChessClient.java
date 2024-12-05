@@ -424,12 +424,14 @@ public class ChessClient {
         ws.leaveSend(authData.getAuthToken(), gameID);
         SQLGameDAO sqlGameDAO = new SQLGameDAO();
         if (playerColor != "observer") {
-            sqlGameDAO.removePlayer(gameID, playerColor);
+            //sqlGameDAO.removePlayer(gameID, playerColor);
+            currentGame = sqlGameDAO.findGame(gameID).getGame();
+            sqlGameDAO.updateGame(currentGame, gameID);
+
         }
         currentGame = null;
         inGameplay = false;
         asObserver = false;
-
 
         return "You have left the game.";
         } catch (ResponseException | DataAccessException | SQLException e) {
