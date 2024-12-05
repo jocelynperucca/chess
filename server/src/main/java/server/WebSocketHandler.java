@@ -119,12 +119,6 @@ public class WebSocketHandler {
 
         if(validMoves.contains(move)) {
             ChessPiece piece = chessGame.getBoard().getPiece(start);
-            if(canPromote(piece, move)) {
-                System.out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
-                String promoteType = scanner.nextLine();
-                ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
-                move = new ChessMove(start, end, promotionPiece);
-            }
             chessGame.makeMove(move);
             gameDAO.updateGame(chessGame, gameID);
 
