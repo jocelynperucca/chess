@@ -247,7 +247,13 @@ public class WebSocketHandler {
 
     private void resign(Session session, ResignCommand command) throws DataAccessException, IOException {
         String authToken = command.getAuthToken();
+
         int gameID = command.getGameID();
+        if (!command.getInGame()) {
+            String errorMessage = "Error: You cannot resign, you're an observer. Try leaving instead";
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
 
         GameData gameData = gameDAO.findGame(gameID);
         AuthData authData = authDAO.getAuthToken(authToken);
@@ -262,10 +268,6 @@ public class WebSocketHandler {
         NotificationMessage notificationMessage = new NotificationMessage(message);
 
         connections.broadcast(gameID, authToken, notificationMessage);
-
-        //LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
-        //String jsonMessage = new Gson().toJson(loadGameMessage);
-        //connections.broadcast(gameID, authToken, loadGameMessage);
 
         String confirmMessage = "You have resigned from the game";
         session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));

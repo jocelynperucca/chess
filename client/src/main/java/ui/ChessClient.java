@@ -440,9 +440,9 @@ public class ChessClient {
 
     public String resign(PrintStream out) throws ResponseException {
         assertInGameplay();
-        assertObserver();
+        //assertObserver();
         try {
-            ws.resignSend(authData.getAuthToken(), gameID);
+            ws.resignSend(authData.getAuthToken(), gameID, assertInGameplay());
 
             currentGame = null;
             inGameplay = false;

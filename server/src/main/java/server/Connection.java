@@ -19,4 +19,8 @@ public class Connection {
     public void send(String msg) throws IOException {
         session.getRemote().sendString(msg);
     }
+
+    public String getRole() {
+        return this.role;
+    }
 }

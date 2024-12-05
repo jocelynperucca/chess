@@ -54,4 +54,15 @@ public class ConnectionManager {
             connectionsByGame.remove(gameID);
         }
     }
+
+    public Connection getConnection(String authToken) {
+        for (List<Connection> connections : connectionsByGame.values()) {
+            for (Connection connection : connections) {
+                if (connection.authToken.equals(authToken)) {
+                    return connection;
+                }
+            }
+        }
+        return null; // Return null if no connection is found
+    }
 }
