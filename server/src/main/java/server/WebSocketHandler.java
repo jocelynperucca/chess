@@ -97,7 +97,6 @@ public class WebSocketHandler {
     }
 
     private void makeMove(Session session, MakeMoveCommand command) throws DataAccessException, InvalidMoveException, IOException {
-
         String authToken = command.getAuthToken();
         int gameID = command.getGameID();
         ChessMove move = command.getMove();
@@ -105,7 +104,6 @@ public class WebSocketHandler {
 
         if (assertGameNotOver(gameID)) {
             String errorMessage = "ERROR: game over";
-            //System.err.println(errorMessage);
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
             return;
 
@@ -115,6 +113,13 @@ public class WebSocketHandler {
         AuthData authData = authDAO.getAuthToken(authToken);
         if (authData == null) {
             String errorMessage = "Error: Invalid authToken";
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
+
+        Connection connection = connections.getConnection(authToken);
+        if (Objects.equals(connection.getRole(), "observer") || authData.getUsername().equals("observer")) {
+            String errorMessage = "Error: You cannot make a move, you're an observer.";
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
             return;
         }
@@ -146,40 +151,47 @@ public class WebSocketHandler {
             chessGame.makeMove(move);
             gameDAO.updateGame(chessGame, gameID);
 
-            if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
-                String whiteUsername = gameData.getWhiteUsername();
-                var checkNotification = new NotificationMessage(whiteUsername +" is in check");
-                String jsonMessage = new Gson().toJson(checkNotification);
-                connections.broadcast(gameID, authToken, checkNotification);
-                session.getRemote().sendString(jsonMessage);
-            }
-            if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
-                String blackUsername = gameData.getBlackUsername();
-                var checkNotification = new NotificationMessage(blackUsername + " is in check");
-                String jsonMessage = new Gson().toJson(checkNotification);
-                connections.broadcast(gameID, authToken, checkNotification);
-                session.getRemote().sendString(jsonMessage);
-            }
 
             if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
                 String whiteUsername = gameData.getWhiteUsername();
                 var checkNotification = new NotificationMessage(whiteUsername + " is in checkmate");
                 String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
-                session.getRemote().sendString(jsonMessage);
+                //session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
                 gameDAO.updateGame(chessGame,gameID);
-            }
 
-            if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+            } else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                String whiteUsername = gameData.getWhiteUsername();
+                var checkNotification = new NotificationMessage(whiteUsername +" is in check");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+
+            } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
                 String blackUsername = gameData.getBlackUsername();
                 var checkNotification = new NotificationMessage(blackUsername + " is in checkmate");
                 String jsonMessage = new Gson().toJson(checkNotification);
                 connections.broadcast(gameID, authToken, checkNotification);
-                session.getRemote().sendString(jsonMessage);
+                //session.getRemote().sendString(jsonMessage);
                 chessGame.setGameOver(true);
                 gameDAO.updateGame(chessGame,gameID);
+
+            } else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                String blackUsername = gameData.getBlackUsername();
+                var checkNotification = new NotificationMessage(blackUsername + " is in check");
+                String jsonMessage = new Gson().toJson(checkNotification);
+                connections.broadcast(gameID, authToken, checkNotification);
+                session.getRemote().sendString(jsonMessage);
+
+            } else {
+                String startMove = toChessCoordinates(move.getStartPosition());
+                String endMove = toChessCoordinates(move.getEndPosition());
+                String moves = startMove + "-" + endMove + " ";
+                var notification = new NotificationMessage(moves + userName + " made move successfully");
+                connections.broadcast(gameID, authToken, notification);
             }
+
 
             if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
                 String whiteUsername = gameData.getWhiteUsername();
@@ -205,13 +217,7 @@ public class WebSocketHandler {
             String jsonMessage = new Gson().toJson(loadGameMessage);
             connections.broadcast(gameID, authToken, loadGameMessage);
             session.getRemote().sendString(jsonMessage);
-            String startMove = toChessCoordinates(move.getStartPosition());
-            String endMove = toChessCoordinates(move.getEndPosition());
-            String moves = startMove + "-" + endMove + " ";
 
-
-            var notification = new NotificationMessage(moves + userName + " made move successfully");
-            connections.broadcast(gameID, authToken, notification);
 
         } else {
             String errorMessage = "Error: Invalid move";
