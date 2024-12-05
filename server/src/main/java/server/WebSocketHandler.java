@@ -104,8 +104,12 @@ public class WebSocketHandler {
         GameData gameData = gameDAO.findGame(gameID);
 
         assertGameNotOver(gameID);
-
-
+        AuthData authData = authDAO.getAuthToken(authToken);
+        if (authData == null) {
+            String errorMessage = "Error: Invalid authToken";
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
 
         ChessGame chessGame = gameData.getGame();
         chessGame.makeMove(move);
@@ -118,7 +122,8 @@ public class WebSocketHandler {
         String startMove = toChessCoordinates(move.getStartPosition());
         String endMove = toChessCoordinates(move.getEndPosition());
         String moves = startMove + "-" + endMove + " ";
-        AuthData authData = authDAO.getAuthToken(authToken);
+
+
         String userName = authData.getUsername();
 
 
