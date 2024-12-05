@@ -59,11 +59,20 @@ public class WebSocketHandler {
         if (gameID <= 0 || authToken == null) {
             throw new IllegalArgumentException("Invalid gameID or authToken");
         }
+
+
         GameData gameData = gameDAO.findGame(gameID);
-        AuthData authData = authDAO.getAuthToken(authToken);
+        //AuthData authData = authDAO.getAuthToken(authToken);
         if (gameData == null) {
             String errorMessage = "ERROR: Invalid gameID - " + gameID;
             //System.err.println(errorMessage);
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
+
+        AuthData authData = authDAO.getAuthToken(authToken);
+        if (authData == null) {
+            String errorMessage = "ERROR: Invalid authToken";
             session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
             return;
         }
