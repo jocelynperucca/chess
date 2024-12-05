@@ -344,9 +344,9 @@ public class ChessClient {
             return "There is no piece there!";
         }
 
-        if (piece.getTeamColor() != currentGame.getTeamTurn()) {
-            return ("It's not your turn!");
-        }
+//        if (piece.getTeamColor() != currentGame.getTeamTurn()) {
+//            return ("It's not your turn!");
+//        }
 
         if (piece.getTeamColor() != teamColor) {
             out.println("This piece isn't yours, choose another");

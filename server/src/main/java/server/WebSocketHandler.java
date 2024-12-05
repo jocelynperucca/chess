@@ -19,6 +19,7 @@ import websocket.messages.NotificationMessage;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -109,9 +110,22 @@ public class WebSocketHandler {
             return;
         }
 
-
+        ChessGame.TeamColor playerColor;
 
         ChessGame chessGame = gameData.getGame();
+        String userNametest = authData.getUsername();
+        String userNamemaybe = gameData.getBlackUsername();
+        if (Objects.equals(authData.getUsername(), gameData.getBlackUsername())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else {
+            playerColor = ChessGame.TeamColor.WHITE;
+        }
+        if (chessGame.getTeamTurn() != playerColor) {
+            String errorMessage = "Error: It's not your turn";
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
+
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
 
@@ -235,5 +249,14 @@ public class WebSocketHandler {
         }
     }
 
+    private ChessGame.TeamColor stringtoTeamColor(String playerColor) {
+        if (playerColor.equalsIgnoreCase("white")) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (playerColor.equalsIgnoreCase("black")) {
+            return ChessGame.TeamColor.BLACK;
+        } else {
+            return null;
+        }
+    }
 
 }
