@@ -242,7 +242,7 @@ public class WebSocketHandler {
 
 
         String confirmMessage = "You have left the game.";
-        session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
+        //session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
     }
 
     private void resign(Session session, ResignCommand command) throws DataAccessException, IOException {
