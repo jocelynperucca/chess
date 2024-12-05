@@ -1,9 +1,6 @@
 package server;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.AuthData;
@@ -21,6 +18,7 @@ import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
 
 @WebSocket
 public class WebSocketHandler {
@@ -111,24 +109,48 @@ public class WebSocketHandler {
             return;
         }
 
+
+
         ChessGame chessGame = gameData.getGame();
-        chessGame.makeMove(move);
-        gameDAO.updateGame(chessGame, gameID);
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
 
-        LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
-        String jsonMessage = new Gson().toJson(loadGameMessage);
-        connections.broadcast(gameID, authToken, loadGameMessage);
-        session.getRemote().sendString(jsonMessage);
-        String startMove = toChessCoordinates(move.getStartPosition());
-        String endMove = toChessCoordinates(move.getEndPosition());
-        String moves = startMove + "-" + endMove + " ";
+        Collection< ChessMove > validMoves = chessGame.validMoves(start);
+
+        if(validMoves.contains(move)) {
+            ChessPiece piece = chessGame.getBoard().getPiece(start);
+            if(canPromote(piece, move)) {
+                System.out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
+                String promoteType = scanner.nextLine();
+                ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
+                move = new ChessMove(start, end, promotionPiece);
+            }
+            chessGame.makeMove(move);
+            gameDAO.updateGame(chessGame, gameID);
+
+            LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
+            String jsonMessage = new Gson().toJson(loadGameMessage);
+            connections.broadcast(gameID, authToken, loadGameMessage);
+            session.getRemote().sendString(jsonMessage);
+            String startMove = toChessCoordinates(move.getStartPosition());
+            String endMove = toChessCoordinates(move.getEndPosition());
+            String moves = startMove + "-" + endMove + " ";
 
 
-        String userName = authData.getUsername();
+            String userName = authData.getUsername();
 
 
-        var notification = new NotificationMessage(moves + userName + " made move successfully");
-        connections.broadcast(gameID, authToken, notification);
+            var notification = new NotificationMessage(moves + userName + " made move successfully");
+            connections.broadcast(gameID, authToken, notification);
+
+        } else {
+            String errorMessage = "Error: Invalid move";
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+        }
+
+
+
     }
 
     private void addConnection(String authToken, int gameID, Session session) throws DataAccessException {
@@ -218,4 +240,6 @@ public class WebSocketHandler {
             throw new IllegalStateException("The game is already over. No further actions are allowed.");
         }
     }
+
+
 }

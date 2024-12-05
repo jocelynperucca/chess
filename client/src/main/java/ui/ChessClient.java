@@ -238,11 +238,8 @@ public class ChessClient {
         //try to join game, if not, return exception
         try {
             currentGame = server.joinGame(playerColor, gameID, authData);
-//            currentGame = selectedGame.getGame();
-//            chessBoard = currentGame.getBoard();
             String message = "Successfully joined game " + selectedGame.getGameName() + " as " + playerColor;
-            //chessBoard.resetBoard();
-            //ChessBoardDraw.drawChessBoard(chessBoard, null);
+
             ws = new WebSocketFacade(serverUrl, notificationHandler, serverMessageListener);
             server.setWebsocket(ws);
             inGameplay = true;
@@ -251,7 +248,6 @@ public class ChessClient {
             } catch (ResponseException e) {
                 throw new RuntimeException(e);
             }
-            //HERE
             return message;
         } catch (ResponseException e) {
             return "Failed to join game, check player color or status of game";
@@ -364,29 +360,21 @@ public class ChessClient {
             makeMove(out);
         }
         ChessPosition end = parseChessPosition(endCoordinates);
-        //get game chessboard from gameData
-        //update board after successful move. make method for that
-
         ChessGame game = new ChessGame();
         ChessMove tryMove = new ChessMove(start, end, null);
-        Collection< ChessMove > validMoves = game.validMoves(start);
-        if (validMoves.contains(tryMove)) {
-            if(canPromote(piece, tryMove)) {
-                out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
-                String promoteType = scanner.nextLine();
-                ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
-                tryMove = new ChessMove(start, end, promotionPiece);
-            }
-
-            try {
-                ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
-            } catch (ResponseException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return "Invalid move, try again";
-
+        try {
+            ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
+
+        if(canPromote(piece, tryMove)) {
+            out.println("What would you like to sub your piece for? [Q|R|B|N] : ");
+            String promoteType = scanner.nextLine();
+            ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
+            tryMove = new ChessMove(start, end, promotionPiece);
+        }
+
         return "Made move";
 
     }
