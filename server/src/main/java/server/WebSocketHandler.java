@@ -60,6 +60,7 @@ public class WebSocketHandler {
             throw new IllegalArgumentException("Invalid gameID or authToken");
         }
         GameData gameData = gameDAO.findGame(gameID);
+        AuthData authData = authDAO.getAuthToken(authToken);
         if (gameData == null) {
             String errorMessage = "ERROR: Invalid gameID - " + gameID;
             //System.err.println(errorMessage);
@@ -87,10 +88,13 @@ public class WebSocketHandler {
     }
 
     private void makeMove(Session session, MakeMoveCommand command) throws DataAccessException, InvalidMoveException, IOException {
+
         String authToken = command.getAuthToken();
         int gameID = command.getGameID();
         ChessMove move = command.getMove();
         GameData gameData = gameDAO.findGame(gameID);
+
+        assertGameNotOver(gameID);
 
 
 
@@ -125,18 +129,40 @@ public class WebSocketHandler {
         int gameID = command.getGameID();
 
         connections.remove(authToken, gameID);
-
         String userName = authDAO.getAuthToken(authToken).getUsername();
         String message = userName + " has left the game.";
         var notification = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notification);
 
+
         String confirmMessage = "You have left the game.";
         session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
     }
 
-    private void resign(Session session, ResignCommand command) {
+    private void resign(Session session, ResignCommand command) throws DataAccessException, IOException {
+        String authToken = command.getAuthToken();
+        int gameID = command.getGameID();
 
+        GameData gameData = gameDAO.findGame(gameID);
+        AuthData authData = authDAO.getAuthToken(authToken);
+
+        String resignUsername = authData.getUsername();
+        ChessGame chessGame = gameData.getGame();
+        chessGame.setGameOver(true);
+        gameDAO.updateGame(chessGame, gameID);
+
+        connections.remove(authToken,gameID);
+        String message = resignUsername + " has resigned. The game is now over";
+        NotificationMessage notificationMessage = new NotificationMessage(message);
+
+        connections.broadcast(gameID, authToken, notificationMessage);
+
+        LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
+        //String jsonMessage = new Gson().toJson(loadGameMessage);
+        connections.broadcast(gameID, authToken, loadGameMessage);
+
+        String confirmMessage = "You have resigned from the game";
+        session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
     }
 
 
@@ -168,6 +194,14 @@ public class WebSocketHandler {
             session.getRemote().sendString(jsonErrorMessage);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void assertGameNotOver(int gameID) throws DataAccessException {
+        GameData gameData = gameDAO.findGame(gameID);
+        ChessGame chessGame = gameData.getGame();
+        if (chessGame.isGameOver()) {
+            throw new IllegalStateException("The game is already over. No further actions are allowed.");
         }
     }
 }

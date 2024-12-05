@@ -87,7 +87,7 @@ public class ChessClient {
                 case "make" -> makeMove(out);
                 case "highlight" -> highlight(out);
                 case "leave" -> leave(out);
-                //case "resign" -> resign(out);
+                case "resign" -> resign(out);
                 case " " -> help();
                 default -> "Invalid command";
             };
@@ -320,7 +320,8 @@ public class ChessClient {
         return "Observing game: " + selectedGame.getGameName();
     }
 
-    public String redrawChessboard(PrintStream out) {
+    public String redrawChessboard(PrintStream out) throws ResponseException {
+        assertInGameplay();
         out.println("Printing chessboard...");
         ChessBoardDraw.drawChessBoard(chessBoard,null);
         return "Current Chessboard";
@@ -329,6 +330,10 @@ public class ChessClient {
 
     public String makeMove(PrintStream out) throws ResponseException, InvalidMoveException {
         assertInGameplay();
+        if (currentGame.isGameOver()) {
+            return "Game is over, cannot make a move";
+        }
+
         out.println("Making Move...");
         out.println("Enter coordinates of piece you want to move: ");
         String coordinates = scanner.nextLine();
@@ -372,23 +377,12 @@ public class ChessClient {
                 ChessPiece.PieceType promotionPiece = setPieceType(promoteType);
                 tryMove = new ChessMove(start, end, promotionPiece);
             }
-//            currentGame.makeMove(tryMove);
-//            chessBoard = currentGame.getBoard();
-//            currentGame.setBoard(chessBoard);
+
             try {
                 ws.makeMoveSend(authData.getAuthToken(), gameID, tryMove);
             } catch (ResponseException e) {
                 throw new RuntimeException(e);
             }
-            //ChessBoardDraw.drawChessBoard(chessBoard, null);
-
-//            try {
-//                SQLGameDAO sqlGameDAO = new SQLGameDAO();
-//                sqlGameDAO.updateGame(currentGame, gameID);
-//            } catch (SQLException | DataAccessException e) {
-//                throw new RuntimeException(e);
-//            }
-//
         } else {
             return "Invalid move, try again";
 
@@ -440,11 +434,26 @@ public class ChessClient {
         currentGame = null;
         inGameplay = false;
 
+
         return "You have left the game.";
         } catch (ResponseException | DataAccessException | SQLException e) {
             return "Failed to leave game" + e.getMessage();
         }
 
+    }
+
+    public String resign(PrintStream out) throws ResponseException {
+        assertInGameplay();
+        try {
+            ws.resignSend(authData.getAuthToken(), gameID);
+
+            currentGame = null;
+            inGameplay = false;
+
+            return "Resigned";
+        } catch (ResponseException e) {
+            return "Could not resign" + e.getMessage();
+        }
     }
 
 
@@ -573,6 +582,12 @@ public class ChessClient {
     private void assertInGameplay() throws ResponseException {
         if (inGameplay != true) {
             throw new ResponseException(400, "You must be in a game");
+        }
+    }
+
+    private void assertGameOver() {
+        if (currentGame.isGameOver()) {
+            throw new IllegalStateException("The game is over. No further moves can be made. Leave game to play again");
         }
     }
 }
