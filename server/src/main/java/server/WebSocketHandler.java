@@ -103,6 +103,14 @@ public class WebSocketHandler {
         ChessMove move = command.getMove();
         GameData gameData = gameDAO.findGame(gameID);
 
+        if (assertGameNotOver(gameID)) {
+            String errorMessage = "ERROR: game over";
+            //System.err.println(errorMessage);
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            return;
+
+        }
+
         assertGameNotOver(gameID);
         AuthData authData = authDAO.getAuthToken(authToken);
         if (authData == null) {
@@ -295,12 +303,10 @@ public class WebSocketHandler {
         }
     }
 
-    private void assertGameNotOver(int gameID) throws DataAccessException {
+    private boolean assertGameNotOver(int gameID) throws DataAccessException {
         GameData gameData = gameDAO.findGame(gameID);
-        ChessGame chessGame = gameData.getGame();
-        if (chessGame.isGameOver()) {
-            throw new IllegalStateException("The game is already over. No further actions are allowed.");
-        }
+        ChessGame game = gameData.getGame();
+        return game.isGameOver();
     }
 
     private ChessGame.TeamColor stringtoTeamColor(String playerColor) {
