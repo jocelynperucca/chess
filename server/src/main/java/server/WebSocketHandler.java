@@ -255,9 +255,9 @@ public class WebSocketHandler {
 
         connections.broadcast(gameID, authToken, notificationMessage);
 
-        LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
+        //LoadGameMessage loadGameMessage = new LoadGameMessage(chessGame);
         //String jsonMessage = new Gson().toJson(loadGameMessage);
-        connections.broadcast(gameID, authToken, loadGameMessage);
+        //connections.broadcast(gameID, authToken, loadGameMessage);
 
         String confirmMessage = "You have resigned from the game";
         session.getRemote().sendString(new Gson().toJson(new NotificationMessage(confirmMessage)));
