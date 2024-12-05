@@ -93,8 +93,8 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void joinPlayerSend(int gameID, ChessGame.TeamColor teamColor, String authToken) throws ResponseException {
-        ConnectCommand connectCommand = new ConnectCommand(authToken, gameID);
+    public void joinPlayerSend(int gameID, String teamColor, String authToken) throws ResponseException {
+        ConnectCommand connectCommand = new ConnectCommand(authToken, gameID, teamColor);
         sendCommand(connectCommand);
     }
 

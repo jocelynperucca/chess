@@ -244,7 +244,7 @@ public class ChessClient {
             server.setWebsocket(ws);
             inGameplay = true;
             try {
-                ws.joinPlayerSend(gameID, ChessGame.TeamColor.WHITE, authData.getAuthToken());
+                ws.joinPlayerSend(gameID, playerColor, authData.getAuthToken());
             } catch (ResponseException e) {
                 throw new RuntimeException(e);
             }
@@ -307,10 +307,7 @@ public class ChessClient {
         server.setWebsocket(ws);
         currentGame = selectedGame.getGame();
         chessBoard = currentGame.getBoard();
-        ws.joinPlayerSend(gameID, null, authData.getAuthToken());
-
-        //Draw chessboard depending on the board at the time
-        ChessBoardDraw.drawChessBoard(chessBoard,null);
+        ws.joinPlayerSend(gameID, "observer", authData.getAuthToken());
 
         //Successfully entered game to observe
         return "Observing game: " + selectedGame.getGameName();
@@ -343,10 +340,6 @@ public class ChessClient {
         if(piece == null) {
             return "There is no piece there!";
         }
-
-//        if (piece.getTeamColor() != currentGame.getTeamTurn()) {
-//            return ("It's not your turn!");
-//        }
 
         if (piece.getTeamColor() != teamColor) {
             out.println("This piece isn't yours, choose another");

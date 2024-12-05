@@ -27,6 +27,7 @@ public class WebSocketHandler {
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private GameDAO gameDAO;
+    private String playerColor;
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
@@ -81,12 +82,12 @@ public class WebSocketHandler {
             throw new IllegalArgumentException("Invalid authToken");
         }
         String userName = authDAO.getAuthToken(authToken).getUsername();
-
+        playerColor = command.getPlayerColor();
         // Add connection grouped by gameID
-        connections.add(authToken, gameID, session);
+        connections.add(authToken, gameID, session, playerColor);
 
         // Notify other users in the same game
-        var message = String.format("%s has connected to game", userName);
+        var message = String.format("%s has connected to game as %s", userName, playerColor);
         var notification = new NotificationMessage(message);
         connections.broadcast(gameID, authToken, notification);
         //GameData gameData = gameDAO.findGame(gameID);
@@ -165,7 +166,7 @@ public class WebSocketHandler {
         if (authDAO.getAuthToken(authToken) == null) {
             throw new IllegalArgumentException("Invalid authToken");
         }
-        connections.add(authToken, gameID, session);
+        connections.add(authToken, gameID, session, playerColor);
     }
 
     private void leave(Session session, LeaveCommand command) throws DataAccessException, IOException {

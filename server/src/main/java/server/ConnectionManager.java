@@ -14,8 +14,8 @@ public class ConnectionManager {
     private final ConcurrentHashMap<Integer, List<Connection>> connectionsByGame = new ConcurrentHashMap<>();
 
     // Add a connection to a specific game
-    public void add(String visitorName, int gameID, Session session) {
-        var connection = new Connection(visitorName, gameID, session);
+    public void add(String visitorName, int gameID, Session session, String role) {
+        var connection = new Connection(visitorName, gameID, role, session);
         connectionsByGame.computeIfAbsent(gameID, k -> new ArrayList<>()).add(connection);
     }
 
